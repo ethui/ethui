@@ -14,7 +14,7 @@ impl AddressAlias {
     }
 
     pub async fn run(self) -> Result<serde_json::Value> {
-        let alias = settings_ref()
+        let alias = settings()
             .ask(GetAlias(self.address))
             .await
             .map_err(|e| Error::Ethui(eyre!("Failed to get alias: {}", e)))?;

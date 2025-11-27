@@ -18,22 +18,22 @@ use walkdir::{DirEntry, WalkDir};
 
 use crate::{abi::ForgeAbi, utils};
 
-pub fn forge_ref() -> ActorRef<Worker> {
-    try_forge_ref().expect("forge actor not found")
+pub fn forge() -> ActorRef<ForgeActor> {
+    try_forge().expect("forge actor not found")
 }
 
-fn try_forge_ref() -> color_eyre::Result<ActorRef<Worker>> {
-    ActorRef::<Worker>::lookup("forge")?.wrap_err_with(|| "forge actor not found")
+fn try_forge() -> color_eyre::Result<ActorRef<ForgeActor>> {
+    ActorRef::<ForgeActor>::lookup("forge")?.wrap_err_with(|| "forge actor not found")
 }
 
 #[derive(Default)]
-pub struct Worker {
+pub struct ForgeActor {
     roots: HashSet<PathBuf>,
     foundry_roots: HashSet<PathBuf>,
     watcher: Option<Debouncer<RecommendedWatcher, RecommendedCache>>,
 
     abis_by_path: BTreeMap<PathBuf, ForgeAbi>,
-    self_ref: Option<ActorRef<Worker>>,
+    self_ref: Option<ActorRef<ForgeActor>>,
     has_new_abis: bool,
 
     update_contracts_triggers: usize,
@@ -45,7 +45,7 @@ pub enum Msg {
     NewContract,
 }
 
-impl Message<Msg> for Worker {
+impl Message<Msg> for ForgeActor {
     type Reply = ();
 
     async fn handle(
@@ -69,7 +69,7 @@ impl Message<Msg> for Worker {
     }
 }
 
-impl Message<Vec<DebouncedEvent>> for Worker {
+impl Message<Vec<DebouncedEvent>> for ForgeActor {
     type Reply = ();
 
     async fn handle(
@@ -92,7 +92,7 @@ impl Message<Vec<DebouncedEvent>> for Worker {
 
 struct UpdateContracts;
 
-impl Message<UpdateContracts> for Worker {
+impl Message<UpdateContracts> for ForgeActor {
     type Reply = Result<()>;
 
     async fn handle(
@@ -159,7 +159,7 @@ impl Message<UpdateContracts> for Worker {
 
 pub struct FetchAbis;
 
-impl Message<FetchAbis> for Worker {
+impl Message<FetchAbis> for ForgeActor {
     type Reply = Vec<ForgeAbi>;
 
     async fn handle(
@@ -173,7 +173,7 @@ impl Message<FetchAbis> for Worker {
 
 pub struct GetAbiFor(pub Bytes);
 
-impl Message<GetAbiFor> for Worker {
+impl Message<GetAbiFor> for ForgeActor {
     type Reply = Option<ForgeAbi>;
 
     async fn handle(
@@ -185,7 +185,7 @@ impl Message<GetAbiFor> for Worker {
     }
 }
 
-impl Actor for Worker {
+impl Actor for ForgeActor {
     type Args = ();
     type Error = color_eyre::Report;
 
@@ -224,7 +224,7 @@ impl Actor for Worker {
     }
 }
 
-impl Worker {
+impl ForgeActor {
     #[instrument(skip_all, fields(project = ?root), level = "trace")]
     async fn scan_project(&mut self, root: &Path) -> Result<()> {
         // TODO: read custom out dir from foundry.toml
@@ -284,7 +284,7 @@ impl Worker {
             self.insert_abi(abi);
         }
 
-        let settings_actor = settings_ref();
+        let settings_actor = settings();
         let settings = settings_actor.ask(GetAll).await?;
 
         if !self.abis_by_path.is_empty()
@@ -536,7 +536,7 @@ mod tests {
     async fn find_forge_tomls() -> Result<()> {
         let dir = create_fixture_directories()?;
 
-        let mut actor = Worker::default();
+        let mut actor = ForgeActor::default();
         actor.add_path(dir.path().to_path_buf()).await?;
 
         let paths = actor.find_foundry_roots().await?;

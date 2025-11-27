@@ -59,7 +59,7 @@ pub async fn add_contract(
     let (name, abi) = if let Some(ProxyType::Eip1167(_)) = proxy {
         // if it's an EIP1167 proxy, there's no ABI to fetch
         (Some("EIP1167".into()), None)
-    } else if let Some(abi) = forge_ref().ask(GetAbiFor(code.clone())).await? {
+    } else if let Some(abi) = forge().ask(GetAbiFor(code.clone())).await? {
         // if we have a local match, use that
         (
             Some(abi.name),

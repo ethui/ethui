@@ -4,7 +4,7 @@ use tauri::{AppHandle, Manager};
 use super::build_window;
 
 pub(crate) async fn show(app: &AppHandle) {
-    let settings = settings_ref()
+    let settings = settings()
         .ask(GetAll)
         .await
         .expect("Failed to get settings");

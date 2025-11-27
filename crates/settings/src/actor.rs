@@ -17,11 +17,11 @@ pub struct SettingsActor {
     file: PathBuf,
 }
 
-pub fn settings_ref() -> ActorRef<SettingsActor> {
-    try_settings_ref().expect("settings actor not found")
+pub fn settings() -> ActorRef<SettingsActor> {
+    try_settings().expect("settings actor not found")
 }
 
-fn try_settings_ref() -> Result<ActorRef<SettingsActor>> {
+fn try_settings() -> Result<ActorRef<SettingsActor>> {
     ActorRef::<SettingsActor>::lookup("settings")?.wrap_err_with(|| "settings actor not found")
 }
 

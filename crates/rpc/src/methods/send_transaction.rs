@@ -59,7 +59,7 @@ impl SendTransaction {
 
         let skip = self.network.is_dev().await
             && wallet_is_dev
-            && settings_ref()
+            && settings()
                 .ask(GetAll)
                 .await
                 .map_err(|e| eyre!("{}", e))?

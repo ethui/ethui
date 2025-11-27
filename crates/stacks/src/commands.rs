@@ -6,7 +6,7 @@ use url::Url;
 use crate::{
     actor::{
         CreateStack, GetConfig, GetRuntimeState, ListStracks, RemoveStack, RuntimeStateResponse,
-        Shutdown, stacks_ref,
+        Shutdown, stacks,
     },
     utils,
 };
@@ -15,11 +15,11 @@ use crate::{
 pub async fn stacks_create(slug: String) -> TauriResult<()> {
     let slug = slug.to_lowercase();
 
-    stacks_ref().ask(CreateStack(slug.clone())).await?;
+    stacks().ask(CreateStack(slug.clone())).await?;
 
     tokio::time::sleep(tokio::time::Duration::from_secs(2)).await;
 
-    let (port, _) = stacks_ref().ask(GetConfig()).await?;
+    let (port, _) = stacks().ask(GetConfig).await?;
 
     let rpc_url = format!("http://{}.local.ethui.dev:{}", slug, port);
     let chain_id = utils::get_chain_id(&rpc_url).await?;
@@ -44,13 +44,13 @@ pub async fn stacks_create(slug: String) -> TauriResult<()> {
 
 #[command]
 pub async fn stacks_list() -> TauriResult<Vec<String>> {
-    let stacks = stacks_ref().ask(ListStracks()).await?;
+    let stacks = stacks().ask(ListStracks).await?;
     Ok(stacks)
 }
 
 #[command]
 pub async fn stacks_get_status(slug: String) -> TauriResult<String> {
-    let (port, _) = stacks_ref().ask(GetConfig()).await?;
+    let (port, _) = stacks().ask(GetConfig).await?;
     let rpc_url = format!("http://{}.local.ethui.dev:{}", slug, port);
 
     match utils::check_stack_online(&rpc_url).await {
@@ -63,7 +63,7 @@ pub async fn stacks_get_status(slug: String) -> TauriResult<String> {
 #[command]
 pub async fn stacks_remove(slug: String) -> TauriResult<()> {
     // Remove the stack
-    stacks_ref().ask(RemoveStack(slug.clone())).await?;
+    stacks().ask(RemoveStack(slug.clone())).await?;
 
     stack_network_remove(slug).await;
 
@@ -72,12 +72,12 @@ pub async fn stacks_remove(slug: String) -> TauriResult<()> {
 
 #[command]
 pub async fn stacks_shutdown() -> TauriResult<()> {
-    stacks_ref().ask(Shutdown()).await?;
+    stacks().ask(Shutdown).await?;
     Ok(())
 }
 
 #[command]
 pub async fn stacks_get_runtime_state() -> TauriResult<RuntimeStateResponse> {
-    let runtime_state = stacks_ref().ask(GetRuntimeState()).await?;
+    let runtime_state = stacks().ask(GetRuntimeState).await?;
     Ok(runtime_state)
 }

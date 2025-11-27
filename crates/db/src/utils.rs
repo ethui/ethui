@@ -9,7 +9,7 @@ pub async fn fetch_etherscan_contract_name(
     chain: Chain,
     address: Address,
 ) -> Result<Option<String>> {
-    let settings = settings_ref().ask(GetAll).await?;
+    let settings = settings().ask(GetAll).await?;
     let api_key = settings
         .etherscan_api_key
         .wrap_err_with(|| "Etherscan API key not set")?;
@@ -26,7 +26,7 @@ pub async fn fetch_etherscan_abi(
     chain: Chain,
     address: Address,
 ) -> Result<Option<JsonAbi>> {
-    let settings = settings_ref().ask(GetAll).await?;
+    let settings = settings().ask(GetAll).await?;
     let api_key = settings
         .etherscan_api_key
         .wrap_err_with(|| "Etherscan API key not set")?;

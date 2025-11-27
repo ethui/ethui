@@ -5,7 +5,7 @@ use ethui_types::eyre;
 use crate::Alchemy;
 
 pub async fn get_current_api_key() -> color_eyre::Result<Option<String>> {
-    let settings = settings_ref()
+    let settings = settings()
         .ask(GetAll)
         .await
         .wrap_err_with(|| "Failed to get settings")?;

@@ -2,7 +2,7 @@
 
 use std::time::Duration;
 
-use ethui_settings::actor::{GetAll, settings_ref};
+use ethui_settings::actor::{GetAll, settings};
 use ethui_types::UINotify;
 use tauri_plugin_updater::UpdaterExt as _;
 use tokio::time::interval;
@@ -15,7 +15,7 @@ pub(crate) fn spawn(handle: tauri::AppHandle) {
         loop {
             interval.tick().await;
 
-            let check_for_updates = settings_ref()
+            let check_for_updates = settings()
                 .ask(GetAll)
                 .await
                 .ok()

@@ -6,16 +6,16 @@ use tracing::error;
 
 use crate::docker::{ContainerNotRunning, ContainerRunning, DockerManager, initialize};
 
-pub fn stacks_ref() -> ActorRef<Worker> {
-    try_stacks_ref().expect("stacks actor not found")
+pub fn stacks() -> ActorRef<StacksActor> {
+    try_stacks().expect("stacks actor not found")
 }
 
-fn try_stacks_ref() -> color_eyre::Result<ActorRef<Worker>> {
-    ActorRef::<Worker>::lookup("run_local_stacks")?.wrap_err_with(|| "local stacks actor not found")
+pub fn try_stacks() -> color_eyre::Result<ActorRef<StacksActor>> {
+    ActorRef::<StacksActor>::lookup("run_local_stacks")?.wrap_err_with(|| "local stacks actor not found")
 }
 
 #[derive(Clone, Debug)]
-pub struct Worker {
+pub struct StacksActor {
     pub stacks: bool,
     pub port: u16,
     pub config_dir: PathBuf,
@@ -41,16 +41,16 @@ impl RuntimeState {
     }
 }
 
-pub struct Initializing();
+pub struct Initializing;
 pub struct SetEnabled(pub bool);
-pub struct GetConfig();
-pub struct GetRuntimeState();
-pub struct ListStracks();
+pub struct GetConfig;
+pub struct GetRuntimeState;
+pub struct ListStracks;
 pub struct CreateStack(pub String);
 pub struct RemoveStack(pub String);
-pub struct Shutdown();
+pub struct Shutdown;
 
-impl Message<SetEnabled> for Worker {
+impl Message<SetEnabled> for StacksActor {
     type Reply = ();
 
     async fn handle(
@@ -89,7 +89,7 @@ impl Message<SetEnabled> for Worker {
     }
 }
 
-impl Message<GetConfig> for Worker {
+impl Message<GetConfig> for StacksActor {
     type Reply = (u16, PathBuf);
 
     async fn handle(
@@ -101,7 +101,7 @@ impl Message<GetConfig> for Worker {
     }
 }
 
-impl Message<ListStracks> for Worker {
+impl Message<ListStracks> for StacksActor {
     type Reply = Result<Vec<String>>;
 
     async fn handle(
@@ -116,7 +116,7 @@ impl Message<ListStracks> for Worker {
     }
 }
 
-impl Message<CreateStack> for Worker {
+impl Message<CreateStack> for StacksActor {
     type Reply = Result<()>;
 
     async fn handle(
@@ -131,7 +131,7 @@ impl Message<CreateStack> for Worker {
     }
 }
 
-impl Message<RemoveStack> for Worker {
+impl Message<RemoveStack> for StacksActor {
     type Reply = Result<()>;
 
     async fn handle(
@@ -146,7 +146,7 @@ impl Message<RemoveStack> for Worker {
     }
 }
 
-impl Message<Shutdown> for Worker {
+impl Message<Shutdown> for StacksActor {
     type Reply = ();
 
     async fn handle(
@@ -168,7 +168,7 @@ impl Message<Shutdown> for Worker {
     }
 }
 
-impl Message<Initializing> for Worker {
+impl Message<Initializing> for StacksActor {
     type Reply = Result<()>;
 
     async fn handle(
@@ -209,7 +209,7 @@ pub struct RuntimeStateResponse {
     pub state: String,
 }
 
-impl Message<GetRuntimeState> for Worker {
+impl Message<GetRuntimeState> for StacksActor {
     type Reply = Result<RuntimeStateResponse>;
 
     async fn handle(
@@ -225,7 +225,7 @@ impl Message<GetRuntimeState> for Worker {
     }
 }
 
-impl Actor for Worker {
+impl Actor for StacksActor {
     type Args = (u16, PathBuf);
     type Error = color_eyre::Report;
 
@@ -243,7 +243,7 @@ impl Actor for Worker {
     }
 }
 
-impl Worker {
+impl StacksActor {
     pub fn new(port: u16, config_dir: PathBuf) -> color_eyre::Result<Self> {
         Ok(Self {
             stacks: false,
