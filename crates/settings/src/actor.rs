@@ -26,7 +26,7 @@ pub fn try_settings() -> color_eyre::Result<ActorRef<SettingsActor>> {
 }
 
 impl SettingsActor {
-    pub async fn new(file: PathBuf) -> Result<Self> {
+    pub async fn new(file: PathBuf) -> color_eyre::Result<Self> {
         let inner = if file.exists() {
             load_and_migrate(&file).await?
         } else {
@@ -46,7 +46,7 @@ impl SettingsActor {
     }
 
     #[instrument(skip(self), level = "trace")]
-    async fn save(&self) -> Result<()> {
+    async fn save(&self) -> color_eyre::Result<()> {
         let pathbuf = self.file.clone();
         let path = Path::new(&pathbuf);
         let file = File::create(path)?;

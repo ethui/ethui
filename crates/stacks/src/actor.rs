@@ -183,7 +183,7 @@ impl Message<Initializing> for StacksActor {
                         match manager.run() {
                             Ok(c) => self.manager = RuntimeState::Running(c),
                             Err(e) => {
-                                tracing::error!("Failed to stop stacks docker image: {}", e);
+                                tracing::error!("Failed to start stacks docker image: {}", e);
 
                                 self.manager = RuntimeState::Error(e.to_string());
                             }
@@ -204,7 +204,7 @@ impl Message<Initializing> for StacksActor {
 
 #[derive(Debug, Serialize)]
 pub struct RuntimeStateResponse {
-    pub running: bool,
+    pub enabled: bool,
     pub error: bool,
     pub state: String,
 }
@@ -218,7 +218,7 @@ impl Message<GetRuntimeState> for StacksActor {
         _ctx: &mut Context<Self, Self::Reply>,
     ) -> Self::Reply {
         Ok(RuntimeStateResponse {
-            running: self.enabled,
+            enabled: self.enabled,
             error: matches!(self.manager, RuntimeState::Error(_)),
             state: self.manager.as_str().to_string(),
         })
