@@ -1,6 +1,6 @@
 use std::net::SocketAddr;
 
-use ethui_networks::Networks;
+use ethui_networks::{ValidateChainId, ask};
 use ethui_types::{Affinity, NetworkId, prelude::*};
 use serde_json::json;
 use tokio::sync::mpsc;
@@ -98,9 +98,7 @@ impl Peers {
     ) {
         let chain_id = id.chain_id();
 
-        let is_valid = Networks::read().await.validate_chain_id(chain_id);
-
-        if is_valid {
+        if ask(ValidateChainId(chain_id)).await.unwrap_or(false) {
             let msg = json!({
                 "method": "chainChanged",
                 "params": {

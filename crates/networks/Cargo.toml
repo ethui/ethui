@@ -18,12 +18,11 @@ serde.workspace = true
 serde_json.workspace = true
 serde-constant.workspace = true
 tokio.workspace = true
-once_cell.workspace = true
 color-eyre.workspace = true
 url.workspace = true
-async-trait.workspace = true
 tracing.workspace = true
 futures.workspace = true
+kameo.workspace = true
 
 [dev-dependencies]
 tempfile.workspace = true

@@ -220,7 +220,7 @@ async fn init(app: &tauri::App, args: &Args) -> color_eyre::Result<()> {
     ethui_ws::init(args).await;
     ethui_connections::init(resource(app, "connections.json", args)).await;
     ethui_wallets::init(resource(app, "wallets.json", args)).await;
-    ethui_networks::init(resource(app, "networks.json", args)).await;
+    ethui_networks::init(resource(app, "networks.json", args))?;
     ethui_forge::init().await?;
     ethui_analytics::init(app.handle()).await;
 

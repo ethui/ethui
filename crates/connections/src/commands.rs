@@ -1,4 +1,4 @@
-use ethui_networks::Networks;
+use ethui_networks::{GetCurrent, ValidateChainId, ask};
 use ethui_types::{prelude::*, Affinity};
 
 use crate::Store;
@@ -14,13 +14,13 @@ pub async fn connections_set_affinity(domain: &str, affinity: Affinity) -> Tauri
         Affinity::Sticky(dedup_chain_id) => {
             let chain_id = dedup_chain_id.chain_id();
 
-            if !Networks::read().await.validate_chain_id(chain_id) {
+            if !ask(ValidateChainId(chain_id)).await.unwrap_or(false) {
                 return Err(eyre!("Invalid chain ID {chain_id}").into());
             }
 
             dedup_chain_id
         }
-        _ => Networks::read().await.get_current().dedup_chain_id(),
+        _ => ask(GetCurrent).await?.dedup_chain_id(),
     };
 
     Store::write().await.set_affinity(domain, affinity)?;
