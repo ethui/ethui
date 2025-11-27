@@ -2,7 +2,7 @@ use ethui_broadcast::InternalMsg;
 use ethui_settings::actor::*;
 use kameo::{Actor as _, actor::ActorRef};
 
-use crate::actor::{ForgeActor, Msg};
+use crate::actor::{ForgeActor, NewContract, UpdateRoots};
 
 pub async fn init() -> color_eyre::Result<()> {
     let handle = ForgeActor::spawn(());
@@ -14,7 +14,7 @@ pub async fn init() -> color_eyre::Result<()> {
 
     if let Some(ref path) = settings.abi_watch_path {
         handle
-            .tell(Msg::UpdateRoots(vec![path.clone().into()]))
+            .tell(UpdateRoots(vec![path.clone().into()]))
             .await?;
     }
 
@@ -39,14 +39,14 @@ async fn receiver(handle: ActorRef<ForgeActor>) -> ! {
                     if let Some(ref path) = settings.abi_watch_path {
                         // TODO: support multiple
                         handle
-                            .tell(Msg::UpdateRoots(vec![path.clone().into()]))
+                            .tell(UpdateRoots(vec![path.clone().into()]))
                             .await
                             .unwrap();
                     }
                 }
 
                 InternalMsg::ContractFound => {
-                    handle.tell(Msg::NewContract).await.unwrap();
+                    handle.tell(NewContract).await.unwrap();
                 }
                 _ => (),
             }

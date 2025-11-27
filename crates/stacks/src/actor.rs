@@ -11,7 +11,7 @@ pub fn stacks() -> ActorRef<StacksActor> {
 }
 
 pub fn try_stacks() -> color_eyre::Result<ActorRef<StacksActor>> {
-    ActorRef::<StacksActor>::lookup("run_local_stacks")?.wrap_err_with(|| "local stacks actor not found")
+    ActorRef::<StacksActor>::lookup("stacks")?.wrap_err_with(|| "stacks actor not found")
 }
 
 #[derive(Clone, Debug)]
@@ -102,7 +102,7 @@ impl Message<GetConfig> for StacksActor {
 }
 
 impl Message<ListStacks> for StacksActor {
-    type Reply = Result<Vec<String>>;
+    type Reply = color_eyre::Result<Vec<String>>;
 
     async fn handle(
         &mut self,
@@ -117,7 +117,7 @@ impl Message<ListStacks> for StacksActor {
 }
 
 impl Message<CreateStack> for StacksActor {
-    type Reply = Result<()>;
+    type Reply = color_eyre::Result<()>;
 
     async fn handle(
         &mut self,
@@ -132,7 +132,7 @@ impl Message<CreateStack> for StacksActor {
 }
 
 impl Message<RemoveStack> for StacksActor {
-    type Reply = Result<()>;
+    type Reply = color_eyre::Result<()>;
 
     async fn handle(
         &mut self,
@@ -169,7 +169,7 @@ impl Message<Shutdown> for StacksActor {
 }
 
 impl Message<Initializing> for StacksActor {
-    type Reply = Result<()>;
+    type Reply = color_eyre::Result<()>;
 
     async fn handle(
         &mut self,
@@ -210,7 +210,7 @@ pub struct RuntimeStateResponse {
 }
 
 impl Message<GetRuntimeState> for StacksActor {
-    type Reply = Result<RuntimeStateResponse>;
+    type Reply = color_eyre::Result<RuntimeStateResponse>;
 
     async fn handle(
         &mut self,

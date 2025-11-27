@@ -34,38 +34,47 @@ pub struct ForgeActor {
 
     abis_by_path: BTreeMap<PathBuf, ForgeAbi>,
     self_ref: Option<ActorRef<ForgeActor>>,
-    has_new_abis: bool,
 
     update_contracts_triggers: usize,
 }
 
-pub enum Msg {
-    UpdateRoots(Vec<PathBuf>),
-    PollFoundryRoots,
-    NewContract,
-}
+pub struct UpdateRoots(pub Vec<PathBuf>);
+pub struct PollFoundryRoots;
+pub struct NewContract;
 
-impl Message<Msg> for ForgeActor {
+impl Message<UpdateRoots> for ForgeActor {
     type Reply = ();
 
     async fn handle(
         &mut self,
-        msg: Msg,
+        UpdateRoots(roots): UpdateRoots,
         _ctx: &mut kameo::message::Context<Self, Self::Reply>,
     ) -> Self::Reply {
-        match msg {
-            Msg::UpdateRoots(roots) => {
-                let _ = self.update_roots(roots).await;
-            }
+        let _ = self.update_roots(roots).await;
+    }
+}
 
-            Msg::PollFoundryRoots => {
-                let _ = self.update_foundry_roots().await;
-            }
+impl Message<PollFoundryRoots> for ForgeActor {
+    type Reply = ();
 
-            Msg::NewContract => {
-                self.trigger_update_contracts().await;
-            }
-        }
+    async fn handle(
+        &mut self,
+        _msg: PollFoundryRoots,
+        _ctx: &mut kameo::message::Context<Self, Self::Reply>,
+    ) -> Self::Reply {
+        let _ = self.update_foundry_roots().await;
+    }
+}
+
+impl Message<NewContract> for ForgeActor {
+    type Reply = ();
+
+    async fn handle(
+        &mut self,
+        _msg: NewContract,
+        _ctx: &mut kameo::message::Context<Self, Self::Reply>,
+    ) -> Self::Reply {
+        self.trigger_update_contracts().await;
     }
 }
 
@@ -93,7 +102,7 @@ impl Message<Vec<DebouncedEvent>> for ForgeActor {
 struct UpdateContracts;
 
 impl Message<UpdateContracts> for ForgeActor {
-    type Reply = Result<()>;
+    type Reply = color_eyre::Result<()>;
 
     async fn handle(
         &mut self,
@@ -328,7 +337,7 @@ impl ForgeActor {
         self.self_ref
             .as_ref()
             .unwrap()
-            .tell(Msg::PollFoundryRoots)
+            .tell(PollFoundryRoots)
             .try_send()?;
 
         Ok(())
@@ -508,7 +517,6 @@ impl ForgeActor {
     #[instrument(level = "trace", skip_all, fields(project = abi.project, name = abi.name))]
     fn insert_abi(&mut self, abi: ForgeAbi) {
         self.abis_by_path.insert(abi.path.clone(), abi);
-        self.has_new_abis = true;
     }
 
     /// removes a previously known ABI by their path

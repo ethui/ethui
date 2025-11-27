@@ -106,7 +106,7 @@ impl Message<GetAll> for SettingsActor {
 }
 
 impl Message<Set> for SettingsActor {
-    type Reply = Result<()>;
+    type Reply = color_eyre::Result<()>;
 
     #[instrument(skip(self, ctx), level = "trace")]
     async fn handle(&mut self, msg: Set, ctx: &mut Context<Self, Self::Reply>) -> Self::Reply {

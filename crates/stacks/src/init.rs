@@ -8,7 +8,7 @@ use crate::actor::{Initializing, SetEnabled, StacksActor};
 
 pub async fn init(stacks_port: u16, config_dir: PathBuf) -> color_eyre::Result<()> {
     let handle = StacksActor::spawn((stacks_port, config_dir));
-    handle.register("run_local_stacks")?;
+    handle.register("stacks")?;
 
     let settings = settings()
         .ask(GetAll)
