@@ -3310,12 +3310,11 @@ name = "ethui-networks"
 version = "1.26.4"
 dependencies = [
  "alloy",
- "async-trait",
  "color-eyre",
  "ethui-broadcast",
  "ethui-types",
  "futures",
- "once_cell",
+ "kameo",
  "serde",
  "serde-constant",
  "serde_json",

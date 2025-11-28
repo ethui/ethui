@@ -1,37 +1,32 @@
 use ethui_types::{NewNetworkParams, prelude::*};
 
-use super::Networks;
+use crate::actor::{networks, NetworksActorExt as _};
 
 #[tauri::command]
 pub async fn networks_get_current() -> TauriResult<Network> {
-    let networks = Networks::read().await;
-
-    Ok(networks.get_current().clone())
+    Ok(networks().get_current().await?)
 }
 
 #[tauri::command]
 pub async fn networks_get_list() -> TauriResult<Vec<Network>> {
-    let networks = Networks::read().await;
-
-    Ok(networks.inner.networks.values().cloned().collect())
+    Ok(networks().get_list().await?)
 }
 
 #[tauri::command]
 pub async fn networks_set_current(network: String) -> TauriResult<Network> {
-    let mut networks = Networks::write().await;
+    let actor = networks();
 
-    networks
+    actor
         .set_current_by_name(network)
         .await
         .map_err(SerializableError::from)?;
 
-    Ok(networks.get_current().clone())
+    Ok(actor.get_current().await?)
 }
 
 #[tauri::command]
 pub async fn networks_add(network: NewNetworkParams) -> TauriResult<()> {
-    let mut networks = Networks::write().await;
-    networks
+    networks()
         .add_network(network)
         .await
         .map_err(SerializableError::from)?;
@@ -40,9 +35,8 @@ pub async fn networks_add(network: NewNetworkParams) -> TauriResult<()> {
 
 #[tauri::command]
 pub async fn networks_update(old_name: String, network: Network) -> TauriResult<()> {
-    let mut networks = Networks::write().await;
-    networks
-        .update_network(&old_name, network)
+    networks()
+        .update_network(old_name, network)
         .await
         .map_err(SerializableError::from)?;
     Ok(())
@@ -50,9 +44,8 @@ pub async fn networks_update(old_name: String, network: Network) -> TauriResult<
 
 #[tauri::command]
 pub async fn networks_remove(name: String) -> TauriResult<()> {
-    let mut networks = Networks::write().await;
-    networks
-        .remove_network(&name)
+    networks()
+        .remove_network(name)
         .await
         .map_err(SerializableError::from)?;
     Ok(())
@@ -60,10 +53,10 @@ pub async fn networks_remove(name: String) -> TauriResult<()> {
 
 #[tauri::command]
 pub async fn networks_is_dev(id: NetworkId) -> TauriResult<bool> {
-    let network = Networks::read()
-        .await
-        .get_network_by_dedup_chain_id_cloned(id)
-        .map_err(SerializableError::from)?;
+    let network = networks()
+        .get_network_by_dedup_chain_id(id)
+        .await?
+        .ok_or_else(|| SerializableError::from(eyre!("Network not found")))?;
 
     Ok(network.is_dev().await)
 }

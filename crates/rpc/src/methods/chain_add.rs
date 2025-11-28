@@ -1,6 +1,6 @@
 use ethui_dialogs::{Dialog, DialogMsg};
-use ethui_networks::Networks;
-use ethui_types::{GlobalState, NewNetworkParams, U64};
+use ethui_networks::{networks, NetworksActorExt as _};
+use ethui_types::{NewNetworkParams, U64};
 use serde::{Deserialize, Serialize};
 use tracing::info;
 use url::Url;
@@ -46,14 +46,14 @@ impl ChainAdd {
     }
 
     pub async fn already_exists(&self) -> bool {
-        let networks = Networks::read().await;
-        networks.validate_chain_id(self.network.chain_id)
+        networks()
+            .validate_chain_id(self.network.chain_id)
+            .await
+            .expect("networks actor not available")
     }
 
     pub async fn on_accept(&self) -> Result<()> {
-        let mut networks = Networks::write().await;
-
-        networks.add_network(self.network.clone()).await?;
+        networks().add_network(self.network.clone()).await?;
 
         Ok(())
     }

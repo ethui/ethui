@@ -1,4 +1,4 @@
-use ethui_networks::Networks;
+use ethui_networks::{networks, NetworksActorExt as _};
 use ethui_types::{eyre, Affinity, GlobalState, Network, NetworkId};
 
 use crate::{
@@ -39,11 +39,11 @@ impl Ctx {
     pub async fn network(&self) -> Network {
         let chain_id = self.chain_id().await;
 
-        Networks::read()
-            .await
+        networks()
             .get_network(chain_id)
-            .unwrap()
-            .clone()
+            .await
+            .expect("networks actor not available")
+            .expect("network not found for chain_id")
     }
 
     pub async fn switch_chain(&mut self, new_chain_id: u32) -> color_eyre::Result<()> {
@@ -51,8 +51,8 @@ impl Ctx {
             return Ok(());
         }
 
-        if Networks::read().await.validate_chain_id(new_chain_id) {
-            let dedup_id = Networks::read().await.get_lowest_dedup_id(new_chain_id);
+        if networks().validate_chain_id(new_chain_id).await? {
+            let dedup_id = networks().get_lowest_dedup_id(new_chain_id).await?;
             match self.get_affinity().await {
                 // If affinity is not set, or sticky, update local affinity, and publish event
                 Affinity::Unset | Affinity::Sticky(_) => {
@@ -85,7 +85,11 @@ impl Ctx {
     pub async fn chain_id(&self) -> u32 {
         match self.get_affinity().await {
             Affinity::Sticky(dedup_chain_id) => dedup_chain_id.chain_id(),
-            _ => Networks::read().await.get_current().chain_id(),
+            _ => networks()
+                .get_current()
+                .await
+                .expect("networks actor not available")
+                .chain_id(),
         }
     }
 
