@@ -86,6 +86,7 @@ export function AppSidebar() {
                 icon={<Globe />}
                 title="Explorer"
                 items={getExplorerItems(isAnvilNetwork)}
+                defaultOpen={true}
               />
               <CollapsibleMenuSection
                 icon={<Cog />}
@@ -127,7 +128,7 @@ function CustomSidebarMenuItem({
         asChild
         className={cn(
           (url === location.pathname || location.pathname.startsWith(url)) &&
-            "bg-primary text-accent hover:bg-primary hover:text-accent",
+          "bg-primary text-accent hover:bg-primary hover:text-accent",
         )}
       >
         <Link to={url}>
@@ -143,17 +144,19 @@ interface CollapsibleMenuSectionProps {
   icon: React.ReactNode;
   title: string;
   items: Array<{ title: string; url: string }>;
+  defaultOpen?: boolean;
 }
 
 function CollapsibleMenuSection({
   icon,
   title,
   items,
+  defaultOpen = false,
 }: CollapsibleMenuSectionProps) {
   const location = useLocation();
 
   return (
-    <Collapsible className="group/collapsible">
+    <Collapsible className="group/collapsible" defaultOpen={defaultOpen}>
       <SidebarMenuItem>
         <CollapsibleTrigger asChild className="cursor-pointer">
           <SidebarMenuButton>
@@ -172,7 +175,7 @@ function CollapsibleMenuSection({
                   className={cn(
                     (item.url === location.pathname ||
                       location.pathname.startsWith(item.url)) &&
-                      "bg-primary text-accent hover:bg-primary hover:text-accent",
+                    "bg-primary text-accent hover:bg-primary hover:text-accent",
                   )}
                 >
                   <Link to={item.url}>{item.title}</Link>
