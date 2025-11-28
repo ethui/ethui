@@ -5,7 +5,7 @@ use kameo::actor::ActorRef;
 
 use crate::abi::ForgeAbi;
 
-use super::{FetchAbis, ForgeActor, GetAbiFor, NewContract, PollFoundryRoots, UpdateContracts, UpdateRoots};
+use super::ForgeActor;
 
 #[allow(async_fn_in_trait)]
 pub trait ForgeActorExt {
@@ -19,30 +19,30 @@ pub trait ForgeActorExt {
 
 impl ForgeActorExt for ActorRef<ForgeActor> {
     async fn fetch_abis(&self) -> color_eyre::Result<Vec<ForgeAbi>> {
-        Ok(self.ask(FetchAbis).await?)
+        Ok(self.ask(super::FetchAbis).await?)
     }
 
     async fn get_abi_for(&self, bytes: Bytes) -> color_eyre::Result<Option<ForgeAbi>> {
-        Ok(self.ask(GetAbiFor(bytes)).await?)
+        Ok(self.ask(super::GetAbiFor { bytes }).await?)
     }
 
     async fn update_roots(&self, roots: Vec<PathBuf>) -> color_eyre::Result<()> {
-        self.tell(UpdateRoots(roots)).await?;
+        self.tell(super::UpdateRoots { roots }).await?;
         Ok(())
     }
 
     async fn poll_foundry_roots(&self) -> color_eyre::Result<()> {
-        self.tell(PollFoundryRoots).await?;
+        self.tell(super::PollFoundryRoots).await?;
         Ok(())
     }
 
     async fn new_contract(&self) -> color_eyre::Result<()> {
-        self.tell(NewContract).await?;
+        self.tell(super::NewContract).await?;
         Ok(())
     }
 
     async fn update_contracts(&self) -> color_eyre::Result<()> {
-        self.ask(UpdateContracts).await?;
+        self.ask(super::UpdateContracts).await?;
         Ok(())
     }
 }

@@ -1,6 +1,6 @@
 use ethui_broadcast::InternalMsg;
 use ethui_settings::{SettingsActorExt as _, settings};
-use kameo::{Actor as _, actor::ActorRef};
+use kameo::actor::{ActorRef, Spawn as _};
 
 use crate::actor::{ForgeActor, ForgeActorExt as _};
 

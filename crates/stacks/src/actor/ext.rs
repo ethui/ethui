@@ -2,10 +2,7 @@ use std::path::PathBuf;
 
 use kameo::actor::ActorRef;
 
-use super::{
-    CreateStack, GetConfig, GetRuntimeState, Initializing, ListStacks, RemoveStack,
-    RuntimeStateResponse, SetEnabled, Shutdown, StacksActor,
-};
+use super::{RuntimeStateResponse, StacksActor};
 
 #[allow(async_fn_in_trait)]
 pub trait StacksActorExt {
@@ -21,39 +18,39 @@ pub trait StacksActorExt {
 
 impl StacksActorExt for ActorRef<StacksActor> {
     async fn get_config(&self) -> color_eyre::Result<(u16, PathBuf)> {
-        Ok(self.ask(GetConfig).await?)
+        Ok(self.ask(super::GetConfig).await?)
     }
 
     async fn get_runtime_state(&self) -> color_eyre::Result<RuntimeStateResponse> {
-        Ok(self.ask(GetRuntimeState).await?)
+        Ok(self.ask(super::GetRuntimeState).await?)
     }
 
     async fn list_stacks(&self) -> color_eyre::Result<Vec<String>> {
-        Ok(self.ask(ListStacks).await?)
+        Ok(self.ask(super::ListStacks).await?)
     }
 
     async fn create_stack(&self, slug: String) -> color_eyre::Result<()> {
-        self.ask(CreateStack(slug)).await?;
+        self.ask(super::CreateStack { slug }).await?;
         Ok(())
     }
 
     async fn remove_stack(&self, slug: String) -> color_eyre::Result<()> {
-        self.ask(RemoveStack(slug)).await?;
+        self.ask(super::RemoveStack { slug }).await?;
         Ok(())
     }
 
     async fn shutdown(&self) -> color_eyre::Result<()> {
-        self.ask(Shutdown).await?;
+        self.ask(super::Shutdown).await?;
         Ok(())
     }
 
     async fn set_enabled(&self, enabled: bool) -> color_eyre::Result<()> {
-        self.tell(SetEnabled(enabled)).await?;
+        self.tell(super::SetEnabled { enabled }).await?;
         Ok(())
     }
 
     async fn initialize(&self) -> color_eyre::Result<()> {
-        self.ask(Initializing).await?;
+        self.ask(super::Initializing).await?;
         Ok(())
     }
 }

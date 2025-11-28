@@ -46,23 +46,35 @@ impl RuntimeState {
     }
 }
 
-pub(crate) struct Initializing;
-pub(crate) struct SetEnabled(pub bool);
-pub(crate) struct GetConfig;
-pub(crate) struct GetRuntimeState;
-pub(crate) struct ListStacks;
-pub(crate) struct CreateStack(pub String);
-pub(crate) struct RemoveStack(pub String);
-pub(crate) struct Shutdown;
+impl Actor for StacksActor {
+    type Args = (u16, PathBuf);
+    type Error = color_eyre::Report;
 
-impl Message<SetEnabled> for StacksActor {
-    type Reply = ();
+    async fn on_start(args: Self::Args, _actor_ref: ActorRef<Self>) -> color_eyre::Result<Self> {
+        Self::new(args.0, args.1)
+    }
 
-    async fn handle(
+    async fn on_panic(
         &mut self,
-        SetEnabled(enabled): SetEnabled,
-        _ctx: &mut Context<Self, Self::Reply>,
-    ) -> Self::Reply {
+        _actor_ref: WeakActorRef<Self>,
+        err: PanicError,
+    ) -> color_eyre::Result<ControlFlow<ActorStopReason>> {
+        error!("stacks actor panic: {}", err);
+        Ok(ControlFlow::Continue(()))
+    }
+}
+
+#[derive(Debug, Serialize)]
+pub struct RuntimeStateResponse {
+    pub enabled: bool,
+    pub error: bool,
+    pub state: String,
+}
+
+#[messages]
+impl StacksActor {
+    #[message]
+    fn set_enabled(&mut self, enabled: bool) {
         if self.enabled == enabled {
             return;
         }
@@ -92,73 +104,38 @@ impl Message<SetEnabled> for StacksActor {
             _ => (),
         }
     }
-}
 
-impl Message<GetConfig> for StacksActor {
-    type Reply = (u16, PathBuf);
-
-    async fn handle(
-        &mut self,
-        _msg: GetConfig,
-        _ctx: &mut Context<Self, Self::Reply>,
-    ) -> Self::Reply {
+    #[message]
+    fn get_config(&self) -> (u16, PathBuf) {
         (self.port, self.config_dir.clone())
     }
-}
 
-impl Message<ListStacks> for StacksActor {
-    type Reply = color_eyre::Result<Vec<String>>;
-
-    async fn handle(
-        &mut self,
-        _msg: ListStacks,
-        _ctx: &mut Context<Self, Self::Reply>,
-    ) -> Self::Reply {
+    #[message]
+    async fn list_stacks(&self) -> color_eyre::Result<Vec<String>> {
         match &self.manager {
             RuntimeState::Running(docker_manager) => docker_manager.list_stacks().await,
             _ => Ok(vec![]),
         }
     }
-}
 
-impl Message<CreateStack> for StacksActor {
-    type Reply = color_eyre::Result<()>;
-
-    async fn handle(
-        &mut self,
-        CreateStack(slug): CreateStack,
-        _ctx: &mut Context<Self, Self::Reply>,
-    ) -> Self::Reply {
+    #[message]
+    async fn create_stack(&self, slug: String) -> color_eyre::Result<()> {
         match &self.manager {
             RuntimeState::Running(docker_manager) => docker_manager.create_stack(&slug).await,
             _ => Ok(()),
         }
     }
-}
 
-impl Message<RemoveStack> for StacksActor {
-    type Reply = color_eyre::Result<()>;
-
-    async fn handle(
-        &mut self,
-        RemoveStack(slug): RemoveStack,
-        _ctx: &mut Context<Self, Self::Reply>,
-    ) -> Self::Reply {
+    #[message]
+    async fn remove_stack(&self, slug: String) -> color_eyre::Result<()> {
         match &self.manager {
             RuntimeState::Running(docker_manager) => docker_manager.remove_stack(&slug).await,
             _ => Ok(()),
         }
     }
-}
 
-impl Message<Shutdown> for StacksActor {
-    type Reply = ();
-
-    async fn handle(
-        &mut self,
-        _msg: Shutdown,
-        _ctx: &mut Context<Self, Self::Reply>,
-    ) -> Self::Reply {
+    #[message]
+    fn shutdown(&mut self) {
         if let RuntimeState::Running(docker_manager) = &self.manager {
             match docker_manager.clone().stop() {
                 Ok(c) => {
@@ -171,16 +148,9 @@ impl Message<Shutdown> for StacksActor {
             }
         }
     }
-}
 
-impl Message<Initializing> for StacksActor {
-    type Reply = color_eyre::Result<()>;
-
-    async fn handle(
-        &mut self,
-        _msg: Initializing,
-        _ctx: &mut Context<Self, Self::Reply>,
-    ) -> Self::Reply {
+    #[message]
+    fn initializing(&mut self) -> color_eyre::Result<()> {
         if let RuntimeState::Initializing = &self.manager {
             match initialize(self.port, self.config_dir.clone()) {
                 Ok(manager) => {
@@ -205,46 +175,14 @@ impl Message<Initializing> for StacksActor {
         }
         Ok(())
     }
-}
 
-#[derive(Debug, Serialize)]
-pub struct RuntimeStateResponse {
-    pub enabled: bool,
-    pub error: bool,
-    pub state: String,
-}
-
-impl Message<GetRuntimeState> for StacksActor {
-    type Reply = color_eyre::Result<RuntimeStateResponse>;
-
-    async fn handle(
-        &mut self,
-        _msg: GetRuntimeState,
-        _ctx: &mut Context<Self, Self::Reply>,
-    ) -> Self::Reply {
+    #[message]
+    fn get_runtime_state(&self) -> color_eyre::Result<RuntimeStateResponse> {
         Ok(RuntimeStateResponse {
             enabled: self.enabled,
             error: matches!(self.manager, RuntimeState::Error(_)),
             state: self.manager.as_str().to_string(),
         })
-    }
-}
-
-impl Actor for StacksActor {
-    type Args = (u16, PathBuf);
-    type Error = color_eyre::Report;
-
-    async fn on_start(args: Self::Args, _actor_ref: ActorRef<Self>) -> color_eyre::Result<Self> {
-        Self::new(args.0, args.1)
-    }
-
-    async fn on_panic(
-        &mut self,
-        _actor_ref: WeakActorRef<Self>,
-        err: PanicError,
-    ) -> color_eyre::Result<ControlFlow<ActorStopReason>> {
-        error!("stacks actor panic: {}", err);
-        Ok(ControlFlow::Continue(()))
     }
 }
 

@@ -84,7 +84,7 @@ impl Actor for SettingsActor {
 }
 
 #[derive(Debug, Clone)]
-pub(crate) enum Set {
+pub(crate) enum SetValue {
     All(serde_json::Map<String, serde_json::Value>),
     DarkMode(DarkMode),
     FastMode(bool),
@@ -94,27 +94,27 @@ pub(crate) enum Set {
     RunLocalStacks(bool),
 }
 
-#[derive(Debug, Clone, Serialize)]
-pub(crate) struct GetAll;
-
-#[derive(Debug, Clone)]
-pub(crate) struct GetAlias(pub ethui_types::Address);
-
-impl Message<GetAll> for SettingsActor {
-    type Reply = Settings;
-
-    async fn handle(&mut self, _msg: GetAll, _ctx: &mut Context<Self, Settings>) -> Self::Reply {
+#[messages]
+impl SettingsActor {
+    #[message]
+    fn get_all(&self) -> Settings {
         self.inner.clone()
     }
-}
 
-impl Message<Set> for SettingsActor {
-    type Reply = color_eyre::Result<()>;
+    #[message]
+    fn get_alias(&self, address: ethui_types::Address) -> Option<String> {
+        self.inner.aliases.get(&address).cloned()
+    }
 
+    #[message(ctx)]
     #[instrument(skip(self, ctx), level = "trace")]
-    async fn handle(&mut self, msg: Set, ctx: &mut Context<Self, Self::Reply>) -> Self::Reply {
-        match msg {
-            Set::All(map) => {
+    async fn set(
+        &mut self,
+        value: SetValue,
+        ctx: &mut Context<Self, color_eyre::Result<()>>,
+    ) -> color_eyre::Result<()> {
+        match value {
+            SetValue::All(map) => {
                 if let Some(v) = map.get("darkMode") {
                     self.inner.dark_mode = serde_json::from_value(v.clone()).unwrap()
                 }
@@ -131,7 +131,7 @@ impl Message<Set> for SettingsActor {
                     {
                         let _ = ctx
                             .actor_ref()
-                            .tell(Set::FinishOnboardingStep(OnboardingStep::Alchemy))
+                            .tell(Set { value: SetValue::FinishOnboardingStep(OnboardingStep::Alchemy) })
                             .await;
                     }
                     let v: String = serde_json::from_value(v.clone()).unwrap();
@@ -150,7 +150,7 @@ impl Message<Set> for SettingsActor {
                     {
                         let _ = ctx
                             .actor_ref()
-                            .tell(Set::FinishOnboardingStep(OnboardingStep::Etherscan))
+                            .tell(Set { value: SetValue::FinishOnboardingStep(OnboardingStep::Etherscan) })
                             .await;
                     }
                     let v: String = serde_json::from_value(v.clone()).unwrap();
@@ -183,20 +183,20 @@ impl Message<Set> for SettingsActor {
                     self.inner.run_local_stacks = serde_json::from_value(v.clone()).unwrap();
                 }
             }
-            Set::DarkMode(mode) => {
+            SetValue::DarkMode(mode) => {
                 self.inner.dark_mode = mode;
             }
-            Set::FastMode(mode) => {
+            SetValue::FastMode(mode) => {
                 self.inner.fast_mode = mode;
             }
 
-            Set::FinishOnboardingStep(step) => {
+            SetValue::FinishOnboardingStep(step) => {
                 self.inner.onboarding.finish_step(step);
             }
-            Set::FinishOnboarding => {
+            SetValue::FinishOnboarding => {
                 self.inner.onboarding.finish();
             }
-            Set::Alias(address, alias) => {
+            SetValue::Alias(address, alias) => {
                 let alias = alias.map(|v| v.trim().to_owned()).filter(|v| !v.is_empty());
                 if let Some(alias) = alias {
                     self.inner.aliases.insert(address, alias);
@@ -204,7 +204,7 @@ impl Message<Set> for SettingsActor {
                     self.inner.aliases.remove(&address);
                 }
             }
-            Set::RunLocalStacks(mode) => {
+            SetValue::RunLocalStacks(mode) => {
                 self.inner.run_local_stacks = mode;
             }
         }
@@ -212,17 +212,5 @@ impl Message<Set> for SettingsActor {
         self.save().await?;
 
         Ok(())
-    }
-}
-
-impl Message<GetAlias> for SettingsActor {
-    type Reply = Option<String>;
-
-    async fn handle(
-        &mut self,
-        GetAlias(address): GetAlias,
-        _ctx: &mut Context<Self, Self::Reply>,
-    ) -> Self::Reply {
-        self.inner.aliases.get(&address).cloned()
     }
 }

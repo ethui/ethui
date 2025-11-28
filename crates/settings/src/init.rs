@@ -2,7 +2,7 @@ use std::path::PathBuf;
 
 use color_eyre::eyre::Context as _;
 use ethui_broadcast::InternalMsg;
-use kameo::{Actor as _, actor::ActorRef};
+use kameo::actor::{ActorRef, Spawn as _};
 
 use crate::{actor::{SettingsActor, SettingsActorExt as _}, onboarding::OnboardingStep};
 

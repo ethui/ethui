@@ -44,54 +44,90 @@ pub struct ForgeActor {
     update_contracts_triggers: usize,
 }
 
-pub(crate) struct UpdateRoots(pub Vec<PathBuf>);
-pub(crate) struct PollFoundryRoots;
-pub(crate) struct NewContract;
+impl Actor for ForgeActor {
+    type Args = ();
+    type Error = color_eyre::Report;
 
-impl Message<UpdateRoots> for ForgeActor {
-    type Reply = ();
+    async fn on_start(
+        _args: Self::Args,
+        actor_ref: ActorRef<Self>,
+    ) -> color_eyre::Result<Self> {
+        let mut this = Self {
+            self_ref: Some(actor_ref.clone()),
+            ..Default::default()
+        };
 
-    async fn handle(
+        let debounced_watcher = new_debouncer(
+            Duration::from_millis(500),
+            None,
+            move |result: DebounceEventResult| match result {
+                Ok(events) => {
+                    let _ = actor_ref.tell(ProcessDebouncedEvents { events });
+                }
+                Err(e) => tracing::warn!("watch error: {:?}", e),
+            },
+        )?;
+
+        this.watcher = Some(debounced_watcher);
+
+        Ok(this)
+    }
+
+    async fn on_panic(
         &mut self,
-        UpdateRoots(roots): UpdateRoots,
-        _ctx: &mut Context<Self, Self::Reply>,
-    ) -> Self::Reply {
-        let _ = self.update_roots(roots).await;
+        _actor_ref: WeakActorRef<Self>,
+        err: PanicError,
+    ) -> color_eyre::Result<ControlFlow<ActorStopReason>> {
+        error!("forge actor panic: {}", err);
+        Ok(ControlFlow::Continue(()))
     }
 }
 
-impl Message<PollFoundryRoots> for ForgeActor {
-    type Reply = ();
+#[messages]
+impl ForgeActor {
+    #[message]
+    #[instrument(skip_all, level = "trace")]
+    async fn update_roots(&mut self, roots: Vec<PathBuf>) {
+        let to_remove: Vec<_> = self
+            .roots
+            .iter()
+            .filter(|p| !roots.contains(p))
+            .cloned()
+            .collect();
 
-    async fn handle(
-        &mut self,
-        _msg: PollFoundryRoots,
-        _ctx: &mut Context<Self, Self::Reply>,
-    ) -> Self::Reply {
+        let to_add: Vec<_> = roots
+            .iter()
+            .filter(|p| !self.roots.contains(*p))
+            .cloned()
+            .collect();
+
+        for path in to_remove {
+            let _ = self.remove_path(path).await;
+        }
+
+        for path in to_add {
+            let _ = self.add_path(path).await;
+        }
+
+        let _ = self.self_ref
+            .as_ref()
+            .unwrap()
+            .tell(PollFoundryRoots)
+            .try_send();
+    }
+
+    #[message]
+    async fn poll_foundry_roots(&mut self) {
         let _ = self.update_foundry_roots().await;
     }
-}
 
-impl Message<NewContract> for ForgeActor {
-    type Reply = ();
-
-    async fn handle(
-        &mut self,
-        _msg: NewContract,
-        _ctx: &mut Context<Self, Self::Reply>,
-    ) -> Self::Reply {
+    #[message]
+    async fn new_contract(&mut self) {
         self.trigger_update_contracts().await;
     }
-}
 
-impl Message<Vec<DebouncedEvent>> for ForgeActor {
-    type Reply = ();
-
-    async fn handle(
-        &mut self,
-        events: Vec<DebouncedEvent>,
-        _ctx: &mut Context<Self, Self::Reply>,
-    ) -> Self::Reply {
+    #[message]
+    async fn process_debounced_events(&mut self, events: Vec<DebouncedEvent>) {
         trace!("process_debounced_events");
         for debounced in events.into_iter() {
             let path = debounced.event.paths[0].clone();
@@ -103,18 +139,9 @@ impl Message<Vec<DebouncedEvent>> for ForgeActor {
 
         self.trigger_update_contracts().await;
     }
-}
 
-pub(crate) struct UpdateContracts;
-
-impl Message<UpdateContracts> for ForgeActor {
-    type Reply = color_eyre::Result<()>;
-
-    async fn handle(
-        &mut self,
-        _msg: UpdateContracts,
-        _ctx: &mut Context<Self, Self::Reply>,
-    ) -> Self::Reply {
+    #[message]
+    async fn update_contracts(&mut self) -> color_eyre::Result<()> {
         self.update_contracts_triggers -= 1;
 
         // if the counter hasn't reached zero, it means more updates are queued, so we skip this
@@ -142,7 +169,10 @@ impl Message<UpdateContracts> for ForgeActor {
             .buffer_unordered(10)
             .filter_map(|x| async { x })
             .map(|(chain_id, address, code)| async move {
-                s.get_abi_for(&code)
+                s.abis_by_path
+                    .values()
+                    .find(|abi| utils::diff_score(&abi.code, &code) < utils::FUZZ_DIFF_THRESHOLD)
+                    .cloned()
                     .map(|abi| (chain_id, address, code, abi))
             })
             .buffer_unordered(10)
@@ -170,72 +200,18 @@ impl Message<UpdateContracts> for ForgeActor {
 
         Ok(())
     }
-}
 
-pub(crate) struct FetchAbis;
-
-impl Message<FetchAbis> for ForgeActor {
-    type Reply = Vec<ForgeAbi>;
-
-    async fn handle(
-        &mut self,
-        _msg: FetchAbis,
-        _ctx: &mut Context<Self, Self::Reply>,
-    ) -> Self::Reply {
+    #[message]
+    fn fetch_abis(&self) -> Vec<ForgeAbi> {
         self.abis_by_path.clone().into_values().collect()
     }
-}
 
-pub(crate) struct GetAbiFor(pub Bytes);
-
-impl Message<GetAbiFor> for ForgeActor {
-    type Reply = Option<ForgeAbi>;
-
-    async fn handle(
-        &mut self,
-        msg: GetAbiFor,
-        _ctx: &mut Context<Self, Self::Reply>,
-    ) -> Self::Reply {
-        self.get_abi_for(&msg.0)
-    }
-}
-
-impl Actor for ForgeActor {
-    type Args = ();
-    type Error = color_eyre::Report;
-
-    async fn on_start(
-        _args: Self::Args,
-        actor_ref: ActorRef<Self>,
-    ) -> color_eyre::Result<Self> {
-        let mut this = Self {
-            self_ref: Some(actor_ref.clone()),
-            ..Default::default()
-        };
-
-        let debounced_watcher = new_debouncer(
-            Duration::from_millis(500),
-            None,
-            move |result: DebounceEventResult| match result {
-                Ok(events) => {
-                    let _ = actor_ref.tell(events);
-                }
-                Err(e) => tracing::warn!("watch error: {:?}", e),
-            },
-        )?;
-
-        this.watcher = Some(debounced_watcher);
-
-        Ok(this)
-    }
-
-    async fn on_panic(
-        &mut self,
-        _actor_ref: WeakActorRef<Self>,
-        err: PanicError,
-    ) -> color_eyre::Result<ControlFlow<ActorStopReason>> {
-        error!("forge actor panic: {}", err);
-        Ok(ControlFlow::Continue(()))
+    #[message]
+    fn get_abi_for(&self, bytes: Bytes) -> Option<ForgeAbi> {
+        self.abis_by_path
+            .values()
+            .find(|abi| utils::diff_score(&abi.code, &bytes) < utils::FUZZ_DIFF_THRESHOLD)
+            .cloned()
     }
 }
 
@@ -313,38 +289,6 @@ impl ForgeActor {
         }
 
         self.trigger_update_contracts().await;
-
-        Ok(())
-    }
-
-    #[instrument(skip_all, level = "trace")]
-    async fn update_roots(&mut self, roots: Vec<PathBuf>) -> Result<()> {
-        let to_remove: Vec<_> = self
-            .roots
-            .iter()
-            .filter(|p| !roots.contains(p))
-            .cloned()
-            .collect();
-
-        let to_add: Vec<_> = roots
-            .iter()
-            .filter(|p| !self.roots.contains(*p))
-            .cloned()
-            .collect();
-
-        for path in to_remove {
-            self.remove_path(path).await?;
-        }
-
-        for path in to_add {
-            self.add_path(path).await?;
-        }
-
-        self.self_ref
-            .as_ref()
-            .unwrap()
-            .tell(PollFoundryRoots)
-            .try_send()?;
 
         Ok(())
     }
@@ -528,13 +472,6 @@ impl ForgeActor {
     /// removes a previously known ABI by their path
     fn remove_abi(&mut self, path: &PathBuf) {
         self.abis_by_path.remove(path);
-    }
-
-    fn get_abi_for(&self, code: &Bytes) -> Option<ForgeAbi> {
-        self.abis_by_path
-            .values()
-            .find(|abi| utils::diff_score(&abi.code, code) < utils::FUZZ_DIFF_THRESHOLD)
-            .cloned()
     }
 }
 
