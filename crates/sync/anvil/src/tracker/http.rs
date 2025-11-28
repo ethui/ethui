@@ -70,7 +70,7 @@ impl AnvilProvider for AnvilHttp {
         let provider = self.provider().await?;
 
         // Determine starting block number: fork_block_number + 1 or 1
-        let start_block = sync_info.fork_block_number.unwrap_or(1);
+        let start_block = sync_info.fork_block_number.map(|fb| fb + 1).unwrap_or(1);
         let end_block = sync_info.number;
 
         if end_block < start_block {
