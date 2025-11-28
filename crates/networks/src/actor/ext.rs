@@ -64,44 +64,40 @@ impl NetworksActorExt for ActorRef<NetworksActor> {
     }
 
     async fn set_current_by_name(&self, name: String) -> Result<()> {
-        self.ask(SetCurrentByName {
-            new_current_network: name,
-        })
-        .await?;
-        Ok(())
+        Ok(self
+            .tell(SetCurrentByName {
+                new_current_network: name,
+            })
+            .await?)
     }
 
     async fn set_current_by_id(&self, chain_id: u32) -> Result<()> {
-        self.ask(SetCurrentById {
-            new_chain_id: chain_id,
-        })
-        .await?;
-        Ok(())
+        Ok(self
+            .tell(SetCurrentById {
+                new_chain_id: chain_id,
+            })
+            .await?)
     }
 
     async fn set_current_by_dedup_chain_id(&self, id: NetworkId) -> Result<()> {
-        self.ask(SetCurrentByDedupChainId { dedup_chain_id: id })
-            .await?;
-        Ok(())
+        Ok(self
+            .tell(SetCurrentByDedupChainId { dedup_chain_id: id })
+            .await?)
     }
 
     async fn add_network(&self, params: NewNetworkParams) -> Result<()> {
-        self.ask(AddNetwork { network: params }).await?;
-        Ok(())
+        Ok(self.tell(AddNetwork { network: params }).await?)
     }
 
     async fn update_network(&self, old_name: String, network: Network) -> Result<()> {
-        self.ask(UpdateNetwork { old_name, network }).await?;
-        Ok(())
+        Ok(self.tell(UpdateNetwork { old_name, network }).await?)
     }
 
     async fn remove_network(&self, name: String) -> Result<()> {
-        self.ask(RemoveNetwork { name }).await?;
-        Ok(())
+        Ok(self.tell(RemoveNetwork { name }).await?)
     }
 
     async fn update_network_statuses(&self, updates: Vec<(String, Network)>) -> Result<()> {
-        self.ask(UpdateNetworkStatuses { updates }).await?;
-        Ok(())
+        Ok(self.tell(UpdateNetworkStatuses { updates }).await?)
     }
 }
