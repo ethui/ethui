@@ -128,7 +128,7 @@ function CustomSidebarMenuItem({
         asChild
         className={cn(
           (url === location.pathname || location.pathname.startsWith(url)) &&
-          "bg-primary text-accent hover:bg-primary hover:text-accent",
+            "bg-primary text-accent hover:bg-primary hover:text-accent",
         )}
       >
         <Link to={url}>
@@ -175,7 +175,7 @@ function CollapsibleMenuSection({
                   className={cn(
                     (item.url === location.pathname ||
                       location.pathname.startsWith(item.url)) &&
-                    "bg-primary text-accent hover:bg-primary hover:text-accent",
+                      "bg-primary text-accent hover:bg-primary hover:text-accent",
                   )}
                 >
                   <Link to={item.url}>{item.title}</Link>
