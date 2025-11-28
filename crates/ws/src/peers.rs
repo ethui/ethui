@@ -1,6 +1,6 @@
 use std::net::SocketAddr;
 
-use ethui_networks::Networks;
+use ethui_networks::{networks, NetworksActorExt as _};
 use ethui_types::{Affinity, NetworkId, prelude::*};
 use serde_json::json;
 use tokio::sync::mpsc;
@@ -98,7 +98,10 @@ impl Peers {
     ) {
         let chain_id = id.chain_id();
 
-        let is_valid = Networks::read().await.validate_chain_id(chain_id);
+        let is_valid = networks()
+            .validate_chain_id(chain_id)
+            .await
+            .expect("networks actor not available");
 
         if is_valid {
             let msg = json!({

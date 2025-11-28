@@ -31,46 +31,28 @@ pub fn try_settings() -> color_eyre::Result<ActorRef<SettingsActor>> {
         .ok_or_else(|| color_eyre::eyre::eyre!("settings actor not found"))
 }
 
-impl SettingsActor {
-    pub async fn new(file: PathBuf) -> color_eyre::Result<Self> {
+impl Actor for SettingsActor {
+    type Args = PathBuf;
+    type Error = color_eyre::Report;
+
+    async fn on_start(args: Self::Args, _actor_ref: ActorRef<Self>) -> color_eyre::Result<Self> {
+        let file = args;
         let inner = if file.exists() {
             load_and_migrate(&file).await?
         } else {
             Settings::default()
         };
 
-        let ret = Self { inner, file };
+        let actor = Self { inner, file };
 
         // Save immediately after instantiation to persist any migrations
-        ret.save().await?;
+        actor.save().await?;
 
         // make sure OS's autostart is synced with settings
-        crate::autostart::update(ret.inner.autostart)?;
-        ethui_tracing::reload(&ret.inner.rust_log)?;
+        crate::autostart::update(actor.inner.autostart)?;
+        ethui_tracing::reload(&actor.inner.rust_log)?;
 
-        Ok(ret)
-    }
-
-    #[instrument(skip(self), level = "trace")]
-    async fn save(&self) -> color_eyre::Result<()> {
-        let pathbuf = self.file.clone();
-        let path = Path::new(&pathbuf);
-        let file = File::create(path)?;
-
-        serde_json::to_writer_pretty(file, &self.inner)?;
-        ethui_broadcast::settings_updated().await;
-        ethui_broadcast::ui_notify(UINotify::SettingsChanged).await;
-
-        Ok(())
-    }
-}
-
-impl Actor for SettingsActor {
-    type Args = PathBuf;
-    type Error = color_eyre::Report;
-
-    async fn on_start(args: Self::Args, _actor_ref: ActorRef<Self>) -> color_eyre::Result<Self> {
-        Self::new(args).await
+        Ok(actor)
     }
 
     async fn on_panic(
@@ -96,6 +78,19 @@ pub(crate) enum SetValue {
 
 #[messages]
 impl SettingsActor {
+    #[instrument(skip(self), level = "trace")]
+    async fn save(&self) -> color_eyre::Result<()> {
+        let pathbuf = self.file.clone();
+        let path = Path::new(&pathbuf);
+        let file = File::create(path)?;
+
+        serde_json::to_writer_pretty(file, &self.inner)?;
+        ethui_broadcast::settings_updated().await;
+        ethui_broadcast::ui_notify(UINotify::SettingsChanged).await;
+
+        Ok(())
+    }
+
     #[message]
     fn get_all(&self) -> Settings {
         self.inner.clone()

@@ -213,9 +213,7 @@ impl ForgeActor {
             .find(|abi| utils::diff_score(&abi.code, &bytes) < utils::FUZZ_DIFF_THRESHOLD)
             .cloned()
     }
-}
 
-impl ForgeActor {
     #[instrument(skip_all, fields(project = ?root), level = "trace")]
     async fn scan_project(&mut self, root: &Path) -> Result<()> {
         // TODO: read custom out dir from foundry.toml

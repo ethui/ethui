@@ -12,7 +12,7 @@ use url::Url;
 
 use crate::prelude::*;
 
-#[derive(Debug, Deserialize, Serialize, Clone)]
+#[derive(Debug, Deserialize, Serialize, Clone, kameo::Reply)]
 pub struct Network {
     // previously named "dedup_chain_id"
     // aliasing allows for backwards compatibility without needing a migration

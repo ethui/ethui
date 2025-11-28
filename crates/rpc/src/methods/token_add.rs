@@ -1,5 +1,5 @@
 use ethui_dialogs::{Dialog, DialogMsg};
-use ethui_networks::Networks;
+use ethui_networks::{networks, NetworksActorExt as _};
 use ethui_sync::{get_alchemy, Erc20Metadata, ErcMetadataResponse, ErcOwnersResponse};
 use ethui_types::{prelude::*, TokenMetadata};
 use ethui_wallets::{WalletControl, Wallets};
@@ -39,8 +39,11 @@ impl TokenAdd {
     }
 
     pub async fn get_current_chain_id(&self) -> u32 {
-        let networks = Networks::read().await;
-        networks.get_current().chain_id()
+        networks()
+            .get_current()
+            .await
+            .expect("networks actor not available")
+            .chain_id()
     }
 
     pub async fn get_current_wallet_address(&self) -> Address {

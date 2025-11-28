@@ -11,7 +11,7 @@ use serde_constant::ConstI64;
 use serde_json::json;
 use url::Url;
 
-use crate::{Networks, SerializedNetworks};
+use crate::SerializedNetworks;
 
 pub type LatestVersion = ConstI64<3>;
 
@@ -68,7 +68,7 @@ pub struct NetworkV1 {
     pub decimals: u32,
 }
 
-pub(crate) fn load_and_migrate(pathbuf: &PathBuf) -> color_eyre::Result<Networks> {
+pub(crate) fn load_and_migrate(pathbuf: &PathBuf) -> color_eyre::Result<SerializedNetworks> {
     let path = Path::new(&pathbuf);
     let file = File::open(path)?;
     let reader = BufReader::new(&file);
@@ -81,14 +81,7 @@ pub(crate) fn load_and_migrate(pathbuf: &PathBuf) -> color_eyre::Result<Networks
 
     let networks: Versions = serde_json::from_value(networks)?;
 
-    let networks = Networks {
-        inner: run_migrations(networks),
-        file: path.to_path_buf(),
-    };
-
-    networks.save()?;
-
-    Ok(networks)
+    Ok(run_migrations(networks))
 }
 
 fn run_migrations(networks: Versions) -> SerializedNetworks {
