@@ -20,7 +20,7 @@ pub(crate) fn spawn(handle: tauri::AppHandle) {
                 .await
                 .ok()
                 .map(|s| s.check_for_updates)
-                .unwrap_or(false);
+                .unwrap_or(true);
 
             if check_for_updates {
                 let _ = update(&handle).await;
