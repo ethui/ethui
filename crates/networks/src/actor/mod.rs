@@ -3,11 +3,10 @@ mod ext;
 use std::{fs::File, ops::ControlFlow, path::PathBuf};
 
 use ethui_types::{Affinity, Network, NetworkId, NewNetworkParams, UINotify, prelude::*};
+pub use ext::NetworksActorExt;
 use kameo::prelude::*;
 
 use crate::{SerializedNetworks, migrations::load_and_migrate};
-
-pub use ext::NetworksActorExt;
 
 #[derive(Debug)]
 pub struct NetworksActor {
@@ -22,53 +21,6 @@ pub fn networks() -> ActorRef<NetworksActor> {
 pub fn try_networks() -> color_eyre::Result<ActorRef<NetworksActor>> {
     ActorRef::<NetworksActor>::lookup("networks")?
         .ok_or_else(|| color_eyre::eyre::eyre!("networks actor not found"))
-}
-
-impl NetworksActor {
-    fn get_current_inner(&self) -> &Network {
-        if !self.inner.networks.contains_key(&self.inner.current) {
-            return self
-                .inner
-                .networks
-                .values()
-                .next()
-                .expect("No networks available");
-        }
-
-        &self.inner.networks[&self.inner.current]
-    }
-
-    async fn on_network_changed(&self) -> color_eyre::Result<()> {
-        self.notify_peers();
-        ethui_broadcast::ui_notify(UINotify::CurrentNetworkChanged).await;
-
-        let network = self.get_current_inner().clone();
-        ethui_broadcast::current_network_changed(network).await;
-
-        Ok(())
-    }
-
-    fn notify_peers(&self) {
-        let current = self.get_current_inner().clone();
-        tokio::spawn(async move {
-            ethui_broadcast::chain_changed(current.dedup_chain_id(), None, Affinity::Global).await;
-        });
-    }
-
-    async fn broadcast_init(&self) {
-        for network in self.inner.networks.values() {
-            ethui_broadcast::network_added(network.clone()).await;
-        }
-
-        let network = self.get_current_inner().clone();
-        ethui_broadcast::current_network_changed(network).await;
-    }
-
-    fn save(&self) -> color_eyre::Result<()> {
-        let file = File::create(&self.file)?;
-        serde_json::to_writer_pretty(file, &self.inner)?;
-        Ok(())
-    }
 }
 
 impl Actor for NetworksActor {
@@ -114,6 +66,59 @@ impl Actor for NetworksActor {
 
 #[messages]
 impl NetworksActor {
+    fn get_current_inner(&self) -> &Network {
+        if !self.inner.networks.contains_key(&self.inner.current) {
+            return self
+                .inner
+                .networks
+                .values()
+                .next()
+                .expect("No networks available");
+        }
+
+        &self.inner.networks[&self.inner.current]
+    }
+
+    async fn on_network_changed(&self) -> color_eyre::Result<()> {
+        self.notify_peers();
+        ethui_broadcast::ui_notify(UINotify::CurrentNetworkChanged).await;
+
+        let network = self.get_current_inner().clone();
+        ethui_broadcast::current_network_changed(network).await;
+
+        Ok(())
+    }
+
+    fn notify_peers(&self) {
+        let current = self.get_current_inner().clone();
+        tokio::spawn(async move {
+            ethui_broadcast::chain_changed(current.dedup_chain_id(), None, Affinity::Global).await;
+        });
+    }
+
+    async fn broadcast_init(&self) {
+        for network in self.inner.networks.values() {
+            ethui_broadcast::network_added(network.clone()).await;
+        }
+
+        let network = self.get_current_inner().clone();
+        ethui_broadcast::current_network_changed(network).await;
+    }
+
+    fn save(&self) -> color_eyre::Result<()> {
+        let file = File::create(&self.file)?;
+        serde_json::to_writer_pretty(file, &self.inner)?;
+        Ok(())
+    }
+
+    fn get_chain_id_count_inner(&self, chain_id: u32) -> usize {
+        self.inner
+            .networks
+            .values()
+            .filter(|network| network.chain_id() == chain_id)
+            .count()
+    }
+
     #[message]
     fn get_current(&self) -> Network {
         self.get_current_inner().clone()
@@ -135,7 +140,11 @@ impl NetworksActor {
 
     #[message]
     fn get_by_name(&self, name: String) -> Option<Network> {
-        self.inner.networks.values().find(|n| n.name == name).cloned()
+        self.inner
+            .networks
+            .values()
+            .find(|n| n.name == name)
+            .cloned()
     }
 
     #[message]
@@ -241,8 +250,7 @@ impl NetworksActor {
                 .inner
                 .networks
                 .values()
-                .find(|n| n.id == network.dedup_chain_id())
-                .is_some()
+                .any(|n| n.id == network.dedup_chain_id())
         {
             return Err(eyre!("Already exists"));
         }
@@ -316,15 +324,5 @@ impl NetworksActor {
 
         self.save()?;
         Ok(())
-    }
-}
-
-impl NetworksActor {
-    fn get_chain_id_count_inner(&self, chain_id: u32) -> usize {
-        self.inner
-            .networks
-            .values()
-            .filter(|network| network.chain_id() == chain_id)
-            .count()
     }
 }
