@@ -1,21 +1,19 @@
 use ethui_broadcast::InternalMsg;
-use ethui_settings::actor::*;
+use ethui_settings::{SettingsActorExt as _, settings};
 use kameo::{Actor as _, actor::ActorRef};
 
-use crate::actor::{ForgeActor, NewContract, UpdateRoots};
+use crate::actor::{ForgeActor, ForgeActorExt as _};
 
 pub async fn init() -> color_eyre::Result<()> {
     let handle = ForgeActor::spawn(());
     handle.register("forge").unwrap();
     let settings = settings()
-        .ask(GetAll)
+        .get_all()
         .await
         .expect("Failed to get settings");
 
     if let Some(ref path) = settings.abi_watch_path {
-        handle
-            .tell(UpdateRoots(vec![path.clone().into()]))
-            .await?;
+        handle.update_roots(vec![path.clone().into()]).await?;
     }
 
     tokio::spawn(async move { receiver(handle).await });
@@ -33,20 +31,20 @@ async fn receiver(handle: ActorRef<ForgeActor>) -> ! {
             match msg {
                 InternalMsg::SettingsUpdated => {
                     let settings = settings()
-                        .ask(GetAll)
+                        .get_all()
                         .await
                         .expect("Failed to get settings");
                     if let Some(ref path) = settings.abi_watch_path {
                         // TODO: support multiple
                         handle
-                            .tell(UpdateRoots(vec![path.clone().into()]))
+                            .update_roots(vec![path.clone().into()])
                             .await
                             .unwrap();
                     }
                 }
 
                 InternalMsg::ContractFound => {
-                    handle.tell(NewContract).await.unwrap();
+                    handle.new_contract().await.unwrap();
                 }
                 _ => (),
             }

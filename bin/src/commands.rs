@@ -4,7 +4,7 @@ use ethui_db::{
     Db,
     utils::{fetch_etherscan_abi, fetch_etherscan_contract_name},
 };
-use ethui_forge::actor::*;
+use ethui_forge::{ForgeActorExt as _, forge};
 use ethui_proxy_detect::ProxyType;
 use ethui_types::{Address, TauriResult, UINotify};
 use serde::Serialize;
@@ -59,7 +59,7 @@ pub async fn add_contract(
     let (name, abi) = if let Some(ProxyType::Eip1167(_)) = proxy {
         // if it's an EIP1167 proxy, there's no ABI to fetch
         (Some("EIP1167".into()), None)
-    } else if let Some(abi) = forge().ask(GetAbiFor(code.clone())).await? {
+    } else if let Some(abi) = forge().get_abi_for(code.clone()).await? {
         // if we have a local match, use that
         (
             Some(abi.name),

@@ -7,7 +7,7 @@ use alloy::{
 };
 use ethui_connections::Ctx;
 use ethui_dialogs::{Dialog, DialogMsg};
-use ethui_settings::actor::*;
+use ethui_settings::{SettingsActorExt as _, settings};
 use ethui_types::prelude::*;
 use ethui_wallets::{WalletControl, WalletType, Wallets};
 
@@ -60,7 +60,7 @@ impl SendTransaction {
         let skip = self.network.is_dev().await
             && wallet_is_dev
             && settings()
-                .ask(GetAll)
+                .get_all()
                 .await
                 .map_err(|e| eyre!("{}", e))?
                 .fast_mode;

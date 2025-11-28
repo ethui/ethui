@@ -1,10 +1,13 @@
+mod ext;
+
 use std::{
     collections::{BTreeMap, HashSet},
+    ops::ControlFlow,
     path::{Path, PathBuf},
     time::Duration,
 };
 
-use ethui_settings::{OnboardingStep, actor::*};
+use ethui_settings::{OnboardingStep, SettingsActorExt as _, settings};
 use ethui_types::prelude::*;
 use futures::{StreamExt as _, stream};
 use glob::glob;
@@ -18,12 +21,15 @@ use walkdir::{DirEntry, WalkDir};
 
 use crate::{abi::ForgeAbi, utils};
 
+pub use ext::ForgeActorExt;
+
 pub fn forge() -> ActorRef<ForgeActor> {
     try_forge().expect("forge actor not initialized")
 }
 
 pub fn try_forge() -> color_eyre::Result<ActorRef<ForgeActor>> {
-    ActorRef::<ForgeActor>::lookup("forge")?.ok_or_else(|| color_eyre::eyre::eyre!("forge actor not found"))
+    ActorRef::<ForgeActor>::lookup("forge")?
+        .ok_or_else(|| color_eyre::eyre::eyre!("forge actor not found"))
 }
 
 #[derive(Default)]
@@ -38,9 +44,9 @@ pub struct ForgeActor {
     update_contracts_triggers: usize,
 }
 
-pub struct UpdateRoots(pub Vec<PathBuf>);
-pub struct PollFoundryRoots;
-pub struct NewContract;
+pub(crate) struct UpdateRoots(pub Vec<PathBuf>);
+pub(crate) struct PollFoundryRoots;
+pub(crate) struct NewContract;
 
 impl Message<UpdateRoots> for ForgeActor {
     type Reply = ();
@@ -99,7 +105,7 @@ impl Message<Vec<DebouncedEvent>> for ForgeActor {
     }
 }
 
-pub struct UpdateContracts;
+pub(crate) struct UpdateContracts;
 
 impl Message<UpdateContracts> for ForgeActor {
     type Reply = color_eyre::Result<()>;
@@ -166,7 +172,7 @@ impl Message<UpdateContracts> for ForgeActor {
     }
 }
 
-pub struct FetchAbis;
+pub(crate) struct FetchAbis;
 
 impl Message<FetchAbis> for ForgeActor {
     type Reply = Vec<ForgeAbi>;
@@ -180,7 +186,7 @@ impl Message<FetchAbis> for ForgeActor {
     }
 }
 
-pub struct GetAbiFor(pub Bytes);
+pub(crate) struct GetAbiFor(pub Bytes);
 
 impl Message<GetAbiFor> for ForgeActor {
     type Reply = Option<ForgeAbi>;
@@ -200,8 +206,8 @@ impl Actor for ForgeActor {
 
     async fn on_start(
         _args: Self::Args,
-        actor_ref: kameo::actor::ActorRef<Self>,
-    ) -> std::result::Result<Self, Self::Error> {
+        actor_ref: ActorRef<Self>,
+    ) -> color_eyre::Result<Self> {
         let mut this = Self {
             self_ref: Some(actor_ref.clone()),
             ..Default::default()
@@ -227,9 +233,9 @@ impl Actor for ForgeActor {
         &mut self,
         _actor_ref: WeakActorRef<Self>,
         err: PanicError,
-    ) -> std::result::Result<std::ops::ControlFlow<ActorStopReason>, Self::Error> {
-        error!("ethui_forge panic: {}", err);
-        Ok(std::ops::ControlFlow::Continue(()))
+    ) -> color_eyre::Result<ControlFlow<ActorStopReason>> {
+        error!("forge actor panic: {}", err);
+        Ok(ControlFlow::Continue(()))
     }
 }
 
@@ -294,7 +300,7 @@ impl ForgeActor {
         }
 
         let settings_actor = settings();
-        let settings = settings_actor.ask(GetAll).await?;
+        let settings = settings_actor.get_all().await?;
 
         if !self.abis_by_path.is_empty()
             && !settings
@@ -302,7 +308,7 @@ impl ForgeActor {
                 .is_step_finished(OnboardingStep::Foundry)
         {
             let _ = settings_actor
-                .tell(Set::FinishOnboardingStep(OnboardingStep::Foundry))
+                .finish_onboarding_step(OnboardingStep::Foundry)
                 .await;
         }
 

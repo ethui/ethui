@@ -2,9 +2,9 @@ use std::path::PathBuf;
 
 use ethui_args::Args;
 use ethui_broadcast::UIMsg;
-use ethui_settings::actor::{GetAll, settings};
+use ethui_settings::{SettingsActorExt as _, settings};
 #[cfg(feature = "stacks")]
-use ethui_stacks::actor::{Shutdown, try_stacks};
+use ethui_stacks::actor::{StacksActorExt as _, try_stacks};
 use named_lock::NamedLock;
 use tauri::{AppHandle, Builder, Emitter as _, Manager as _};
 #[cfg(feature = "aptabase")]
@@ -162,7 +162,7 @@ impl EthUIApp {
     }
 
     pub async fn run(self) {
-        let settings = settings().ask(GetAll).await.ok();
+        let settings = settings().get_all().await.ok();
         let start_minimized = settings.map(|s| s.start_minimized).unwrap_or(false);
         if !self.hidden && !start_minimized {
             windows::main::show(self.app.handle()).await;
@@ -188,7 +188,7 @@ impl EthUIApp {
                     tokio::task::block_in_place(|| {
                         tokio::runtime::Handle::current().block_on(async {
                             if let Ok(r) = try_stacks() {
-                                let _ = r.ask(Shutdown).await;
+                                let _ = r.shutdown().await;
                             }
                         });
                     });

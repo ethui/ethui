@@ -1,22 +1,22 @@
 use std::path::PathBuf;
 
 use ethui_broadcast::InternalMsg;
-use ethui_settings::actor::*;
+use ethui_settings::{SettingsActorExt as _, settings};
 use kameo::{Actor as _, actor::ActorRef};
 
-use crate::actor::{Initializing, SetEnabled, StacksActor};
+use crate::actor::{StacksActor, StacksActorExt as _};
 
 pub async fn init(stacks_port: u16, config_dir: PathBuf) -> color_eyre::Result<()> {
     let handle = StacksActor::spawn((stacks_port, config_dir));
     handle.register("stacks")?;
 
     let settings = settings()
-        .ask(GetAll)
+        .get_all()
         .await
         .expect("Failed to get settings");
 
-    handle.tell(Initializing).await?;
-    handle.tell(SetEnabled(settings.run_local_stacks)).await?;
+    handle.initialize().await?;
+    handle.set_enabled(settings.run_local_stacks).await?;
 
     tokio::spawn(async move { receiver(handle).await });
 
@@ -31,11 +31,11 @@ async fn receiver(handle: ActorRef<StacksActor>) -> ! {
             && let InternalMsg::SettingsUpdated = msg
         {
             let settings = settings()
-                .ask(GetAll)
+                .get_all()
                 .await
                 .expect("Failed to get settings");
 
-            if let Err(e) = handle.tell(SetEnabled(settings.run_local_stacks)).await {
+            if let Err(e) = handle.set_enabled(settings.run_local_stacks).await {
                 tracing::error!("Failed to send stacks actor SetEnabled message: {}", e);
             }
         }

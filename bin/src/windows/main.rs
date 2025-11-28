@@ -1,11 +1,11 @@
-use ethui_settings::actor::*;
+use ethui_settings::{SettingsActorExt as _, settings};
 use tauri::{AppHandle, Manager};
 
 use super::build_window;
 
 pub(crate) async fn show(app: &AppHandle) {
     let settings = settings()
-        .ask(GetAll)
+        .get_all()
         .await
         .expect("Failed to get settings");
 

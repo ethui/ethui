@@ -1,4 +1,6 @@
-use std::path::PathBuf;
+mod ext;
+
+use std::{ops::ControlFlow, path::PathBuf};
 
 use ethui_types::prelude::*;
 use kameo::prelude::*;
@@ -6,12 +8,15 @@ use tracing::error;
 
 use crate::docker::{ContainerNotRunning, ContainerRunning, DockerManager, initialize};
 
+pub use ext::StacksActorExt;
+
 pub fn stacks() -> ActorRef<StacksActor> {
     try_stacks().expect("stacks actor not initialized")
 }
 
 pub fn try_stacks() -> color_eyre::Result<ActorRef<StacksActor>> {
-    ActorRef::<StacksActor>::lookup("stacks")?.ok_or_else(|| color_eyre::eyre::eyre!("stacks actor not found"))
+    ActorRef::<StacksActor>::lookup("stacks")?
+        .ok_or_else(|| color_eyre::eyre::eyre!("stacks actor not found"))
 }
 
 #[derive(Clone, Debug)]
@@ -41,14 +46,14 @@ impl RuntimeState {
     }
 }
 
-pub struct Initializing;
-pub struct SetEnabled(pub bool);
-pub struct GetConfig;
-pub struct GetRuntimeState;
-pub struct ListStacks;
-pub struct CreateStack(pub String);
-pub struct RemoveStack(pub String);
-pub struct Shutdown;
+pub(crate) struct Initializing;
+pub(crate) struct SetEnabled(pub bool);
+pub(crate) struct GetConfig;
+pub(crate) struct GetRuntimeState;
+pub(crate) struct ListStacks;
+pub(crate) struct CreateStack(pub String);
+pub(crate) struct RemoveStack(pub String);
+pub(crate) struct Shutdown;
 
 impl Message<SetEnabled> for StacksActor {
     type Reply = ();
@@ -237,9 +242,9 @@ impl Actor for StacksActor {
         &mut self,
         _actor_ref: WeakActorRef<Self>,
         err: PanicError,
-    ) -> std::result::Result<std::ops::ControlFlow<ActorStopReason>, Self::Error> {
-        error!("ethui_stacks panic: {}", err);
-        Ok(std::ops::ControlFlow::Continue(()))
+    ) -> color_eyre::Result<ControlFlow<ActorStopReason>> {
+        error!("stacks actor panic: {}", err);
+        Ok(ControlFlow::Continue(()))
     }
 }
 

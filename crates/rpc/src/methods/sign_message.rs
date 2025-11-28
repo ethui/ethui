@@ -6,7 +6,7 @@ use alloy::{
     signers::Signer as _,
 };
 use ethui_dialogs::{Dialog, DialogMsg};
-use ethui_settings::actor::*;
+use ethui_settings::{SettingsActorExt as _, settings};
 use ethui_types::Network;
 use ethui_wallets::{Signer, Wallet, WalletControl};
 use serde::Serialize;
@@ -30,7 +30,7 @@ impl SignMessage {
         let skip = self.network.is_dev().await
             && self.wallet.is_dev()
             && settings()
-                .ask(GetAll)
+                .get_all()
                 .await
                 .expect("Failed to get settings")
                 .fast_mode;

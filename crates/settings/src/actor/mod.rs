@@ -1,5 +1,8 @@
+mod ext;
+
 use std::{
     fs::File,
+    ops::ControlFlow,
     path::{Path, PathBuf},
 };
 
@@ -10,6 +13,8 @@ use crate::{
     DarkMode, Settings, migrations::load_and_migrate, onboarding::OnboardingStep,
     test_alchemy_api_key, utils::test_etherscan_api_key,
 };
+
+pub use ext::SettingsActorExt;
 
 #[derive(Debug)]
 pub struct SettingsActor {
@@ -22,7 +27,8 @@ pub fn settings() -> ActorRef<SettingsActor> {
 }
 
 pub fn try_settings() -> color_eyre::Result<ActorRef<SettingsActor>> {
-    ActorRef::<SettingsActor>::lookup("settings")?.ok_or_else(|| color_eyre::eyre::eyre!("settings actor not found"))
+    ActorRef::<SettingsActor>::lookup("settings")?
+        .ok_or_else(|| color_eyre::eyre::eyre!("settings actor not found"))
 }
 
 impl SettingsActor {
@@ -63,10 +69,7 @@ impl Actor for SettingsActor {
     type Args = PathBuf;
     type Error = color_eyre::Report;
 
-    async fn on_start(
-        args: Self::Args,
-        _actor_ref: ActorRef<Self>,
-    ) -> std::result::Result<Self, Self::Error> {
+    async fn on_start(args: Self::Args, _actor_ref: ActorRef<Self>) -> color_eyre::Result<Self> {
         Self::new(args).await
     }
 
@@ -74,14 +77,14 @@ impl Actor for SettingsActor {
         &mut self,
         _actor_ref: WeakActorRef<Self>,
         err: PanicError,
-    ) -> std::result::Result<std::ops::ControlFlow<ActorStopReason>, Self::Error> {
-        error!("ethui_settings panic: {}", err);
-        Ok(std::ops::ControlFlow::Continue(()))
+    ) -> color_eyre::Result<ControlFlow<ActorStopReason>> {
+        error!("settings actor panic: {}", err);
+        Ok(ControlFlow::Continue(()))
     }
 }
 
 #[derive(Debug, Clone)]
-pub enum Set {
+pub(crate) enum Set {
     All(serde_json::Map<String, serde_json::Value>),
     DarkMode(DarkMode),
     FastMode(bool),
@@ -92,10 +95,10 @@ pub enum Set {
 }
 
 #[derive(Debug, Clone, Serialize)]
-pub struct GetAll;
+pub(crate) struct GetAll;
 
 #[derive(Debug, Clone)]
-pub struct GetAlias(pub ethui_types::Address);
+pub(crate) struct GetAlias(pub ethui_types::Address);
 
 impl Message<GetAll> for SettingsActor {
     type Reply = Settings;
@@ -207,8 +210,6 @@ impl Message<Set> for SettingsActor {
         }
 
         self.save().await?;
-        // trigger a file save
-        // let _ = ctx.actor_ref().tell(Save).try_send();
 
         Ok(())
     }
