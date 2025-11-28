@@ -13,9 +13,9 @@ pub async fn networks_get_list() -> TauriResult<Vec<Network>> {
 }
 
 #[tauri::command]
-pub async fn networks_set_current(network: String) -> TauriResult<Network> {
+pub async fn networks_set_current(name: String) -> TauriResult<Network> {
     let networks = networks();
-    networks.set_current_by_name(network).await?;
+    networks.set_current_by_name(name).await?;
     Ok(networks.get_current().await?)
 }
 
