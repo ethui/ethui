@@ -111,7 +111,7 @@ impl NetworksActor {
         Ok(())
     }
 
-    fn get_chain_id_count_inner(&self, chain_id: u32) -> usize {
+    fn get_chain_id_count(&self, chain_id: u32) -> usize {
         self.inner
             .networks
             .values()
@@ -165,15 +165,6 @@ impl NetworksActor {
     }
 
     #[message]
-    fn get_chain_id_count(&self, chain_id: u32) -> usize {
-        self.inner
-            .networks
-            .values()
-            .filter(|network| network.chain_id() == chain_id)
-            .count()
-    }
-
-    #[message]
     fn get_lowest_dedup_id(&self, chain_id: u32) -> u32 {
         self.inner
             .networks
@@ -194,23 +185,6 @@ impl NetworksActor {
             self.on_network_changed().await?;
         }
 
-        self.save()?;
-
-        Ok(())
-    }
-
-    #[message]
-    async fn set_current_by_id(&mut self, new_chain_id: u32) -> color_eyre::Result<()> {
-        let new_network = self
-            .inner
-            .networks
-            .values()
-            .find(|n| n.chain_id() == new_chain_id)
-            .with_context(|| format!("Network with chain_id {new_chain_id} not found"))?;
-
-        let name = new_network.name.clone();
-        self.inner.current = name;
-        self.on_network_changed().await?;
         self.save()?;
 
         Ok(())
@@ -242,7 +216,7 @@ impl NetworksActor {
             return Err(eyre!("Already exists"));
         }
 
-        let deduplication_id = self.get_chain_id_count_inner(network.chain_id) as u32;
+        let deduplication_id = self.get_chain_id_count(network.chain_id) as u32;
         let network = network.into_network(deduplication_id);
 
         if !network.is_dev().await

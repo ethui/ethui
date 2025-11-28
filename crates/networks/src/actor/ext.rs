@@ -2,9 +2,8 @@ use ethui_types::{Network, NetworkId, NewNetworkParams, prelude::*};
 use kameo::actor::ActorRef;
 
 use super::{
-    Add, Get, GetByDedupChainId, GetByName, GetChainIdCount, GetCurrent, GetList, GetLowestDedupId,
-    NetworksActor, Remove, SetCurrentByDedupChainId, SetCurrentById, SetCurrentByName, Update,
-    UpdateStatuses, ValidateChainId,
+    Add, Get, GetByDedupChainId, GetByName, GetCurrent, GetList, GetLowestDedupId, NetworksActor,
+    Remove, SetCurrentByDedupChainId, SetCurrentByName, Update, UpdateStatuses, ValidateChainId,
 };
 
 #[allow(async_fn_in_trait)]
@@ -16,12 +15,10 @@ pub trait NetworksActorExt {
     async fn get_by_name(&self, name: String) -> Result<Option<Network>>;
     async fn get_by_dedup_chain_id(&self, dedup_chain_id: NetworkId) -> Result<Option<Network>>;
     async fn validate_chain_id(&self, chain_id: u32) -> Result<bool>;
-    async fn get_chain_id_count(&self, chain_id: u32) -> Result<usize>;
     async fn get_lowest_dedup_id(&self, chain_id: u32) -> Result<u32>;
 
     // Write operations
     async fn set_current_by_name(&self, new_current_network: String) -> Result<()>;
-    async fn set_current_by_id(&self, new_chain_id: u32) -> Result<()>;
     async fn set_current_by_dedup_chain_id(&self, dedup_chain_id: NetworkId) -> Result<()>;
     async fn add(&self, network: NewNetworkParams) -> Result<()>;
     async fn update(&self, old_name: String, network: Network) -> Result<()>;
@@ -54,10 +51,6 @@ impl NetworksActorExt for ActorRef<NetworksActor> {
         Ok(self.ask(ValidateChainId { chain_id }).await?)
     }
 
-    async fn get_chain_id_count(&self, chain_id: u32) -> Result<usize> {
-        Ok(self.ask(GetChainIdCount { chain_id }).await?)
-    }
-
     async fn get_lowest_dedup_id(&self, chain_id: u32) -> Result<u32> {
         Ok(self.ask(GetLowestDedupId { chain_id }).await?)
     }
@@ -66,10 +59,6 @@ impl NetworksActorExt for ActorRef<NetworksActor> {
         Ok(self
             .tell(SetCurrentByName { new_current_network })
             .await?)
-    }
-
-    async fn set_current_by_id(&self, new_chain_id: u32) -> Result<()> {
-        Ok(self.tell(SetCurrentById { new_chain_id }).await?)
     }
 
     async fn set_current_by_dedup_chain_id(&self, dedup_chain_id: NetworkId) -> Result<()> {
