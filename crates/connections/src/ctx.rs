@@ -51,8 +51,9 @@ impl Ctx {
             return Ok(());
         }
 
-        if networks().validate_chain_id(new_chain_id).await? {
-            let dedup_id = networks().get_lowest_dedup_id(new_chain_id).await?;
+        let networks = networks();
+        if networks.validate_chain_id(new_chain_id).await? {
+            let dedup_id = networks.get_lowest_dedup_id(new_chain_id).await?;
             match self.get_affinity().await {
                 // If affinity is not set, or sticky, update local affinity, and publish event
                 Affinity::Unset | Affinity::Sticky(_) => {
