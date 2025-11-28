@@ -4,18 +4,18 @@ use alloy::{
     primitives::{Bytes, Log},
     providers::{Provider as _, RootProvider},
     rpc::types::{
+        Log as RpcLog,
         trace::parity::{
             Action, CallAction, CallOutput, CreateAction, CreateOutput, LocalizedTransactionTrace,
             TraceOutput,
         },
-        Log as RpcLog,
     },
     sol_types::SolEvent as _,
 };
 use color_eyre::eyre::ContextCompat as _;
 use ethui_types::{
-    events::{ContractDeployed, ERC20Transfer, Tx},
     Event,
+    events::{ContractDeployed, ERC20Transfer, Tx},
 };
 use futures::future::join_all;
 
@@ -111,26 +111,28 @@ async fn expand_trace(
             }),
             Some(TraceOutput::Call(CallOutput { gas_used, .. })),
             0,
-        ) => vec![Tx {
-            hash: trace.transaction_hash.unwrap(),
-            trace_address: Some(trace.trace.trace_address.clone()),
-            position: trace.transaction_position.map(|p| p as usize),
-            from,
-            to: Some(to),
-            value: Some(value),
-            data: Some(input),
-            status: if receipt.status() { 1 } else { 0 },
-            block_number,
-            gas_limit: Some(gas),
-            gas_used: Some(gas_used),
-            max_fee_per_gas: tx.inner.as_eip1559().map(|t| t.tx().max_fee_per_gas),
-            max_priority_fee_per_gas: tx.inner.as_eip1559().map(|t| t.tx().max_fee_per_gas),
-            nonce: Some(tx.inner.nonce()),
-            r#type: Some(<TxType as Into<u8>>::into(tx.inner.tx_type()) as u64),
-            deployed_contract: None,
-            incomplete: false,
-        }
-        .into()],
+        ) => vec![
+            Tx {
+                hash: trace.transaction_hash.unwrap(),
+                trace_address: Some(trace.trace.trace_address.clone()),
+                position: trace.transaction_position.map(|p| p as usize),
+                from,
+                to: Some(to),
+                value: Some(value),
+                data: Some(input),
+                status: if receipt.status() { 1 } else { 0 },
+                block_number,
+                gas_limit: Some(gas),
+                gas_used: Some(gas_used),
+                max_fee_per_gas: tx.inner.as_eip1559().map(|t| t.tx().max_fee_per_gas),
+                max_priority_fee_per_gas: tx.inner.as_eip1559().map(|t| t.tx().max_fee_per_gas),
+                nonce: Some(tx.inner.nonce()),
+                r#type: Some(<TxType as Into<u8>>::into(tx.inner.tx_type()) as u64),
+                deployed_contract: None,
+                incomplete: false,
+            }
+            .into(),
+        ],
 
         _ => vec![],
     };
