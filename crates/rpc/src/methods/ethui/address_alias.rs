@@ -1,3 +1,4 @@
+use ethui_settings::{SettingsActorExt as _, settings};
 use ethui_types::prelude::*;
 
 use crate::error::{Error, Result};
@@ -13,7 +14,8 @@ impl AddressAlias {
     }
 
     pub async fn run(self) -> Result<serde_json::Value> {
-        let alias = ethui_settings::ask(ethui_settings::GetAlias(self.address))
+        let alias = settings()
+            .get_alias(self.address)
             .await
             .map_err(|e| Error::Ethui(eyre!("Failed to get alias: {}", e)))?;
 

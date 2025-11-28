@@ -1,5 +1,8 @@
+mod ext;
+
 use std::{
     fs::File,
+    ops::ControlFlow,
     path::{Path, PathBuf},
 };
 
@@ -11,42 +14,25 @@ use crate::{
     test_alchemy_api_key, utils::test_etherscan_api_key,
 };
 
+pub use ext::SettingsActorExt;
+
 #[derive(Debug)]
 pub struct SettingsActor {
     inner: Settings,
     file: PathBuf,
 }
 
-pub async fn ask<M>(msg: M) -> Result<<<SettingsActor as Message<M>>::Reply as Reply>::Ok>
-where
-    SettingsActor: Message<M>,
-    M: Send + 'static + Sync,
-    <<SettingsActor as Message<M>>::Reply as Reply>::Error: Sync + std::fmt::Display,
-{
-    let actor = ActorRef::<SettingsActor>::lookup("settings")?
-        .wrap_err_with(|| "settings actor not found")?;
-
-    // The function now directly uses the global actor reference.
-    match actor.ask(msg).await {
-        Ok(ret) => Ok(ret),
-        Err(e) => Err(eyre!("{}", e)),
-    }
+pub fn settings() -> ActorRef<SettingsActor> {
+    try_settings().expect("settings actor not initialized")
 }
 
-pub async fn tell<M>(msg: M) -> Result<()>
-where
-    SettingsActor: Message<M>,
-    M: Send + 'static + Sync,
-    <<SettingsActor as Message<M>>::Reply as Reply>::Error: Sync + std::fmt::Display,
-{
-    let actor = ActorRef::<SettingsActor>::lookup("settings")?
-        .wrap_err_with(|| "settings actor not found")?;
-
-    actor.tell(msg).await.map_err(Into::into)
+pub fn try_settings() -> color_eyre::Result<ActorRef<SettingsActor>> {
+    ActorRef::<SettingsActor>::lookup("settings")?
+        .ok_or_else(|| color_eyre::eyre::eyre!("settings actor not found"))
 }
 
 impl SettingsActor {
-    pub async fn new(file: PathBuf) -> Result<Self> {
+    pub async fn new(file: PathBuf) -> color_eyre::Result<Self> {
         let inner = if file.exists() {
             load_and_migrate(&file).await?
         } else {
@@ -66,7 +52,7 @@ impl SettingsActor {
     }
 
     #[instrument(skip(self), level = "trace")]
-    async fn save(&self) -> Result<()> {
+    async fn save(&self) -> color_eyre::Result<()> {
         let pathbuf = self.file.clone();
         let path = Path::new(&pathbuf);
         let file = File::create(path)?;
@@ -83,10 +69,7 @@ impl Actor for SettingsActor {
     type Args = PathBuf;
     type Error = color_eyre::Report;
 
-    async fn on_start(
-        args: Self::Args,
-        _actor_ref: ActorRef<Self>,
-    ) -> std::result::Result<Self, Self::Error> {
+    async fn on_start(args: Self::Args, _actor_ref: ActorRef<Self>) -> color_eyre::Result<Self> {
         Self::new(args).await
     }
 
@@ -94,14 +77,14 @@ impl Actor for SettingsActor {
         &mut self,
         _actor_ref: WeakActorRef<Self>,
         err: PanicError,
-    ) -> std::result::Result<std::ops::ControlFlow<ActorStopReason>, Self::Error> {
-        error!("ethui_settings panic: {}", err);
-        Ok(std::ops::ControlFlow::Continue(()))
+    ) -> color_eyre::Result<ControlFlow<ActorStopReason>> {
+        error!("settings actor panic: {}", err);
+        Ok(ControlFlow::Continue(()))
     }
 }
 
 #[derive(Debug, Clone)]
-pub enum Set {
+pub(crate) enum SetValue {
     All(serde_json::Map<String, serde_json::Value>),
     DarkMode(DarkMode),
     FastMode(bool),
@@ -111,27 +94,27 @@ pub enum Set {
     RunLocalStacks(bool),
 }
 
-#[derive(Debug, Clone)]
-pub struct GetAll;
-
-#[derive(Debug, Clone)]
-pub struct GetAlias(pub ethui_types::Address);
-
-impl Message<GetAll> for SettingsActor {
-    type Reply = Settings;
-
-    async fn handle(&mut self, _msg: GetAll, _ctx: &mut Context<Self, Settings>) -> Self::Reply {
+#[messages]
+impl SettingsActor {
+    #[message]
+    fn get_all(&self) -> Settings {
         self.inner.clone()
     }
-}
 
-impl Message<Set> for SettingsActor {
-    type Reply = Result<()>;
+    #[message]
+    fn get_alias(&self, address: ethui_types::Address) -> Option<String> {
+        self.inner.aliases.get(&address).cloned()
+    }
 
+    #[message(ctx)]
     #[instrument(skip(self, ctx), level = "trace")]
-    async fn handle(&mut self, msg: Set, ctx: &mut Context<Self, Self::Reply>) -> Self::Reply {
-        match msg {
-            Set::All(map) => {
+    async fn set(
+        &mut self,
+        value: SetValue,
+        ctx: &mut Context<Self, color_eyre::Result<()>>,
+    ) -> color_eyre::Result<()> {
+        match value {
+            SetValue::All(map) => {
                 if let Some(v) = map.get("darkMode") {
                     self.inner.dark_mode = serde_json::from_value(v.clone()).unwrap()
                 }
@@ -148,7 +131,7 @@ impl Message<Set> for SettingsActor {
                     {
                         let _ = ctx
                             .actor_ref()
-                            .tell(Set::FinishOnboardingStep(OnboardingStep::Alchemy))
+                            .tell(Set { value: SetValue::FinishOnboardingStep(OnboardingStep::Alchemy) })
                             .await;
                     }
                     let v: String = serde_json::from_value(v.clone()).unwrap();
@@ -167,7 +150,7 @@ impl Message<Set> for SettingsActor {
                     {
                         let _ = ctx
                             .actor_ref()
-                            .tell(Set::FinishOnboardingStep(OnboardingStep::Etherscan))
+                            .tell(Set { value: SetValue::FinishOnboardingStep(OnboardingStep::Etherscan) })
                             .await;
                     }
                     let v: String = serde_json::from_value(v.clone()).unwrap();
@@ -200,20 +183,20 @@ impl Message<Set> for SettingsActor {
                     self.inner.run_local_stacks = serde_json::from_value(v.clone()).unwrap();
                 }
             }
-            Set::DarkMode(mode) => {
+            SetValue::DarkMode(mode) => {
                 self.inner.dark_mode = mode;
             }
-            Set::FastMode(mode) => {
+            SetValue::FastMode(mode) => {
                 self.inner.fast_mode = mode;
             }
 
-            Set::FinishOnboardingStep(step) => {
+            SetValue::FinishOnboardingStep(step) => {
                 self.inner.onboarding.finish_step(step);
             }
-            Set::FinishOnboarding => {
+            SetValue::FinishOnboarding => {
                 self.inner.onboarding.finish();
             }
-            Set::Alias(address, alias) => {
+            SetValue::Alias(address, alias) => {
                 let alias = alias.map(|v| v.trim().to_owned()).filter(|v| !v.is_empty());
                 if let Some(alias) = alias {
                     self.inner.aliases.insert(address, alias);
@@ -221,27 +204,13 @@ impl Message<Set> for SettingsActor {
                     self.inner.aliases.remove(&address);
                 }
             }
-            Set::RunLocalStacks(mode) => {
+            SetValue::RunLocalStacks(mode) => {
                 self.inner.run_local_stacks = mode;
             }
         }
 
         self.save().await?;
-        // trigger a file save
-        // let _ = ctx.actor_ref().tell(Save).try_send();
 
         Ok(())
-    }
-}
-
-impl Message<GetAlias> for SettingsActor {
-    type Reply = Option<String>;
-
-    async fn handle(
-        &mut self,
-        GetAlias(address): GetAlias,
-        _ctx: &mut Context<Self, Self::Reply>,
-    ) -> Self::Reply {
-        self.inner.aliases.get(&address).cloned()
     }
 }

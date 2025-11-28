@@ -1,10 +1,13 @@
+mod ext;
+
 use std::{
     collections::{BTreeMap, HashSet},
+    ops::ControlFlow,
     path::{Path, PathBuf},
     time::Duration,
 };
 
-use ethui_settings::{GetAll, OnboardingStep, Set};
+use ethui_settings::{OnboardingStep, SettingsActorExt as _, settings};
 use ethui_types::prelude::*;
 use futures::{StreamExt as _, stream};
 use glob::glob;
@@ -18,82 +21,113 @@ use walkdir::{DirEntry, WalkDir};
 
 use crate::{abi::ForgeAbi, utils};
 
-pub async fn ask<M>(msg: M) -> color_eyre::Result<<<Worker as Message<M>>::Reply as Reply>::Ok>
-where
-    Worker: Message<M>,
-    M: Send + 'static + Sync,
-    <<Worker as Message<M>>::Reply as Reply>::Error: Sync + std::fmt::Display,
-{
-    let actor =
-        ActorRef::<Worker>::lookup("settings")?.wrap_err_with(|| "forge actor not found")?;
+pub use ext::ForgeActorExt;
 
-    // The function now directly uses the global actor reference.
-    actor.ask(msg).await.wrap_err_with(|| "failed")
+pub fn forge() -> ActorRef<ForgeActor> {
+    try_forge().expect("forge actor not initialized")
 }
 
-pub async fn tell<M>(msg: M) -> color_eyre::Result<()>
-where
-    Worker: Message<M>,
-    M: Send + 'static + Sync,
-    <<Worker as Message<M>>::Reply as Reply>::Error: Sync + std::fmt::Display,
-{
-    let actor =
-        ActorRef::<Worker>::lookup("settings")?.wrap_err_with(|| "forge actor not found")?;
-
-    actor.tell(msg).await.map_err(Into::into)
+pub fn try_forge() -> color_eyre::Result<ActorRef<ForgeActor>> {
+    ActorRef::<ForgeActor>::lookup("forge")?
+        .ok_or_else(|| color_eyre::eyre::eyre!("forge actor not found"))
 }
 
 #[derive(Default)]
-pub struct Worker {
+pub struct ForgeActor {
     roots: HashSet<PathBuf>,
     foundry_roots: HashSet<PathBuf>,
     watcher: Option<Debouncer<RecommendedWatcher, RecommendedCache>>,
 
     abis_by_path: BTreeMap<PathBuf, ForgeAbi>,
-    self_ref: Option<ActorRef<Worker>>,
-    has_new_abis: bool,
+    self_ref: Option<ActorRef<ForgeActor>>,
 
     update_contracts_triggers: usize,
 }
 
-pub enum Msg {
-    UpdateRoots(Vec<PathBuf>),
-    PollFoundryRoots,
-    NewContract,
-}
+impl Actor for ForgeActor {
+    type Args = ();
+    type Error = color_eyre::Report;
 
-impl Message<Msg> for Worker {
-    type Reply = ();
+    async fn on_start(
+        _args: Self::Args,
+        actor_ref: ActorRef<Self>,
+    ) -> color_eyre::Result<Self> {
+        let mut this = Self {
+            self_ref: Some(actor_ref.clone()),
+            ..Default::default()
+        };
 
-    async fn handle(
+        let debounced_watcher = new_debouncer(
+            Duration::from_millis(500),
+            None,
+            move |result: DebounceEventResult| match result {
+                Ok(events) => {
+                    let _ = actor_ref.tell(ProcessDebouncedEvents { events });
+                }
+                Err(e) => tracing::warn!("watch error: {:?}", e),
+            },
+        )?;
+
+        this.watcher = Some(debounced_watcher);
+
+        Ok(this)
+    }
+
+    async fn on_panic(
         &mut self,
-        msg: Msg,
-        _ctx: &mut kameo::message::Context<Self, Self::Reply>,
-    ) -> Self::Reply {
-        match msg {
-            Msg::UpdateRoots(roots) => {
-                let _ = self.update_roots(roots).await;
-            }
-
-            Msg::PollFoundryRoots => {
-                let _ = self.update_foundry_roots().await;
-            }
-
-            Msg::NewContract => {
-                self.trigger_update_contracts().await;
-            }
-        }
+        _actor_ref: WeakActorRef<Self>,
+        err: PanicError,
+    ) -> color_eyre::Result<ControlFlow<ActorStopReason>> {
+        error!("forge actor panic: {}", err);
+        Ok(ControlFlow::Continue(()))
     }
 }
 
-impl Message<Vec<DebouncedEvent>> for Worker {
-    type Reply = ();
+#[messages]
+impl ForgeActor {
+    #[message]
+    #[instrument(skip_all, level = "trace")]
+    async fn update_roots(&mut self, roots: Vec<PathBuf>) {
+        let to_remove: Vec<_> = self
+            .roots
+            .iter()
+            .filter(|p| !roots.contains(p))
+            .cloned()
+            .collect();
 
-    async fn handle(
-        &mut self,
-        events: Vec<DebouncedEvent>,
-        _ctx: &mut kameo::message::Context<Self, Self::Reply>,
-    ) -> Self::Reply {
+        let to_add: Vec<_> = roots
+            .iter()
+            .filter(|p| !self.roots.contains(*p))
+            .cloned()
+            .collect();
+
+        for path in to_remove {
+            let _ = self.remove_path(path).await;
+        }
+
+        for path in to_add {
+            let _ = self.add_path(path).await;
+        }
+
+        let _ = self.self_ref
+            .as_ref()
+            .unwrap()
+            .tell(PollFoundryRoots)
+            .try_send();
+    }
+
+    #[message]
+    async fn poll_foundry_roots(&mut self) {
+        let _ = self.update_foundry_roots().await;
+    }
+
+    #[message]
+    async fn new_contract(&mut self) {
+        self.trigger_update_contracts().await;
+    }
+
+    #[message]
+    async fn process_debounced_events(&mut self, events: Vec<DebouncedEvent>) {
         trace!("process_debounced_events");
         for debounced in events.into_iter() {
             let path = debounced.event.paths[0].clone();
@@ -105,18 +139,9 @@ impl Message<Vec<DebouncedEvent>> for Worker {
 
         self.trigger_update_contracts().await;
     }
-}
 
-struct UpdateContracts;
-
-impl Message<UpdateContracts> for Worker {
-    type Reply = Result<()>;
-
-    async fn handle(
-        &mut self,
-        _msg: UpdateContracts,
-        _ctx: &mut kameo::message::Context<Self, Self::Reply>,
-    ) -> Self::Reply {
+    #[message]
+    async fn update_contracts(&mut self) -> color_eyre::Result<()> {
         self.update_contracts_triggers -= 1;
 
         // if the counter hasn't reached zero, it means more updates are queued, so we skip this
@@ -144,7 +169,10 @@ impl Message<UpdateContracts> for Worker {
             .buffer_unordered(10)
             .filter_map(|x| async { x })
             .map(|(chain_id, address, code)| async move {
-                s.get_abi_for(&code)
+                s.abis_by_path
+                    .values()
+                    .find(|abi| utils::diff_score(&abi.code, &code) < utils::FUZZ_DIFF_THRESHOLD)
+                    .cloned()
                     .map(|abi| (chain_id, address, code, abi))
             })
             .buffer_unordered(10)
@@ -172,76 +200,22 @@ impl Message<UpdateContracts> for Worker {
 
         Ok(())
     }
-}
 
-pub struct FetchAbis;
-
-impl Message<FetchAbis> for Worker {
-    type Reply = Vec<ForgeAbi>;
-
-    async fn handle(
-        &mut self,
-        _msg: FetchAbis,
-        _ctx: &mut kameo::message::Context<Self, Self::Reply>,
-    ) -> Self::Reply {
+    #[message]
+    fn fetch_abis(&self) -> Vec<ForgeAbi> {
         self.abis_by_path.clone().into_values().collect()
     }
-}
 
-pub struct GetAbiFor(pub Bytes);
-
-impl Message<GetAbiFor> for Worker {
-    type Reply = Option<ForgeAbi>;
-
-    async fn handle(
-        &mut self,
-        msg: GetAbiFor,
-        _ctx: &mut kameo::message::Context<Self, Self::Reply>,
-    ) -> Self::Reply {
-        self.get_abi_for(&msg.0)
+    #[message]
+    fn get_abi_for(&self, bytes: Bytes) -> Option<ForgeAbi> {
+        self.abis_by_path
+            .values()
+            .find(|abi| utils::diff_score(&abi.code, &bytes) < utils::FUZZ_DIFF_THRESHOLD)
+            .cloned()
     }
 }
 
-impl Actor for Worker {
-    type Args = ();
-    type Error = color_eyre::Report;
-
-    async fn on_start(
-        _args: Self::Args,
-        actor_ref: kameo::actor::ActorRef<Self>,
-    ) -> std::result::Result<Self, Self::Error> {
-        let mut this = Self {
-            self_ref: Some(actor_ref.clone()),
-            ..Default::default()
-        };
-
-        let debounced_watcher = new_debouncer(
-            Duration::from_millis(500),
-            None,
-            move |result: DebounceEventResult| match result {
-                Ok(events) => {
-                    let _ = actor_ref.tell(events);
-                }
-                Err(e) => tracing::warn!("watch error: {:?}", e),
-            },
-        )?;
-
-        this.watcher = Some(debounced_watcher);
-
-        Ok(this)
-    }
-
-    async fn on_panic(
-        &mut self,
-        _actor_ref: WeakActorRef<Self>,
-        err: PanicError,
-    ) -> std::result::Result<std::ops::ControlFlow<ActorStopReason>, Self::Error> {
-        error!("ethui_forge panic: {}", err);
-        Ok(std::ops::ControlFlow::Continue(()))
-    }
-}
-
-impl Worker {
+impl ForgeActor {
     #[instrument(skip_all, fields(project = ?root), level = "trace")]
     async fn scan_project(&mut self, root: &Path) -> Result<()> {
         // TODO: read custom out dir from foundry.toml
@@ -301,47 +275,20 @@ impl Worker {
             self.insert_abi(abi);
         }
 
+        let settings_actor = settings();
+        let settings = settings_actor.get_all().await?;
+
         if !self.abis_by_path.is_empty()
-            && let Ok(settings) = ethui_settings::ask(GetAll).await
-            && !settings.onboarding.is_step_finished(OnboardingStep::Foundry)
+            && !settings
+                .onboarding
+                .is_step_finished(OnboardingStep::Foundry)
         {
-            let _ = ethui_settings::tell(Set::FinishOnboardingStep(OnboardingStep::Foundry))
+            let _ = settings_actor
+                .finish_onboarding_step(OnboardingStep::Foundry)
                 .await;
         }
 
         self.trigger_update_contracts().await;
-
-        Ok(())
-    }
-
-    #[instrument(skip_all, level = "trace")]
-    async fn update_roots(&mut self, roots: Vec<PathBuf>) -> Result<()> {
-        let to_remove: Vec<_> = self
-            .roots
-            .iter()
-            .filter(|p| !roots.contains(p))
-            .cloned()
-            .collect();
-
-        let to_add: Vec<_> = roots
-            .iter()
-            .filter(|p| !self.roots.contains(*p))
-            .cloned()
-            .collect();
-
-        for path in to_remove {
-            self.remove_path(path).await?;
-        }
-
-        for path in to_add {
-            self.add_path(path).await?;
-        }
-
-        self.self_ref
-            .as_ref()
-            .unwrap()
-            .tell(Msg::PollFoundryRoots)
-            .try_send()?;
 
         Ok(())
     }
@@ -520,19 +467,11 @@ impl Worker {
     #[instrument(level = "trace", skip_all, fields(project = abi.project, name = abi.name))]
     fn insert_abi(&mut self, abi: ForgeAbi) {
         self.abis_by_path.insert(abi.path.clone(), abi);
-        self.has_new_abis = true;
     }
 
     /// removes a previously known ABI by their path
     fn remove_abi(&mut self, path: &PathBuf) {
         self.abis_by_path.remove(path);
-    }
-
-    fn get_abi_for(&self, code: &Bytes) -> Option<ForgeAbi> {
-        self.abis_by_path
-            .values()
-            .find(|abi| utils::diff_score(&abi.code, code) < utils::FUZZ_DIFF_THRESHOLD)
-            .cloned()
     }
 }
 
@@ -548,7 +487,7 @@ mod tests {
     async fn find_forge_tomls() -> Result<()> {
         let dir = create_fixture_directories()?;
 
-        let mut actor = Worker::default();
+        let mut actor = ForgeActor::default();
         actor.add_path(dir.path().to_path_buf()).await?;
 
         let paths = actor.find_foundry_roots().await?;

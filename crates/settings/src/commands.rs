@@ -1,63 +1,63 @@
 use ethui_types::{Address, TauriResult};
 
-use crate::{ask, onboarding::OnboardingStep, tell, DarkMode, GetAlias, GetAll, Set, Settings};
+use crate::{DarkMode, Settings, actor::{SettingsActorExt as _, settings}, onboarding::OnboardingStep};
 
 #[tauri::command]
 pub async fn settings_get() -> TauriResult<Settings> {
-    Ok(ask(GetAll).await?)
+    Ok(settings().get_all().await?)
 }
 
 #[tauri::command]
 pub async fn settings_set(params: serde_json::Map<String, serde_json::Value>) -> TauriResult<()> {
-    ask(Set::All(params)).await?;
+    settings().set_all(params).await?;
     Ok(())
 }
 
 #[tauri::command]
 pub async fn settings_set_dark_mode(mode: DarkMode) -> TauriResult<()> {
-    ask(Set::DarkMode(mode)).await?;
+    settings().set_dark_mode(mode).await?;
     Ok(())
 }
 
 #[tauri::command]
 pub async fn settings_set_fast_mode(mode: bool) -> TauriResult<()> {
-    ask(Set::FastMode(mode)).await?;
+    settings().set_fast_mode(mode).await?;
     Ok(())
 }
 
 #[tauri::command]
 pub async fn settings_finish_onboarding() -> TauriResult<()> {
-    ask(Set::FinishOnboarding).await?;
+    settings().finish_onboarding().await?;
     Ok(())
 }
 
 /// Gets the alias for an address
 #[tauri::command]
 pub async fn settings_get_alias(address: Address) -> TauriResult<Option<String>> {
-    Ok(ask(GetAlias(address)).await?)
+    Ok(settings().get_alias(address).await?)
 }
 
 /// Sets the alias for an address
 #[tauri::command]
 pub async fn settings_set_alias(address: Address, alias: Option<String>) -> TauriResult<()> {
-    ask(Set::Alias(address, alias)).await?;
+    settings().set_alias(address, alias).await?;
     Ok(())
 }
 
 #[tauri::command]
 pub async fn settings_onboarding_finish_step(id: OnboardingStep) -> TauriResult<()> {
-    tell(Set::FinishOnboardingStep(id)).await?;
+    settings().finish_onboarding_step(id).await?;
     Ok(())
 }
 
 #[tauri::command]
 pub async fn settings_set_run_local_stacks(mode: bool) -> TauriResult<()> {
-    tell(Set::RunLocalStacks(mode)).await?;
+    settings().set_run_local_stacks(mode).await?;
     Ok(())
 }
 
 #[tauri::command]
 pub async fn settings_onboarding_finish_all() -> TauriResult<()> {
-    tell(Set::FinishOnboarding).await?;
+    settings().finish_onboarding().await?;
     Ok(())
 }

@@ -1,13 +1,10 @@
-use color_eyre::eyre::WrapErr;
-use ethui_settings::GetAll;
+use ethui_settings::{SettingsActorExt as _, settings};
 use ethui_types::eyre;
 
 use crate::Alchemy;
 
 pub async fn get_current_api_key() -> color_eyre::Result<Option<String>> {
-    let settings = ethui_settings::ask(GetAll)
-        .await
-        .wrap_err_with(|| "Failed to get settings")?;
+    let settings = settings().get_all().await?;
 
     Ok(settings
         .alchemy_api_key

@@ -1,20 +1,19 @@
 use ethui_broadcast::InternalMsg;
-use ethui_settings::GetAll;
-use kameo::{Actor as _, actor::ActorRef};
+use ethui_settings::{SettingsActorExt as _, settings};
+use kameo::actor::{ActorRef, Spawn as _};
 
-use crate::actor::{Msg, Worker};
+use crate::actor::{ForgeActor, ForgeActorExt as _};
 
 pub async fn init() -> color_eyre::Result<()> {
-    let handle = Worker::spawn(());
+    let handle = ForgeActor::spawn(());
     handle.register("forge").unwrap();
-    let settings = ethui_settings::ask(GetAll)
+    let settings = settings()
+        .get_all()
         .await
         .expect("Failed to get settings");
 
     if let Some(ref path) = settings.abi_watch_path {
-        handle
-            .tell(Msg::UpdateRoots(vec![path.clone().into()]))
-            .await?;
+        handle.update_roots(vec![path.clone().into()]).await?;
     }
 
     tokio::spawn(async move { receiver(handle).await });
@@ -24,27 +23,28 @@ pub async fn init() -> color_eyre::Result<()> {
 
 /// Will listen for new ABI updates, and poll the database for new contracts
 /// the work itself is debounced with a 500ms delay, to batch together multiple updates
-async fn receiver(handle: ActorRef<Worker>) -> ! {
+async fn receiver(handle: ActorRef<ForgeActor>) -> ! {
     let mut rx = ethui_broadcast::subscribe_internal().await;
 
     loop {
         if let Ok(msg) = rx.recv().await {
             match msg {
                 InternalMsg::SettingsUpdated => {
-                    let settings = ethui_settings::ask(GetAll)
+                    let settings = settings()
+                        .get_all()
                         .await
                         .expect("Failed to get settings");
                     if let Some(ref path) = settings.abi_watch_path {
                         // TODO: support multiple
                         handle
-                            .tell(Msg::UpdateRoots(vec![path.clone().into()]))
+                            .update_roots(vec![path.clone().into()])
                             .await
                             .unwrap();
                     }
                 }
 
                 InternalMsg::ContractFound => {
-                    handle.tell(Msg::NewContract).await.unwrap();
+                    handle.new_contract().await.unwrap();
                 }
                 _ => (),
             }

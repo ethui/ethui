@@ -1,4 +1,6 @@
-use std::path::PathBuf;
+mod ext;
+
+use std::{ops::ControlFlow, path::PathBuf};
 
 use ethui_types::prelude::*;
 use kameo::prelude::*;
@@ -6,34 +8,20 @@ use tracing::error;
 
 use crate::docker::{ContainerNotRunning, ContainerRunning, DockerManager, initialize};
 
-pub async fn ask<M>(msg: M) -> color_eyre::Result<<<Worker as Message<M>>::Reply as Reply>::Ok>
-where
-    Worker: Message<M>,
-    M: Send + 'static + Sync,
-    <<Worker as Message<M>>::Reply as Reply>::Error: Sync + std::fmt::Display,
-{
-    let actor = ActorRef::<Worker>::lookup("run_local_stacks")?
-        .wrap_err_with(|| "local stacks actor not found")?;
+pub use ext::StacksActorExt;
 
-    // The function now directly uses the global actor reference.
-    actor.ask(msg).await.wrap_err_with(|| "failed")
+pub fn stacks() -> ActorRef<StacksActor> {
+    try_stacks().expect("stacks actor not initialized")
 }
 
-pub async fn tell<M>(msg: M) -> color_eyre::Result<()>
-where
-    Worker: Message<M>,
-    M: Send + 'static + Sync,
-    <<Worker as Message<M>>::Reply as Reply>::Error: Sync + std::fmt::Display,
-{
-    let actor = ActorRef::<Worker>::lookup("run_local_stacks")?
-        .wrap_err_with(|| "local stacks actor not found")?;
-
-    actor.tell(msg).await.map_err(Into::into)
+pub fn try_stacks() -> color_eyre::Result<ActorRef<StacksActor>> {
+    ActorRef::<StacksActor>::lookup("stacks")?
+        .ok_or_else(|| color_eyre::eyre::eyre!("stacks actor not found"))
 }
 
 #[derive(Clone, Debug)]
-pub struct Worker {
-    pub stacks: bool,
+pub struct StacksActor {
+    pub enabled: bool,
     pub port: u16,
     pub config_dir: PathBuf,
     pub manager: RuntimeState,
@@ -58,28 +46,40 @@ impl RuntimeState {
     }
 }
 
-pub struct Initializing();
-pub struct SetEnabled(pub bool);
-pub struct GetConfig();
-pub struct GetRuntimeState();
-pub struct ListStracks();
-pub struct CreateStack(pub String);
-pub struct RemoveStack(pub String);
-pub struct Shutdown();
+impl Actor for StacksActor {
+    type Args = (u16, PathBuf);
+    type Error = color_eyre::Report;
 
-impl Message<SetEnabled> for Worker {
-    type Reply = ();
+    async fn on_start(args: Self::Args, _actor_ref: ActorRef<Self>) -> color_eyre::Result<Self> {
+        Self::new(args.0, args.1)
+    }
 
-    async fn handle(
+    async fn on_panic(
         &mut self,
-        SetEnabled(enabled): SetEnabled,
-        _ctx: &mut Context<Self, Self::Reply>,
-    ) -> Self::Reply {
-        if self.stacks == enabled {
+        _actor_ref: WeakActorRef<Self>,
+        err: PanicError,
+    ) -> color_eyre::Result<ControlFlow<ActorStopReason>> {
+        error!("stacks actor panic: {}", err);
+        Ok(ControlFlow::Continue(()))
+    }
+}
+
+#[derive(Debug, Serialize)]
+pub struct RuntimeStateResponse {
+    pub enabled: bool,
+    pub error: bool,
+    pub state: String,
+}
+
+#[messages]
+impl StacksActor {
+    #[message]
+    fn set_enabled(&mut self, enabled: bool) {
+        if self.enabled == enabled {
             return;
         }
 
-        self.stacks = enabled;
+        self.enabled = enabled;
 
         match (&self.manager, enabled) {
             (RuntimeState::Stopped(manager), true) => match manager.clone().run() {
@@ -104,73 +104,38 @@ impl Message<SetEnabled> for Worker {
             _ => (),
         }
     }
-}
 
-impl Message<GetConfig> for Worker {
-    type Reply = (u16, PathBuf);
-
-    async fn handle(
-        &mut self,
-        _msg: GetConfig,
-        _ctx: &mut Context<Self, Self::Reply>,
-    ) -> Self::Reply {
+    #[message]
+    fn get_config(&self) -> (u16, PathBuf) {
         (self.port, self.config_dir.clone())
     }
-}
 
-impl Message<ListStracks> for Worker {
-    type Reply = Result<Vec<String>>;
-
-    async fn handle(
-        &mut self,
-        _msg: ListStracks,
-        _ctx: &mut Context<Self, Self::Reply>,
-    ) -> Self::Reply {
+    #[message]
+    async fn list_stacks(&self) -> color_eyre::Result<Vec<String>> {
         match &self.manager {
             RuntimeState::Running(docker_manager) => docker_manager.list_stacks().await,
             _ => Ok(vec![]),
         }
     }
-}
 
-impl Message<CreateStack> for Worker {
-    type Reply = Result<()>;
-
-    async fn handle(
-        &mut self,
-        CreateStack(slug): CreateStack,
-        _ctx: &mut Context<Self, Self::Reply>,
-    ) -> Self::Reply {
+    #[message]
+    async fn create_stack(&self, slug: String) -> color_eyre::Result<()> {
         match &self.manager {
             RuntimeState::Running(docker_manager) => docker_manager.create_stack(&slug).await,
             _ => Ok(()),
         }
     }
-}
 
-impl Message<RemoveStack> for Worker {
-    type Reply = Result<()>;
-
-    async fn handle(
-        &mut self,
-        RemoveStack(slug): RemoveStack,
-        _ctx: &mut Context<Self, Self::Reply>,
-    ) -> Self::Reply {
+    #[message]
+    async fn remove_stack(&self, slug: String) -> color_eyre::Result<()> {
         match &self.manager {
             RuntimeState::Running(docker_manager) => docker_manager.remove_stack(&slug).await,
             _ => Ok(()),
         }
     }
-}
 
-impl Message<Shutdown> for Worker {
-    type Reply = ();
-
-    async fn handle(
-        &mut self,
-        _msg: Shutdown,
-        _ctx: &mut Context<Self, Self::Reply>,
-    ) -> Self::Reply {
+    #[message]
+    fn shutdown(&mut self) {
         if let RuntimeState::Running(docker_manager) = &self.manager {
             match docker_manager.clone().stop() {
                 Ok(c) => {
@@ -183,24 +148,17 @@ impl Message<Shutdown> for Worker {
             }
         }
     }
-}
 
-impl Message<Initializing> for Worker {
-    type Reply = Result<()>;
-
-    async fn handle(
-        &mut self,
-        _msg: Initializing,
-        _ctx: &mut Context<Self, Self::Reply>,
-    ) -> Self::Reply {
+    #[message]
+    fn initializing(&mut self) -> color_eyre::Result<()> {
         if let RuntimeState::Initializing = &self.manager {
             match initialize(self.port, self.config_dir.clone()) {
                 Ok(manager) => {
-                    if self.stacks {
+                    if self.enabled {
                         match manager.run() {
                             Ok(c) => self.manager = RuntimeState::Running(c),
                             Err(e) => {
-                                tracing::error!("Failed to stop stacks docker image: {}", e);
+                                tracing::error!("Failed to start stacks docker image: {}", e);
 
                                 self.manager = RuntimeState::Error(e.to_string());
                             }
@@ -217,53 +175,21 @@ impl Message<Initializing> for Worker {
         }
         Ok(())
     }
-}
 
-#[derive(Debug, Serialize)]
-pub struct RuntimeStateResponse {
-    pub running: bool,
-    pub error: bool,
-    pub state: String,
-}
-
-impl Message<GetRuntimeState> for Worker {
-    type Reply = Result<RuntimeStateResponse>;
-
-    async fn handle(
-        &mut self,
-        _msg: GetRuntimeState,
-        _ctx: &mut Context<Self, Self::Reply>,
-    ) -> Self::Reply {
+    #[message]
+    fn get_runtime_state(&self) -> color_eyre::Result<RuntimeStateResponse> {
         Ok(RuntimeStateResponse {
-            running: self.stacks,
+            enabled: self.enabled,
             error: matches!(self.manager, RuntimeState::Error(_)),
             state: self.manager.as_str().to_string(),
         })
     }
 }
 
-impl Actor for Worker {
-    type Args = (u16, PathBuf);
-    type Error = color_eyre::Report;
-
-    async fn on_start(args: Self::Args, _actor_ref: ActorRef<Self>) -> color_eyre::Result<Self> {
-        Self::new(args.0, args.1)
-    }
-
-    async fn on_panic(
-        &mut self,
-        _actor_ref: WeakActorRef<Self>,
-        err: PanicError,
-    ) -> std::result::Result<std::ops::ControlFlow<ActorStopReason>, Self::Error> {
-        error!("ethui_stacks panic: {}", err);
-        Ok(std::ops::ControlFlow::Continue(()))
-    }
-}
-
-impl Worker {
+impl StacksActor {
     pub fn new(port: u16, config_dir: PathBuf) -> color_eyre::Result<Self> {
         Ok(Self {
-            stacks: false,
+            enabled: false,
             port,
             config_dir,
             manager: RuntimeState::Initializing,
