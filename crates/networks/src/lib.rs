@@ -11,9 +11,9 @@ pub use init::init;
 
 pub async fn get_network(chain_id: u32) -> Result<Network> {
     networks()
-        .get_network(chain_id)
+        .get(chain_id)
         .await?
-        .ok_or_else(|| eyre!("Network with chain_id {} not found", chain_id))
+        .with_context(|| format!("Network with chain_id {} not found", chain_id))
 }
 
 /// Get a provider for a network by chain_id.

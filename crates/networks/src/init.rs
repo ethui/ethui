@@ -34,10 +34,10 @@ async fn receiver(actor: ActorRef<NetworksActor>) -> ! {
                     }
                 }
                 StackAdd(params) => {
-                    let _ = actor.add_network(params).await;
+                    let _ = actor.add(params).await;
                 }
                 StackRemove(name) => {
-                    let _ = actor.remove_network(name).await;
+                    let _ = actor.remove(name).await;
                 }
                 _ => {}
             }
@@ -76,7 +76,7 @@ async fn status_poller(actor: ActorRef<NetworksActor>) -> ! {
                 .map(|(key, network, _)| (key, network))
                 .collect();
 
-            if let Err(e) = actor.update_network_statuses(updates).await {
+            if let Err(e) = actor.update_statuses(updates).await {
                 tracing::error!("Failed to update network statuses: {}", e);
             }
 

@@ -27,7 +27,7 @@ pub async fn networks_set_current(network: String) -> TauriResult<Network> {
 #[tauri::command]
 pub async fn networks_add(network: NewNetworkParams) -> TauriResult<()> {
     networks()
-        .add_network(network)
+        .add(network)
         .await
         .map_err(SerializableError::from)?;
     Ok(())
@@ -36,7 +36,7 @@ pub async fn networks_add(network: NewNetworkParams) -> TauriResult<()> {
 #[tauri::command]
 pub async fn networks_update(old_name: String, network: Network) -> TauriResult<()> {
     networks()
-        .update_network(old_name, network)
+        .update(old_name, network)
         .await
         .map_err(SerializableError::from)?;
     Ok(())
@@ -45,7 +45,7 @@ pub async fn networks_update(old_name: String, network: Network) -> TauriResult<
 #[tauri::command]
 pub async fn networks_remove(name: String) -> TauriResult<()> {
     networks()
-        .remove_network(name)
+        .remove(name)
         .await
         .map_err(SerializableError::from)?;
     Ok(())
@@ -54,9 +54,9 @@ pub async fn networks_remove(name: String) -> TauriResult<()> {
 #[tauri::command]
 pub async fn networks_is_dev(id: NetworkId) -> TauriResult<bool> {
     let network = networks()
-        .get_network_by_dedup_chain_id(id)
+        .get_by_dedup_chain_id(id)
         .await?
-        .ok_or_else(|| SerializableError::from(eyre!("Network not found")))?;
+        .with_context(|| "Network not found")?;
 
     Ok(network.is_dev().await)
 }

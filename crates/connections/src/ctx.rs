@@ -40,7 +40,7 @@ impl Ctx {
         let chain_id = self.chain_id().await;
 
         networks()
-            .get_network(chain_id)
+            .get(chain_id)
             .await
             .expect("networks actor not available")
             .expect("network not found for chain_id")

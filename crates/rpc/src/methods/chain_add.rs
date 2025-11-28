@@ -53,7 +53,7 @@ impl ChainAdd {
     }
 
     pub async fn on_accept(&self) -> Result<()> {
-        networks().add_network(self.network.clone()).await?;
+        networks().add(self.network.clone()).await?;
 
         Ok(())
     }

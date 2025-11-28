@@ -7,9 +7,9 @@ use crate::types::{Request, SimResult};
 #[tauri::command]
 pub async fn simulator_run(chain_id: u32, request: Request) -> TauriResult<SimResult> {
     let network = networks()
-        .get_network(chain_id)
+        .get(chain_id)
         .await?
-        .ok_or_else(|| SerializableError::from(eyre!("Network not found")))?;
+        .with_context(|| "Network not found")?;
 
     Ok(crate::simulate_once(request, network.http_url.to_string(), None).await?)
 }

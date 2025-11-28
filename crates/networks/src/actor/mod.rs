@@ -125,7 +125,7 @@ impl NetworksActor {
     }
 
     #[message]
-    fn get_network(&self, chain_id: u32) -> Option<Network> {
+    fn get(&self, chain_id: u32) -> Option<Network> {
         self.inner
             .networks
             .values()
@@ -134,12 +134,12 @@ impl NetworksActor {
     }
 
     #[message]
-    fn get_network_by_name(&self, name: String) -> Option<Network> {
+    fn get_by_name(&self, name: String) -> Option<Network> {
         self.inner.networks.values().find(|n| n.name == name).cloned()
     }
 
     #[message]
-    fn get_network_by_dedup_chain_id(&self, dedup_chain_id: NetworkId) -> Option<Network> {
+    fn get_by_dedup_chain_id(&self, dedup_chain_id: NetworkId) -> Option<Network> {
         self.inner
             .networks
             .values()
@@ -197,7 +197,7 @@ impl NetworksActor {
             .networks
             .values()
             .find(|n| n.chain_id() == new_chain_id)
-            .ok_or_else(|| eyre!("Network with chain_id {new_chain_id} not found"))?;
+            .with_context(|| format!("Network with chain_id {new_chain_id} not found"))?;
 
         let name = new_network.name.clone();
         self.inner.current = name;
@@ -217,7 +217,7 @@ impl NetworksActor {
             .networks
             .values()
             .find(|n| n.dedup_chain_id() == dedup_chain_id)
-            .ok_or_else(|| eyre!("Network with dedup_chain_id {dedup_chain_id:?} not found"))?;
+            .with_context(|| format!("Network with dedup_chain_id {dedup_chain_id:?} not found"))?;
 
         let name = new_network.name.clone();
         self.inner.current = name;
@@ -228,7 +228,7 @@ impl NetworksActor {
     }
 
     #[message]
-    async fn add_network(&mut self, network: NewNetworkParams) -> color_eyre::Result<()> {
+    async fn add(&mut self, network: NewNetworkParams) -> color_eyre::Result<()> {
         if self.inner.networks.contains_key(&network.name) {
             return Err(eyre!("Already exists"));
         }
@@ -259,11 +259,7 @@ impl NetworksActor {
     }
 
     #[message]
-    async fn update_network(
-        &mut self,
-        old_name: String,
-        network: Network,
-    ) -> color_eyre::Result<()> {
+    async fn update(&mut self, old_name: String, network: Network) -> color_eyre::Result<()> {
         if network.name != old_name && self.inner.networks.contains_key(&network.name) {
             return Err(eyre!("Already exists"));
         }
@@ -286,7 +282,7 @@ impl NetworksActor {
     }
 
     #[message]
-    async fn remove_network(&mut self, name: String) -> color_eyre::Result<()> {
+    async fn remove(&mut self, name: String) -> color_eyre::Result<()> {
         let network = self.inner.networks.remove(&name);
 
         match network {
@@ -297,7 +293,7 @@ impl NetworksActor {
                         .networks
                         .values()
                         .next()
-                        .ok_or_else(|| eyre!("No networks remaining"))?;
+                        .with_context(|| "No networks remaining")?;
                     self.inner.current = first.name.clone();
                     self.on_network_changed().await?;
                 }
@@ -313,7 +309,7 @@ impl NetworksActor {
     }
 
     #[message]
-    fn update_network_statuses(&mut self, updates: Vec<(String, Network)>) -> color_eyre::Result<()> {
+    fn update_statuses(&mut self, updates: Vec<(String, Network)>) -> color_eyre::Result<()> {
         for (key, updated_network) in updates {
             self.inner.networks.insert(key, updated_network);
         }
