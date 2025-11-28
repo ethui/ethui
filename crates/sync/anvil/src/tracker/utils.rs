@@ -24,7 +24,8 @@ pub(crate) async fn try_get_sync_info(url: &str) -> Result<SyncInfo> {
         .client()
         .request::<(), serde_json::Value>("anvil_nodeInfo", ())
         .await?
-        .get("forkBlockNumber")
+        .get("forkConfig")
+        .and_then(|v| v.get("forkBlockNumber"))
         .and_then(|v| v.as_u64());
 
     Ok(SyncInfo {
