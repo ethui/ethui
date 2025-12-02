@@ -31,7 +31,6 @@ function Content() {
   const { data: stacks } = useInvoke<string[]>("stacks_list");
 
   const onSubmit = async (_data: { slug: string }) => {
-    console.log(stacks);
     try {
       setLoading(true);
       await invoke("stacks_create", { slug });
