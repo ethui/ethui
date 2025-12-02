@@ -49,6 +49,7 @@ impl Actor for NetworksActor {
             file: pathbuf,
         };
         actor.save()?;
+        dbg!("save");
         actor.broadcast_init().await;
 
         Ok(actor)
@@ -120,17 +121,23 @@ impl NetworksActor {
     }
 
     #[message]
+    #[tracing::instrument(skip(self))]
     fn get_current(&self) -> Network {
+        trace!("");
         self.get_current_inner().clone()
     }
 
     #[message]
+    #[tracing::instrument(skip(self))]
     fn get_list(&self) -> Vec<Network> {
+        trace!("");
         self.inner.networks.values().cloned().collect()
     }
 
     #[message]
+    #[tracing::instrument(skip(self))]
     fn get(&self, chain_id: u32) -> Option<Network> {
+        trace!("");
         self.inner
             .networks
             .values()
@@ -139,7 +146,9 @@ impl NetworksActor {
     }
 
     #[message]
+    #[tracing::instrument(skip(self))]
     fn get_by_name(&self, name: String) -> Option<Network> {
+        trace!("");
         self.inner
             .networks
             .values()
@@ -148,7 +157,9 @@ impl NetworksActor {
     }
 
     #[message]
+    #[tracing::instrument(skip(self))]
     fn get_by_dedup_chain_id(&self, dedup_chain_id: NetworkId) -> Option<Network> {
+        trace!("");
         self.inner
             .networks
             .values()
@@ -157,7 +168,9 @@ impl NetworksActor {
     }
 
     #[message]
+    #[tracing::instrument(skip(self))]
     fn validate_chain_id(&self, chain_id: u32) -> bool {
+        trace!("");
         self.inner
             .networks
             .iter()
@@ -165,7 +178,9 @@ impl NetworksActor {
     }
 
     #[message]
+    #[tracing::instrument(skip(self))]
     fn get_lowest_dedup_id(&self, chain_id: u32) -> u32 {
+        trace!("");
         self.inner
             .networks
             .values()
@@ -176,7 +191,9 @@ impl NetworksActor {
     }
 
     #[message]
+    #[tracing::instrument(skip(self))]
     async fn set_current_by_name(&mut self, new_current_network: String) -> color_eyre::Result<()> {
+        trace!("");
         let previous = self.get_current_inner().name.clone();
         self.inner.current = new_current_network;
         let new = self.get_current_inner().name.clone();
@@ -191,10 +208,12 @@ impl NetworksActor {
     }
 
     #[message]
+    #[tracing::instrument(skip(self))]
     async fn set_current_by_dedup_chain_id(
         &mut self,
         dedup_chain_id: NetworkId,
     ) -> color_eyre::Result<()> {
+        trace!("");
         let new_network = self
             .inner
             .networks
@@ -202,16 +221,15 @@ impl NetworksActor {
             .find(|n| n.dedup_chain_id() == dedup_chain_id)
             .with_context(|| format!("Network with dedup_chain_id {dedup_chain_id:?} not found"))?;
 
-        let name = new_network.name.clone();
-        self.inner.current = name;
-        self.on_network_changed().await?;
-        self.save()?;
+        self.set_current_by_name(new_network.name.clone()).await?;
 
         Ok(())
     }
 
     #[message]
+    #[tracing::instrument(skip(self))]
     async fn add(&mut self, network: NewNetworkParams) -> color_eyre::Result<()> {
+        trace!("");
         if self.inner.networks.contains_key(&network.name) {
             return Err(eyre!("Already exists"));
         }
@@ -241,7 +259,9 @@ impl NetworksActor {
     }
 
     #[message]
+    #[tracing::instrument(skip(self))]
     async fn update(&mut self, old_name: String, network: Network) -> color_eyre::Result<()> {
+        trace!("");
         if network.name != old_name && self.inner.networks.contains_key(&network.name) {
             return Err(eyre!("Already exists"));
         }
@@ -264,7 +284,9 @@ impl NetworksActor {
     }
 
     #[message]
+    #[tracing::instrument(skip(self))]
     async fn remove(&mut self, name: String) -> color_eyre::Result<()> {
+        trace!("");
         let network = self.inner.networks.remove(&name);
 
         match network {
@@ -291,7 +313,9 @@ impl NetworksActor {
     }
 
     #[message]
+    #[tracing::instrument(skip(self, updates))]
     fn update_statuses(&mut self, updates: Vec<(String, Network)>) -> color_eyre::Result<()> {
+        trace!("");
         for (key, updated_network) in updates {
             self.inner.networks.insert(key, updated_network);
         }
