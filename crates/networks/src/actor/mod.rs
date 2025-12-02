@@ -220,7 +220,7 @@ impl NetworksActor {
         let network = network.into_network(deduplication_id);
 
         if !network.is_dev().await
-            & self
+            && self
                 .inner
                 .networks
                 .values()
