@@ -31,7 +31,7 @@
       in
       with pkgs;
       {
-        packages = 
+        packages =
           let
             packageSet = import ./nix/package.nix {
               rust = rustNightly;
