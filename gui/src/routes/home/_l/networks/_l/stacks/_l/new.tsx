@@ -8,7 +8,6 @@ import { invoke } from "@tauri-apps/api/core";
 import { Check, LoaderCircle } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { useInvoke } from "#/hooks/useInvoke";
 
 export const Route = createFileRoute("/home/_l/networks/_l/stacks/_l/new")({
   beforeLoad: () => ({ breadcrumb: "New" }),
@@ -27,8 +26,6 @@ function Content() {
   });
 
   const slug = form.watch("slug");
-
-  const { data: stacks } = useInvoke<string[]>("stacks_list");
 
   const onSubmit = async (_data: { slug: string }) => {
     try {

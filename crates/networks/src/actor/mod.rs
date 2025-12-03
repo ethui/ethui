@@ -49,7 +49,6 @@ impl Actor for NetworksActor {
             file: pathbuf,
         };
         actor.save()?;
-        dbg!("save");
         actor.broadcast_init().await;
 
         Ok(actor)
