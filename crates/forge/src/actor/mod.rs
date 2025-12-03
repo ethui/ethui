@@ -7,8 +7,8 @@ use std::{
     time::Duration,
 };
 
-use ethui_settings::{OnboardingStep, SettingsActorExt as _, settings};
-use ethui_types::prelude::*;
+use settings::{OnboardingStep, SettingsActorExt as _, settings};
+use common::prelude::*;
 use futures::{StreamExt as _, stream};
 use glob::glob;
 use kameo::prelude::*;
@@ -150,7 +150,7 @@ impl ForgeActor {
             return Ok(());
         }
 
-        let db = ethui_db::get();
+        let db = db::get();
         let contracts = db.get_incomplete_contracts().await?;
 
         let mut any_updates = false;
@@ -195,7 +195,7 @@ impl ForgeActor {
         }
 
         if any_updates {
-            ethui_broadcast::ui_notify(UINotify::ContractsUpdated).await;
+            broadcast::ui_notify(UINotify::ContractsUpdated).await;
         }
 
         Ok(())

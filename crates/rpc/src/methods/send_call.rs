@@ -1,8 +1,8 @@
 use alloy::{
     network::TransactionBuilder as _, providers::Provider as _, rpc::types::TransactionRequest,
 };
-use ethui_connections::Ctx;
-use ethui_types::prelude::*;
+use connections::Ctx;
+use common::prelude::*;
 
 use crate::Result;
 

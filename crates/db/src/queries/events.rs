@@ -1,4 +1,4 @@
-use ethui_types::{Event, NetworkId};
+use common::{Event, NetworkId};
 use tracing::instrument;
 
 use crate::DbInner;

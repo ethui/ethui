@@ -1,7 +1,7 @@
 use std::path::PathBuf;
 
-use ethui_broadcast::InternalMsg;
-use ethui_settings::{SettingsActorExt as _, settings};
+use broadcast::InternalMsg;
+use settings::{SettingsActorExt as _, settings};
 use kameo::actor::{ActorRef, Spawn as _};
 
 use crate::actor::{StacksActor, StacksActorExt as _};
@@ -21,7 +21,7 @@ pub async fn init(stacks_port: u16, config_dir: PathBuf) -> color_eyre::Result<(
 }
 
 async fn receiver(handle: ActorRef<StacksActor>) -> ! {
-    let mut rx = ethui_broadcast::subscribe_internal().await;
+    let mut rx = broadcast::subscribe_internal().await;
 
     loop {
         if let Ok(msg) = rx.recv().await

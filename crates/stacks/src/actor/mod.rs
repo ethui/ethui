@@ -2,7 +2,7 @@ mod ext;
 
 use std::{ops::ControlFlow, path::PathBuf};
 
-use ethui_types::prelude::*;
+use common::prelude::*;
 use kameo::prelude::*;
 use tracing::error;
 

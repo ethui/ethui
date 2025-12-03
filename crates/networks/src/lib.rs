@@ -3,7 +3,7 @@ pub mod commands;
 mod init;
 mod migrations;
 
-use ethui_types::prelude::*;
+use common::prelude::*;
 use migrations::LatestVersion;
 
 pub use actor::{networks, try_networks, NetworksActorExt};

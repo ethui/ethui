@@ -4,7 +4,7 @@ use std::{
     path::{Path, PathBuf},
 };
 
-use ethui_types::{Affinity, NetworkId};
+use common::{Affinity, NetworkId};
 use serde::{Deserialize, Serialize};
 
 use crate::migrations::LatestVersion;

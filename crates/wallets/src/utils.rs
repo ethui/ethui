@@ -2,7 +2,7 @@ use alloy::signers::{
     ledger::{HDPath, LedgerSigner},
     local::{MnemonicBuilder, coins_bip39::English},
 };
-use ethui_types::prelude::*;
+use common::prelude::*;
 use once_cell::sync::Lazy;
 use tokio::sync::Mutex;
 

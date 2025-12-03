@@ -13,7 +13,7 @@ use alloy::{
     sol_types::SolEvent as _,
 };
 use color_eyre::eyre::ContextCompat as _;
-use ethui_types::{
+use common::{
     Event,
     events::{ContractDeployed, ERC20Transfer, Tx},
 };
@@ -29,7 +29,7 @@ pub(super) async fn expand_traces(
     res.flatten().collect()
 }
 
-pub(super) fn expand_logs(traces: Vec<RpcLog>) -> Vec<ethui_types::Event> {
+pub(super) fn expand_logs(traces: Vec<RpcLog>) -> Vec<common::Event> {
     traces.into_iter().filter_map(expand_log).collect()
 }
 
@@ -63,7 +63,7 @@ async fn expand_trace(
             })),
             _,
         ) => {
-            let proxy_type = ethui_proxy_detect::detect_proxy(address, &provider).await?;
+            let proxy_type = proxy_detect::detect_proxy(address, &provider).await?;
 
             vec![
                 Tx {
@@ -143,7 +143,7 @@ async fn expand_trace(
 fn expand_log(log: RpcLog) -> Option<Event> {
     let block_number = log.block_number?;
 
-    use ethui_abis::IERC20;
+    use abis::IERC20;
 
     if let Ok(Log { data, .. }) = IERC20::Transfer::decode_log(&log.inner) {
         return Some(

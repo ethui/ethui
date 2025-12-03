@@ -3,11 +3,11 @@ use alloy::{
     network::TransactionResponse as _,
     providers::Provider as _,
 };
-use ethui_abis::IERC20;
-use ethui_types::{TokenMetadata, events::Tx, prelude::*};
+use abis::IERC20;
+use common::{TokenMetadata, events::Tx, prelude::*};
 
 pub(crate) async fn fetch_full_tx(chain_id: u32, hash: B256) -> color_eyre::Result<()> {
-    let provider = ethui_networks::get_provider(chain_id).await?;
+    let provider = networks::get_provider(chain_id).await?;
 
     let tx = provider.get_transaction_by_hash(hash).await?;
     let receipt = provider.get_transaction_receipt(hash).await?;
@@ -39,7 +39,7 @@ pub(crate) async fn fetch_full_tx(chain_id: u32, hash: B256) -> color_eyre::Resu
         incomplete: false,
     };
 
-    let db = ethui_db::get();
+    let db = db::get();
     db.insert_transaction(chain_id, &tx).await?;
 
     Ok(())
@@ -49,7 +49,7 @@ pub(crate) async fn fetch_erc20_metadata(
     chain_id: u32,
     address: Address,
 ) -> color_eyre::Result<()> {
-    let provider = ethui_networks::get_provider(chain_id).await?;
+    let provider = networks::get_provider(chain_id).await?;
 
     let contract = IERC20::new(address, provider);
 
@@ -60,7 +60,7 @@ pub(crate) async fn fetch_erc20_metadata(
         decimals: contract.decimals().call().await.ok(),
     };
 
-    let db = ethui_db::get();
+    let db = db::get();
     db.save_erc20_metadatas(chain_id, vec![metadata])
         .await
         .unwrap();

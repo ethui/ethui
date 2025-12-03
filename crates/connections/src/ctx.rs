@@ -1,5 +1,5 @@
-use ethui_networks::{networks, NetworksActorExt as _};
-use ethui_types::{eyre, Affinity, GlobalState, Network, NetworkId};
+use networks::{networks, NetworksActorExt as _};
+use common::{eyre, Affinity, GlobalState, Network, NetworkId};
 
 use crate::{
     permissions::{Permission, PermissionRequest, RequestedPermission},
@@ -61,14 +61,14 @@ impl Ctx {
                     let affinity = internal_id.into();
                     self.set_affinity(affinity).await?;
 
-                    ethui_broadcast::chain_changed(internal_id, self.domain.clone(), affinity)
+                    broadcast::chain_changed(internal_id, self.domain.clone(), affinity)
                         .await;
                 }
 
                 // If current affinity is global, there's nothing to update on this Ctx, and the
                 // domain is irrelevant in the update,
                 Affinity::Global => {
-                    ethui_broadcast::chain_changed(
+                    broadcast::chain_changed(
                         (new_chain_id, dedup_id).into(),
                         None,
                         Affinity::Global,

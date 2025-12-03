@@ -5,7 +5,7 @@ use std::{
     path::{Path, PathBuf},
 };
 
-use ethui_types::Affinity;
+use common::Affinity;
 use serde::{Deserialize, Serialize};
 use serde_constant::ConstI64;
 use serde_json::json;
@@ -102,7 +102,7 @@ mod tests {
         io::{BufReader, Write},
     };
 
-    use ethui_types::Affinity;
+    use common::Affinity;
     use serde_json::json;
     use tempfile::NamedTempFile;
 

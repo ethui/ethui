@@ -1,5 +1,5 @@
-use ethui_settings::{SettingsActorExt as _, settings};
-use ethui_types::eyre;
+use settings::{SettingsActorExt as _, settings};
+use common::eyre;
 
 use crate::Alchemy;
 
@@ -18,7 +18,7 @@ pub async fn get_alchemy(chain_id: u32) -> color_eyre::Result<Alchemy> {
         Ok(Some(api_key)) => api_key,
         _ => return Err(eyre!("Alchemy API Key not found")),
     };
-    let alchemy = Alchemy::new(&api_key, ethui_db::get(), chain_id).unwrap();
+    let alchemy = Alchemy::new(&api_key, db::get(), chain_id).unwrap();
 
     Ok(alchemy)
 }

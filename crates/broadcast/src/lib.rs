@@ -1,4 +1,4 @@
-use ethui_types::{Affinity, NetworkId, NewNetworkParams, prelude::*, ui_events};
+use common::{Affinity, NetworkId, NewNetworkParams, prelude::*, ui_events};
 pub use internal_msgs::*;
 use once_cell::sync::Lazy;
 use tokio::sync::{Mutex, broadcast, oneshot};

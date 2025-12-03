@@ -1,5 +1,5 @@
-use ethui_settings::{SettingsActorExt as _, settings};
-use ethui_types::prelude::*;
+use settings::{SettingsActorExt as _, settings};
+use common::prelude::*;
 
 use crate::error::{Error, Result};
 

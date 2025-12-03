@@ -1,10 +1,10 @@
 use std::path::PathBuf;
 
-use ethui_args::Args;
-use ethui_broadcast::UIMsg;
-use ethui_settings::{SettingsActorExt as _, settings};
+use args::Args;
+use broadcast::UIMsg;
+use settings::{SettingsActorExt as _, settings};
 #[cfg(feature = "stacks")]
-use ethui_stacks::actor::{StacksActorExt as _, try_stacks};
+use stacks::actor::{StacksActorExt as _, try_stacks};
 use named_lock::NamedLock;
 use tauri::{AppHandle, Builder, Emitter as _, Manager as _};
 #[cfg(feature = "aptabase")]
@@ -29,13 +29,13 @@ pub struct EthUIApp {
 }
 
 impl EthUIApp {
-    pub async fn start_or_open(args: ethui_args::Args) -> color_eyre::Result<()> {
+    pub async fn start_or_open(args: args::Args) -> color_eyre::Result<()> {
         let lock = NamedLock::create(LOCK_NAME)?;
 
         let _guard = match lock.try_lock() {
             Ok(g) => g,
             Err(_) => {
-                ethui_broadcast::main_window_show().await;
+                broadcast::main_window_show().await;
                 return Ok(());
             }
         };
@@ -43,7 +43,7 @@ impl EthUIApp {
         Ok(())
     }
 
-    pub async fn build(args: ethui_args::Args) -> color_eyre::Result<Self> {
+    pub async fn build(args: args::Args) -> color_eyre::Result<Self> {
         let builder = Builder::default();
 
         let builder = builder
@@ -56,78 +56,78 @@ impl EthUIApp {
                 commands::remove_contract,
                 commands::is_stacks_enabled,
                 #[cfg(feature = "stacks")]
-                ethui_stacks::commands::stacks_create,
+                stacks::commands::stacks_create,
                 #[cfg(feature = "stacks")]
-                ethui_stacks::commands::stacks_list,
+                stacks::commands::stacks_list,
                 #[cfg(feature = "stacks")]
-                ethui_stacks::commands::stacks_get_status,
+                stacks::commands::stacks_get_status,
                 #[cfg(feature = "stacks")]
-                ethui_stacks::commands::stacks_remove,
+                stacks::commands::stacks_remove,
                 #[cfg(feature = "stacks")]
-                ethui_stacks::commands::stacks_shutdown,
+                stacks::commands::stacks_shutdown,
                 #[cfg(feature = "stacks")]
-                ethui_stacks::commands::stacks_get_runtime_state,
-                ethui_settings::commands::settings_get,
-                ethui_settings::commands::settings_set,
-                ethui_settings::commands::settings_set_dark_mode,
-                ethui_settings::commands::settings_set_fast_mode,
-                ethui_settings::commands::settings_finish_onboarding,
-                ethui_settings::commands::settings_set_alias,
-                ethui_settings::commands::settings_get_alias,
-                ethui_settings::commands::settings_onboarding_finish_step,
-                ethui_settings::commands::settings_onboarding_finish_all,
-                ethui_settings::commands::settings_set_run_local_stacks,
-                ethui_networks::commands::networks_get_list,
-                ethui_networks::commands::networks_get_current,
-                ethui_networks::commands::networks_set_current,
-                ethui_networks::commands::networks_add,
-                ethui_networks::commands::networks_update,
-                ethui_networks::commands::networks_remove,
-                ethui_networks::commands::networks_is_dev,
-                ethui_networks::commands::networks_chain_id_from_provider,
-                ethui_db::commands::db_get_contracts,
-                ethui_db::commands::db_get_newer_transactions,
-                ethui_db::commands::db_get_older_transactions,
-                ethui_db::commands::db_get_latest_transactions,
-                ethui_db::commands::db_get_transaction_by_hash,
-                ethui_db::commands::db_get_contract_abi,
-                ethui_db::commands::db_get_contract_impl_abi,
-                ethui_db::commands::db_get_contract_addresses,
-                ethui_db::commands::db_get_transaction_addresses,
-                ethui_db::commands::db_get_erc20_metadata,
-                ethui_db::commands::db_get_erc20_balances,
-                ethui_db::commands::db_get_erc20_blacklist,
-                ethui_db::commands::db_set_erc20_blacklist,
-                ethui_db::commands::db_clear_erc20_blacklist,
-                ethui_db::commands::db_get_native_balance,
-                ethui_db::commands::db_get_erc721_tokens,
-                ethui_forge::commands::fetch_forge_abis,
-                ethui_ws::commands::ws_peers_by_domain,
-                ethui_ws::commands::ws_peer_count,
-                ethui_wallets::commands::wallets_get_all,
-                ethui_wallets::commands::wallets_get_current,
-                ethui_wallets::commands::wallets_get_current_address,
-                ethui_wallets::commands::wallets_create,
-                ethui_wallets::commands::wallets_update,
-                ethui_wallets::commands::wallets_remove,
-                ethui_wallets::commands::wallets_set_current_wallet,
-                ethui_wallets::commands::wallets_set_current_path,
-                ethui_wallets::commands::wallets_get_wallet_addresses,
-                ethui_wallets::commands::wallets_get_mnemonic_addresses,
-                ethui_wallets::commands::wallets_validate_mnemonic,
-                ethui_wallets::commands::wallets_ledger_derive,
-                ethui_dialogs::commands::dialog_get_payload,
-                ethui_dialogs::commands::dialog_send,
-                ethui_rpc::commands::rpc_send_transaction,
-                ethui_rpc::commands::rpc_eth_call,
-                ethui_rpc::commands::rpc_get_code,
-                ethui_rpc::commands::rpc_is_contract,
-                ethui_connections::commands::connections_affinity_for,
-                ethui_connections::commands::connections_set_affinity,
-                ethui_sync::commands::sync_alchemy_is_network_supported,
-                ethui_sync::commands::sync_get_native_balance,
-                ethui_simulator::commands::simulator_run,
-                ethui_simulator::commands::simulator_get_call_count,
+                stacks::commands::stacks_get_runtime_state,
+                settings::commands::settings_get,
+                settings::commands::settings_set,
+                settings::commands::settings_set_dark_mode,
+                settings::commands::settings_set_fast_mode,
+                settings::commands::settings_finish_onboarding,
+                settings::commands::settings_set_alias,
+                settings::commands::settings_get_alias,
+                settings::commands::settings_onboarding_finish_step,
+                settings::commands::settings_onboarding_finish_all,
+                settings::commands::settings_set_run_local_stacks,
+                networks::commands::networks_get_list,
+                networks::commands::networks_get_current,
+                networks::commands::networks_set_current,
+                networks::commands::networks_add,
+                networks::commands::networks_update,
+                networks::commands::networks_remove,
+                networks::commands::networks_is_dev,
+                networks::commands::networks_chain_id_from_provider,
+                db::commands::db_get_contracts,
+                db::commands::db_get_newer_transactions,
+                db::commands::db_get_older_transactions,
+                db::commands::db_get_latest_transactions,
+                db::commands::db_get_transaction_by_hash,
+                db::commands::db_get_contract_abi,
+                db::commands::db_get_contract_impl_abi,
+                db::commands::db_get_contract_addresses,
+                db::commands::db_get_transaction_addresses,
+                db::commands::db_get_erc20_metadata,
+                db::commands::db_get_erc20_balances,
+                db::commands::db_get_erc20_blacklist,
+                db::commands::db_set_erc20_blacklist,
+                db::commands::db_clear_erc20_blacklist,
+                db::commands::db_get_native_balance,
+                db::commands::db_get_erc721_tokens,
+                forge::commands::fetch_forge_abis,
+                ws::commands::ws_peers_by_domain,
+                ws::commands::ws_peer_count,
+                wallets::commands::wallets_get_all,
+                wallets::commands::wallets_get_current,
+                wallets::commands::wallets_get_current_address,
+                wallets::commands::wallets_create,
+                wallets::commands::wallets_update,
+                wallets::commands::wallets_remove,
+                wallets::commands::wallets_set_current_wallet,
+                wallets::commands::wallets_set_current_path,
+                wallets::commands::wallets_get_wallet_addresses,
+                wallets::commands::wallets_get_mnemonic_addresses,
+                wallets::commands::wallets_validate_mnemonic,
+                wallets::commands::wallets_ledger_derive,
+                dialogs::commands::dialog_get_payload,
+                dialogs::commands::dialog_send,
+                rpc::commands::rpc_send_transaction,
+                rpc::commands::rpc_eth_call,
+                rpc::commands::rpc_get_code,
+                rpc::commands::rpc_is_contract,
+                connections::commands::connections_affinity_for,
+                connections::commands::connections_set_affinity,
+                sync::commands::sync_alchemy_is_network_supported,
+                sync::commands::sync_get_native_balance,
+                simulator::commands::simulator_run,
+                simulator::commands::simulator_get_call_count,
             ])
             .plugin(tauri_plugin_os::init())
             .plugin(tauri_plugin_clipboard_manager::init())
@@ -179,7 +179,7 @@ impl EthUIApp {
             }
 
             tauri::RunEvent::Exit => {
-                let _ = ethui_analytics::track_event(handle, "app_exited", None);
+                let _ = analytics::track_event(handle, "app_exited", None);
                 #[cfg(feature = "aptabase")]
                 let _ = handle.track_event("app_exited", None);
 
@@ -207,9 +207,9 @@ impl EthUIApp {
 
 /// Initialization logic
 async fn init(app: &tauri::App, args: &Args) -> color_eyre::Result<()> {
-    ethui_tracing::setup_file_logging(config_dir(app, args).join("logs"))?;
+    tracing_utils::setup_file_logging(config_dir(app, args).join("logs"))?;
 
-    let db = ethui_db::init(&resource(app, "db.sqlite3", args)).await?;
+    let db = db::init(&resource(app, "db.sqlite3", args)).await?;
     app.manage(db.clone());
 
     // set up app's event listener
@@ -220,25 +220,25 @@ async fn init(app: &tauri::App, args: &Args) -> color_eyre::Result<()> {
 
     // calls other crates' initialization logic. anvil needs to be started before networks,
     // otherwise the initial tracker won't be ready to spawn
-    ethui_sync::init().await;
-    ethui_settings::init(resource(app, "settings.json", args))?;
-    ethui_ws::init(args).await;
-    ethui_connections::init(resource(app, "connections.json", args)).await;
-    ethui_wallets::init(resource(app, "wallets.json", args)).await;
-    ethui_networks::init(resource(app, "networks.json", args)).await;
-    ethui_forge::init().await?;
-    ethui_analytics::init(app.handle()).await;
+    sync::init().await;
+    settings::init(resource(app, "settings.json", args))?;
+    ws::init(args).await;
+    connections::init(resource(app, "connections.json", args)).await;
+    wallets::init(resource(app, "wallets.json", args)).await;
+    networks::init(resource(app, "networks.json", args)).await;
+    forge::init().await?;
+    analytics::init(app.handle()).await;
 
-    ethui_analytics::track_event(app.handle(), "app_started", None)?;
+    analytics::track_event(app.handle(), "app_started", None)?;
 
     #[cfg(feature = "stacks")]
-    ethui_stacks::init(args.stacks_port, resource(app, "stacks/", args)).await?;
+    stacks::init(args.stacks_port, resource(app, "stacks/", args)).await?;
 
     Ok(())
 }
 
 async fn event_listener(handle: AppHandle) {
-    let mut rx = ethui_broadcast::subscribe_ui().await;
+    let mut rx = broadcast::subscribe_ui().await;
 
     loop {
         if let Ok(msg) = rx.recv().await {

@@ -1,6 +1,6 @@
 use std::{collections::HashMap, net::SocketAddr};
 
-use ethui_types::prelude::*;
+use common::prelude::*;
 use futures::{SinkExt, StreamExt, stream::SplitSink};
 use tokio::{
     net::{TcpListener, TcpStream},
@@ -79,7 +79,7 @@ async fn handle(
     mut rcv: mpsc::UnboundedReceiver<serde_json::Value>,
 ) -> WsResult<()> {
     debug!("open");
-    let handler: ethui_rpc::Handler = peer.clone().into();
+    let handler: rpc::Handler = peer.clone().into();
 
     // will be used at most once to mark the peer as live once the first message comes in
     let mut liveness_checker = Some(peer);
@@ -125,7 +125,7 @@ async fn handle(
 
 async fn handle_message(
     text: String,
-    handler: &ethui_rpc::Handler,
+    handler: &rpc::Handler,
     sender: &mut SplitSink<WebSocketStream<TcpStream>, Message>,
     liveness_checker: &mut Option<Peer>,
 ) -> WsResult<()> {

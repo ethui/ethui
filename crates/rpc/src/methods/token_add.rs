@@ -1,8 +1,8 @@
-use ethui_dialogs::{Dialog, DialogMsg};
-use ethui_networks::{networks, NetworksActorExt as _};
-use ethui_sync::{get_alchemy, Erc20Metadata, ErcMetadataResponse, ErcOwnersResponse};
-use ethui_types::{prelude::*, TokenMetadata};
-use ethui_wallets::{WalletControl, Wallets};
+use dialogs::{Dialog, DialogMsg};
+use networks::{networks, NetworksActorExt as _};
+use sync::{get_alchemy, Erc20Metadata, ErcMetadataResponse, ErcOwnersResponse};
+use common::{prelude::*, TokenMetadata};
+use wallets::{WalletControl, Wallets};
 
 use crate::{Error, Result};
 
@@ -362,7 +362,7 @@ impl TokenAdd {
         chain_id: u32,
         erc20_full_data: Option<Erc20FullData>,
     ) -> Result<()> {
-        let db = ethui_db::get();
+        let db = db::get();
         let wallet_address = self.get_current_wallet_address().await;
         let erc20_data = erc20_full_data.unwrap();
         let _save_metadata = db
@@ -384,7 +384,7 @@ impl TokenAdd {
         chain_id: u32,
         full_data: ErcMetadataResponse,
     ) -> Result<()> {
-        let db = ethui_db::get();
+        let db = db::get();
         let wallet_address = self.get_current_wallet_address().await;
         let raw_metadata = full_data.raw;
         let token_uri = raw_metadata.token_uri;
@@ -424,7 +424,7 @@ impl TokenAdd {
         chain_id: u32,
         full_data: ErcMetadataResponse,
     ) -> Result<()> {
-        let db = ethui_db::get();
+        let db = db::get();
         let wallet_address = self.get_current_wallet_address().await;
         let raw_metadata = full_data.raw;
         let token_uri = raw_metadata.token_uri;

@@ -2,16 +2,16 @@ pub mod commands;
 mod utils;
 mod worker;
 
-use ethui_broadcast::InternalMsg;
-pub use ethui_sync_alchemy::{
+use broadcast::InternalMsg;
+pub use sync_alchemy::{
     Alchemy, Erc20Metadata, ErcMetadataResponse, ErcOwnersResponse, get_alchemy,
 };
-use ethui_types::prelude::*;
+use common::prelude::*;
 use tokio::sync::{Mutex, mpsc, oneshot};
 pub use worker::Worker;
 
 pub async fn init() {
-    ethui_sync_anvil::init();
+    sync_anvil::init();
 
     let (snd, rcv) = mpsc::unbounded_channel();
     tokio::spawn(async { receiver(snd).await });
@@ -54,7 +54,7 @@ impl TryFrom<InternalMsg> for Msg {
 /// if a msg is convertible to `Msg`, forward that to the sync worker
 #[instrument(skip(snd), level = "trace")]
 async fn receiver(snd: mpsc::UnboundedSender<Msg>) -> std::result::Result<(), ()> {
-    let mut rx = ethui_broadcast::subscribe_internal().await;
+    let mut rx = broadcast::subscribe_internal().await;
 
     loop {
         if let Ok(internal_msg) = rx.recv().await

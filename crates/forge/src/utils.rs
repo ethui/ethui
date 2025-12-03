@@ -1,11 +1,11 @@
 use alloy::{primitives::Bytes, providers::Provider as _};
-use ethui_types::{Address, eyre};
+use common::{Address, eyre};
 use tracing::debug;
 
 pub static FUZZ_DIFF_THRESHOLD: f64 = 0.2;
 
 //pub(crate) async fn update_db_contracts() -> Result<()> {
-//    let db = ethui_db::get();
+//    let db = db::get();
 //
 //    let contracts = db.get_incomplete_contracts().await?;
 //    let mut any_updates = false;
@@ -45,7 +45,7 @@ pub static FUZZ_DIFF_THRESHOLD: f64 = 0.2;
 //    }
 //
 //    if any_updates {
-//        ethui_broadcast::ui_notify(UINotify::ContractsUpdated).await;
+//        broadcast::ui_notify(UINotify::ContractsUpdated).await;
 //    }
 //
 //    Ok(())
@@ -57,7 +57,7 @@ pub async fn get_code(chain_id: u32, address: Address) -> color_eyre::Result<Byt
         address
     );
 
-    let provider = ethui_networks::get_provider(chain_id).await?;
+    let provider = networks::get_provider(chain_id).await?;
     provider
         .get_code_at(address)
         .await

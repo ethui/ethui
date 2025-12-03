@@ -4,9 +4,9 @@ mod methods;
 pub mod utils;
 
 use alloy::{dyn_abi::TypedData, hex, providers::Provider as _};
-use ethui_connections::{permissions::PermissionRequest, Ctx};
-use ethui_types::prelude::*;
-use ethui_wallets::{WalletControl, Wallets};
+use connections::{permissions::PermissionRequest, Ctx};
+use common::prelude::*;
+use wallets::{WalletControl, Wallets};
 use jsonrpc_core::{MetaIoHandler, Params};
 use serde_json::json;
 
@@ -137,8 +137,8 @@ impl Handler {
 
         #[cfg(feature = "forge-traces")]
         self_handler!(
-            "ethui_forgeTestSubmitRun",
-            Self::ethui_forge_test_submit_run
+            "forgeTestSubmitRun",
+            Self::forge_test_submit_run
         );
     }
 
@@ -286,7 +286,7 @@ impl Handler {
         // TODO where should this be used?
         // let address = Address::from_str(&params[1].as_ref().cloned().unwrap()).unwrap();
 
-        let wallet = ethui_wallets::get_current_wallet().await;
+        let wallet = wallets::get_current_wallet().await;
         let wallet_path = wallet.get_current_path();
         let network = ctx.network().await;
 
@@ -314,7 +314,7 @@ impl Handler {
         let data = params[1].as_ref().cloned().unwrap();
         let typed_data: TypedData = serde_json::from_str(&data).unwrap();
 
-        let wallet = ethui_wallets::get_current_wallet().await;
+        let wallet = wallets::get_current_wallet().await;
         let wallet_path = wallet.get_current_path();
         let network = ctx.network().await;
 
@@ -379,7 +379,7 @@ impl Handler {
     }
 
     #[cfg(feature = "forge-traces")]
-    async fn ethui_forge_test_submit_run(
+    async fn forge_test_submit_run(
         params: Params,
         _ctx: Ctx,
     ) -> jsonrpc_core::Result<serde_json::Value> {

@@ -1,4 +1,4 @@
-use ethui_types::{
+use common::{
     prelude::*,
     ui_events::{DialogClose, DialogOpen, DialogSend},
 };
@@ -139,7 +139,7 @@ impl Inner {
         let url = format!("index.html#/dialog/{}/{}", self.preset, self.id);
         let title = format!("ethui Dialog - {}", preset.title);
 
-        ethui_broadcast::dialog_open(DialogOpen {
+        broadcast::dialog_open(DialogOpen {
             id: self.id,
             label: self.label(),
             title,
@@ -153,7 +153,7 @@ impl Inner {
     }
 
     async fn close(&self) -> color_eyre::Result<()> {
-        ethui_broadcast::dialog_close(DialogClose {
+        broadcast::dialog_close(DialogClose {
             label: self.label(),
         })
         .await;
@@ -162,7 +162,7 @@ impl Inner {
     }
 
     async fn send(&self, event_type: &str, payload: Option<Json>) -> color_eyre::Result<()> {
-        ethui_broadcast::dialog_send(DialogSend {
+        broadcast::dialog_send(DialogSend {
             label: self.label(),
             event_type: event_type.into(),
             payload,

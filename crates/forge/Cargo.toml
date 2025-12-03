@@ -1,5 +1,5 @@
 [package]
-name = "ethui-forge"
+name = "forge"
 description = "ethui forge integration"
 version.workspace = true
 edition.workspace = true
@@ -10,11 +10,11 @@ exclude.workspace = true
 authors.workspace = true
 
 [dependencies]
-ethui-types.workspace = true
-ethui-settings.workspace = true
-ethui-networks.workspace = true
-ethui-broadcast.workspace = true
-ethui-db.workspace = true
+common.workspace = true
+settings.workspace = true
+networks.workspace = true
+broadcast.workspace = true
+db.workspace = true
 
 alloy.workspace = true
 serde.workspace = true

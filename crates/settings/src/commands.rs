@@ -1,4 +1,4 @@
-use ethui_types::{Address, TauriResult};
+use common::{Address, TauriResult};
 
 use crate::{DarkMode, Settings, actor::{SettingsActorExt as _, settings}, onboarding::OnboardingStep};
 

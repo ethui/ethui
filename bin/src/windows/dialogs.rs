@@ -1,4 +1,4 @@
-use ethui_types::ui_events;
+use common::ui_events;
 use tauri::{AppHandle, Emitter as _, Manager, WindowEvent};
 
 use super::build_window;
@@ -27,7 +27,7 @@ fn on_event(window_id: u32, event: &WindowEvent) {
     match &event {
         E::CloseRequested { .. } | E::Destroyed => {
             tokio::spawn(async move {
-                ethui_dialogs::dialog_close(window_id)
+                dialogs::dialog_close(window_id)
                     .await
                     .unwrap_or_else(|_e| {
                         tracing::warn!("failed to close dialog: {}", window_id);

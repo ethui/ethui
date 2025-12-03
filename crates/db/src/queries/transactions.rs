@@ -1,6 +1,6 @@
 use std::str::FromStr;
 
-use ethui_types::{events::Tx, prelude::*, transactions::Transaction};
+use common::{events::Tx, prelude::*, transactions::Transaction};
 
 use crate::{pagination::TxIdx, DbInner};
 

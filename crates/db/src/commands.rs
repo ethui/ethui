@@ -1,5 +1,5 @@
 use alloy::json_abi::JsonAbi;
-use ethui_types::{
+use common::{
     events::Tx, prelude::*, transactions::Transaction, Contract, Erc721TokenData, TokenBalance,
     TokenMetadata,
 };
@@ -55,7 +55,7 @@ pub async fn db_get_transaction_by_hash(
 
     if tx.incomplete {
         // force fetch, and read again from DB
-        ethui_broadcast::fetch_full_tx_sync(chain_id, hash).await;
+        broadcast::fetch_full_tx_sync(chain_id, hash).await;
         Ok(db.get_transaction_by_hash(chain_id, hash).await?)
     } else {
         Ok(tx)
@@ -146,7 +146,7 @@ pub async fn db_set_erc20_blacklist(
 ) -> TauriResult<()> {
     db.set_erc20_blacklist(chain_id, address, blacklisted)
         .await?;
-    ethui_broadcast::ui_notify(UINotify::BalancesUpdated).await;
+    broadcast::ui_notify(UINotify::BalancesUpdated).await;
     Ok(())
 }
 
@@ -157,7 +157,7 @@ pub async fn db_clear_erc20_blacklist(
     db: tauri::State<'_, Db>,
 ) -> TauriResult<()> {
     db.clear_erc20_blacklist(chain_id, address).await?;
-    ethui_broadcast::ui_notify(UINotify::BalancesUpdated).await;
+    broadcast::ui_notify(UINotify::BalancesUpdated).await;
     Ok(())
 }
 

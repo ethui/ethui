@@ -5,7 +5,7 @@ use std::{
     path::{Path, PathBuf},
 };
 
-use ethui_types::Address;
+use common::Address;
 use serde::Deserialize;
 #[cfg(test)]
 use serde::Serialize;

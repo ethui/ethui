@@ -5,11 +5,11 @@ use alloy::{
     providers::{PendingTransactionBuilder, Provider, ProviderBuilder, ext::AnvilApi},
     rpc::types::TransactionRequest,
 };
-use ethui_connections::Ctx;
-use ethui_dialogs::{Dialog, DialogMsg};
-use ethui_settings::{SettingsActorExt as _, settings};
-use ethui_types::prelude::*;
-use ethui_wallets::{WalletControl, WalletType, Wallets};
+use connections::Ctx;
+use dialogs::{Dialog, DialogMsg};
+use settings::{SettingsActorExt as _, settings};
+use common::prelude::*;
+use wallets::{WalletControl, WalletType, Wallets};
 
 use crate::{Error, Result};
 
@@ -128,7 +128,7 @@ impl SendTransaction {
         let chain_id = self.network.chain_id();
         let request = self.simulation_request().await?;
 
-        if let Ok(sim) = ethui_simulator::commands::simulator_run(chain_id, request).await {
+        if let Ok(sim) = simulator::commands::simulator_run(chain_id, request).await {
             dialog.send("foo", None).await?;
             dialog
                 .send("simulation-result", Some(serde_json::to_value(sim)?))
@@ -142,7 +142,7 @@ impl SendTransaction {
         self.build_provider().await?;
         let provider = self.provider.as_ref().unwrap();
 
-        ethui_broadcast::transaction_submitted(self.network.chain_id()).await;
+        broadcast::transaction_submitted(self.network.chain_id()).await;
 
         let pending = provider.send_transaction(self.request.clone()).await?;
         Ok(pending)
@@ -189,10 +189,10 @@ impl SendTransaction {
         Ok(())
     }
 
-    async fn simulation_request(&self) -> Result<ethui_simulator::Request> {
+    async fn simulation_request(&self) -> Result<simulator::Request> {
         let tx_request = self.request.clone();
 
-        Ok(ethui_simulator::Request {
+        Ok(simulator::Request {
             from: self.from().await.map_err(|_| Error::CannotSimulate)?,
             to: tx_request
                 .to
@@ -262,7 +262,7 @@ impl<'a> SendTransactionBuilder<'a> {
             let address = Address::from_str(from).unwrap();
             self.request.set_from(address);
 
-            let (wallet, path) = ethui_wallets::find_wallet(address)
+            let (wallet, path) = wallets::find_wallet(address)
                 .await
                 .ok_or(Error::WalletNotFound(address))?;
 
@@ -270,7 +270,7 @@ impl<'a> SendTransactionBuilder<'a> {
             self.wallet_path = Some(path);
             self.wallet_type = Some((&wallet).into());
         } else {
-            let wallet = ethui_wallets::get_current_wallet().await;
+            let wallet = wallets::get_current_wallet().await;
             let current_path = wallet.get_current_path();
 
             self.wallet_path = Some(current_path);

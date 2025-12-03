@@ -1,5 +1,5 @@
 use alloy::transports::{RpcError, TransportErrorKind};
-use ethui_types::prelude::*;
+use common::prelude::*;
 use jsonrpc_core::ErrorCode;
 
 #[derive(thiserror::Error, Debug)]

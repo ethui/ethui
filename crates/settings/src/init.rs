@@ -1,7 +1,7 @@
 use std::path::PathBuf;
 
 use color_eyre::eyre::Context as _;
-use ethui_broadcast::InternalMsg;
+use broadcast::InternalMsg;
 use kameo::actor::{ActorRef, Spawn as _};
 
 use crate::{actor::{SettingsActor, SettingsActorExt as _}, onboarding::OnboardingStep};
@@ -19,7 +19,7 @@ pub fn init(pathbuf: PathBuf) -> color_eyre::Result<()> {
 }
 
 async fn receiver(actor: ActorRef<SettingsActor>) -> ! {
-    let mut rx = ethui_broadcast::subscribe_internal().await;
+    let mut rx = broadcast::subscribe_internal().await;
 
     let mut extension_updated = false;
     let mut wallet_created = false;

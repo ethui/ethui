@@ -1,7 +1,7 @@
 use std::{collections::HashSet, str::FromStr};
 
-use ethui_types::prelude::*;
-use ethui_types::{TokenBalance, TokenMetadata};
+use common::prelude::*;
+use common::{TokenBalance, TokenMetadata};
 use tracing::instrument;
 
 use crate::DbInner;

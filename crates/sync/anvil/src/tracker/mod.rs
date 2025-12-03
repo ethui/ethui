@@ -1,6 +1,6 @@
 use std::{collections::HashMap, sync::Arc};
 
-use ethui_types::{Network, NetworkId};
+use common::{Network, NetworkId};
 use once_cell::sync::Lazy;
 use tokio::{
     sync::{Mutex, oneshot},
@@ -66,7 +66,7 @@ pub(crate) async fn unwatch(network: &Network) {
 
 #[cfg(test)]
 mod tests {
-    use ethui_types::{Network, NetworkStatus};
+    use common::{Network, NetworkStatus};
     use tokio::time::{Duration, sleep};
     use url::Url;
 

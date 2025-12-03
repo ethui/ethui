@@ -1,6 +1,6 @@
-use ethui_dialogs::{Dialog, DialogMsg};
-use ethui_networks::{networks, NetworksActorExt as _};
-use ethui_types::{NewNetworkParams, U64};
+use dialogs::{Dialog, DialogMsg};
+use networks::{networks, NetworksActorExt as _};
+use common::{NewNetworkParams, U64};
 use serde::{Deserialize, Serialize};
 use tracing::info;
 use url::Url;

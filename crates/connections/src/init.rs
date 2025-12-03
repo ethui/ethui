@@ -1,8 +1,8 @@
 use std::path::{Path, PathBuf};
 
 use async_trait::async_trait;
-use ethui_broadcast::InternalMsg;
-use ethui_types::GlobalState;
+use broadcast::InternalMsg;
+use common::GlobalState;
 use once_cell::sync::OnceCell;
 use tokio::sync::{RwLock, RwLockReadGuard, RwLockWriteGuard};
 
@@ -39,7 +39,7 @@ impl GlobalState for Store {
 }
 
 async fn receiver() -> ! {
-    let mut rx = ethui_broadcast::subscribe_internal().await;
+    let mut rx = broadcast::subscribe_internal().await;
 
     loop {
         if let Ok(msg) = rx.recv().await {

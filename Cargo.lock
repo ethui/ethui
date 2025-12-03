@@ -3,6 +3,13 @@
 version = 4
 
 [[package]]
+name = "abis"
+version = "1.26.4"
+dependencies = [
+ "alloy",
+]
+
+[[package]]
 name = "addr2line"
 version = "0.24.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -832,6 +839,22 @@ dependencies = [
 ]
 
 [[package]]
+name = "analytics"
+version = "1.26.4"
+dependencies = [
+ "broadcast",
+ "common",
+ "hostname",
+ "mac_address",
+ "serde_json",
+ "tauri",
+ "tauri-plugin-aptabase",
+ "tokio",
+ "tracing",
+ "uuid 1.18.1",
+]
+
+[[package]]
 name = "android-tzdata"
 version = "0.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -886,6 +909,13 @@ dependencies = [
  "windows-sys 0.59.0",
  "wl-clipboard-rs",
  "x11rb",
+]
+
+[[package]]
+name = "args"
+version = "1.26.4"
+dependencies = [
+ "clap",
 ]
 
 [[package]]
@@ -1853,6 +1883,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "broadcast"
+version = "1.26.4"
+dependencies = [
+ "common",
+ "once_cell",
+ "serde_json",
+ "tokio",
+ "tracing",
+]
+
+[[package]]
 name = "brotli"
 version = "8.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2308,12 +2349,48 @@ dependencies = [
 ]
 
 [[package]]
+name = "common"
+version = "1.26.4"
+dependencies = [
+ "alloy",
+ "async-trait",
+ "color-eyre",
+ "kameo",
+ "serde",
+ "serde_json",
+ "sqlx",
+ "tokio",
+ "tracing",
+ "url",
+]
+
+[[package]]
 name = "concurrent-queue"
 version = "2.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "4ca0197aee26d1ae37445ee532fefce43251d24cc7c166799f4d46817f1d3973"
 dependencies = [
  "crossbeam-utils",
+]
+
+[[package]]
+name = "connections"
+version = "1.26.4"
+dependencies = [
+ "async-trait",
+ "broadcast",
+ "chrono",
+ "color-eyre",
+ "common",
+ "jsonrpc-core",
+ "networks",
+ "once_cell",
+ "serde",
+ "serde-constant",
+ "serde_json",
+ "tauri",
+ "tempfile",
+ "tokio",
 ]
 
 [[package]]
@@ -2497,6 +2574,19 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "460fbee9c2c2f33933d720630a6a0bac33ba7053db5344fac858d4b8952d77d5"
 
 [[package]]
+name = "crypto"
+version = "1.26.4"
+dependencies = [
+ "aead",
+ "chacha20poly1305",
+ "color-eyre",
+ "rust-argon2",
+ "serde",
+ "serde_json",
+ "zeroize",
+]
+
+[[package]]
 name = "crypto-bigint"
 version = "0.5.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2657,6 +2747,26 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2a2330da5de22e8a3cb63252ce2abb30116bf5265e89c0e01bc17015ce30a476"
 
 [[package]]
+name = "db"
+version = "1.26.4"
+dependencies = [
+ "alloy",
+ "alloy-chains",
+ "broadcast",
+ "color-eyre",
+ "common",
+ "foundry-block-explorers",
+ "once_cell",
+ "serde",
+ "serde_json",
+ "settings",
+ "sqlx",
+ "tauri",
+ "tokio",
+ "tracing",
+]
+
+[[package]]
 name = "der"
 version = "0.7.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2742,6 +2852,22 @@ dependencies = [
  "quote",
  "syn 2.0.104",
  "unicode-xid",
+]
+
+[[package]]
+name = "dialogs"
+version = "1.26.4"
+dependencies = [
+ "broadcast",
+ "color-eyre",
+ "common",
+ "once_cell",
+ "rand 0.9.1",
+ "serde",
+ "serde_json",
+ "tauri",
+ "tokio",
+ "tracing",
 ]
 
 [[package]]
@@ -3104,32 +3230,28 @@ name = "ethui"
 version = "1.26.4"
 dependencies = [
  "alloy",
+ "analytics",
+ "args",
+ "broadcast",
  "color-eyre",
- "ethui-analytics",
- "ethui-args",
- "ethui-broadcast",
- "ethui-connections",
- "ethui-db",
- "ethui-dialogs",
- "ethui-forge",
- "ethui-forge-traces",
- "ethui-networks",
- "ethui-proxy-detect",
- "ethui-rpc",
- "ethui-settings",
- "ethui-simulator",
- "ethui-stacks",
- "ethui-sync",
- "ethui-token-list",
- "ethui-tracing",
- "ethui-types",
- "ethui-wallets",
- "ethui-ws",
+ "common",
+ "connections",
+ "db",
+ "dialogs",
  "fix-path-env",
+ "forge",
+ "forge-traces",
  "kameo",
  "named-lock",
+ "networks",
+ "proxy-detect",
+ "rpc",
  "serde",
  "serde_json",
+ "settings",
+ "simulator",
+ "stacks",
+ "sync",
  "tauri",
  "tauri-build",
  "tauri-plugin-aptabase",
@@ -3138,442 +3260,12 @@ dependencies = [
  "tauri-plugin-process",
  "tauri-plugin-shell",
  "tauri-plugin-updater",
+ "token-list",
  "tokio",
  "tracing",
-]
-
-[[package]]
-name = "ethui-abis"
-version = "1.26.4"
-dependencies = [
- "alloy",
-]
-
-[[package]]
-name = "ethui-analytics"
-version = "1.26.4"
-dependencies = [
- "ethui-broadcast",
- "ethui-types",
- "hostname",
- "mac_address",
- "serde_json",
- "tauri",
- "tauri-plugin-aptabase",
- "tokio",
- "tracing",
- "uuid 1.18.1",
-]
-
-[[package]]
-name = "ethui-args"
-version = "1.26.4"
-dependencies = [
- "clap",
-]
-
-[[package]]
-name = "ethui-broadcast"
-version = "1.26.4"
-dependencies = [
- "ethui-types",
- "once_cell",
- "serde_json",
- "tokio",
- "tracing",
-]
-
-[[package]]
-name = "ethui-connections"
-version = "1.26.4"
-dependencies = [
- "async-trait",
- "chrono",
- "color-eyre",
- "ethui-broadcast",
- "ethui-networks",
- "ethui-types",
- "jsonrpc-core",
- "once_cell",
- "serde",
- "serde-constant",
- "serde_json",
- "tauri",
- "tempfile",
- "tokio",
-]
-
-[[package]]
-name = "ethui-crypto"
-version = "1.26.4"
-dependencies = [
- "aead",
- "chacha20poly1305",
- "color-eyre",
- "rust-argon2",
- "serde",
- "serde_json",
- "zeroize",
-]
-
-[[package]]
-name = "ethui-db"
-version = "1.26.4"
-dependencies = [
- "alloy",
- "alloy-chains",
- "color-eyre",
- "ethui-broadcast",
- "ethui-settings",
- "ethui-types",
- "foundry-block-explorers",
- "once_cell",
- "serde",
- "serde_json",
- "sqlx",
- "tauri",
- "tokio",
- "tracing",
-]
-
-[[package]]
-name = "ethui-dialogs"
-version = "1.26.4"
-dependencies = [
- "color-eyre",
- "ethui-broadcast",
- "ethui-types",
- "once_cell",
- "rand 0.9.1",
- "serde",
- "serde_json",
- "tauri",
- "tokio",
- "tracing",
-]
-
-[[package]]
-name = "ethui-exchange-rates"
-version = "1.26.4"
-dependencies = [
- "async-trait",
- "ethui-types",
- "once_cell",
- "serde",
- "serde_json",
- "tokio",
-]
-
-[[package]]
-name = "ethui-forge"
-version = "1.26.4"
-dependencies = [
- "alloy",
- "color-eyre",
- "ethui-broadcast",
- "ethui-db",
- "ethui-networks",
- "ethui-settings",
- "ethui-types",
- "futures",
- "glob",
- "kameo",
- "notify",
- "notify-debouncer-full",
- "regex",
- "serde",
- "serde_json",
- "tauri",
- "tempfile",
- "tokio",
- "tracing",
- "walkdir",
-]
-
-[[package]]
-name = "ethui-forge-traces"
-version = "1.26.4"
-dependencies = [
- "color-eyre",
- "ethui-args",
- "ethui-types",
- "futures",
- "serde",
- "serde_json",
- "tokio",
- "tokio-tungstenite 0.28.0",
- "tracing",
-]
-
-[[package]]
-name = "ethui-networks"
-version = "1.26.4"
-dependencies = [
- "alloy",
- "color-eyre",
- "ethui-broadcast",
- "ethui-types",
- "futures",
- "kameo",
- "serde",
- "serde-constant",
- "serde_json",
- "tauri",
- "tempfile",
- "tokio",
- "tracing",
- "url",
-]
-
-[[package]]
-name = "ethui-proxy-detect"
-version = "1.26.4"
-dependencies = [
- "alloy",
- "lazy_static",
- "rstest",
- "thiserror 2.0.12",
- "tokio",
-]
-
-[[package]]
-name = "ethui-rpc"
-version = "1.26.4"
-dependencies = [
- "alloy",
- "color-eyre",
- "ethui-broadcast",
- "ethui-connections",
- "ethui-db",
- "ethui-dialogs",
- "ethui-forge",
- "ethui-networks",
- "ethui-settings",
- "ethui-simulator",
- "ethui-sync",
- "ethui-types",
- "ethui-wallets",
- "jsonrpc-core",
- "serde",
- "serde_json",
- "tauri",
- "thiserror 2.0.12",
- "tracing",
- "url",
-]
-
-[[package]]
-name = "ethui-settings"
-version = "1.26.4"
-dependencies = [
- "alloy",
- "alloy-chains",
- "async-trait",
- "auto-launch",
- "color-eyre",
- "ethui-broadcast",
- "ethui-tracing",
- "ethui-types",
- "foundry-block-explorers",
- "kameo",
- "once_cell",
- "serde",
- "serde-constant",
- "serde_json",
- "tauri",
- "tempfile",
- "tokio",
- "tracing",
-]
-
-[[package]]
-name = "ethui-simulator"
-version = "1.26.4"
-dependencies = [
- "alloy",
- "color-eyre",
- "ethui-db",
- "ethui-networks",
- "ethui-types",
- "ethui-wallets",
- "pretty_assertions",
- "revm",
- "serde",
- "tauri",
- "tokio",
-]
-
-[[package]]
-name = "ethui-stacks"
-version = "1.26.4"
-dependencies = [
- "alloy",
- "color-eyre",
- "ethui-args",
- "ethui-broadcast",
- "ethui-db",
- "ethui-networks",
- "ethui-settings",
- "ethui-types",
- "futures",
- "glob",
- "kameo",
- "notify",
- "notify-debouncer-full",
- "regex",
- "reqwest",
- "serde",
- "serde_json",
- "tauri",
- "tempfile",
- "thiserror 2.0.12",
- "tokio",
- "tracing",
- "url",
-]
-
-[[package]]
-name = "ethui-sync"
-version = "1.26.4"
-dependencies = [
- "alloy",
- "color-eyre",
- "ethui-abis",
- "ethui-broadcast",
- "ethui-db",
- "ethui-networks",
- "ethui-sync-alchemy",
- "ethui-sync-anvil",
- "ethui-types",
- "serde",
- "tauri",
- "tokio",
- "tracing",
-]
-
-[[package]]
-name = "ethui-sync-alchemy"
-version = "1.26.4"
-dependencies = [
- "alloy",
- "color-eyre",
- "ethui-db",
- "ethui-settings",
- "ethui-types",
- "once_cell",
- "reqwest",
- "serde",
- "serde_json",
- "tokio",
- "tracing",
- "url",
-]
-
-[[package]]
-name = "ethui-sync-anvil"
-version = "1.26.4"
-dependencies = [
- "alloy",
- "clap",
- "color-eyre",
- "ethui-abis",
- "ethui-broadcast",
- "ethui-db",
- "ethui-proxy-detect",
- "ethui-types",
- "futures",
- "once_cell",
- "reqwest",
- "serde_json",
- "serial_test",
- "tokio",
- "tracing",
- "tracing-subscriber 0.3.20",
- "url",
-]
-
-[[package]]
-name = "ethui-token-list"
-version = "1.26.4"
-dependencies = [
- "chrono",
- "color-eyre",
- "reqwest",
- "serde",
- "serde_json",
- "tokio",
-]
-
-[[package]]
-name = "ethui-tracing"
-version = "1.26.4"
-dependencies = [
- "chrono",
- "color-eyre",
- "once_cell",
- "tracing",
- "tracing-subscriber 0.3.20",
-]
-
-[[package]]
-name = "ethui-types"
-version = "1.26.4"
-dependencies = [
- "alloy",
- "async-trait",
- "color-eyre",
- "kameo",
- "serde",
- "serde_json",
- "sqlx",
- "tokio",
- "tracing",
- "url",
-]
-
-[[package]]
-name = "ethui-wallets"
-version = "1.26.4"
-dependencies = [
- "alloy",
- "async-trait",
- "coins-bip32 0.13.0",
- "color-eyre",
- "enum_dispatch",
- "ethui-broadcast",
- "ethui-crypto",
- "ethui-dialogs",
- "ethui-types",
- "once_cell",
- "rstest",
- "secrets",
- "serde",
- "serde_json",
- "tauri",
- "tokio",
-]
-
-[[package]]
-name = "ethui-ws"
-version = "1.26.4"
-dependencies = [
- "async-trait",
- "ethui-args",
- "ethui-broadcast",
- "ethui-connections",
- "ethui-networks",
- "ethui-rpc",
- "ethui-types",
- "futures",
- "once_cell",
- "serde",
- "serde_json",
- "tauri",
- "thiserror 2.0.12",
- "tokio",
- "tokio-tungstenite 0.28.0",
- "tracing",
- "url",
+ "tracing-utils",
+ "wallets",
+ "ws",
 ]
 
 [[package]]
@@ -3585,6 +3277,18 @@ dependencies = [
  "concurrent-queue",
  "parking",
  "pin-project-lite",
+]
+
+[[package]]
+name = "exchange-rates"
+version = "1.26.4"
+dependencies = [
+ "async-trait",
+ "common",
+ "once_cell",
+ "serde",
+ "serde_json",
+ "tokio",
 ]
 
 [[package]]
@@ -3783,6 +3487,47 @@ name = "foreign-types-shared"
 version = "0.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "aa9a19cbb55df58761df49b23516a86d432839add4af60fc256da840f66ed35b"
+
+[[package]]
+name = "forge"
+version = "1.26.4"
+dependencies = [
+ "alloy",
+ "broadcast",
+ "color-eyre",
+ "common",
+ "db",
+ "futures",
+ "glob",
+ "kameo",
+ "networks",
+ "notify",
+ "notify-debouncer-full",
+ "regex",
+ "serde",
+ "serde_json",
+ "settings",
+ "tauri",
+ "tempfile",
+ "tokio",
+ "tracing",
+ "walkdir",
+]
+
+[[package]]
+name = "forge-traces"
+version = "1.26.4"
+dependencies = [
+ "args",
+ "color-eyre",
+ "common",
+ "futures",
+ "serde",
+ "serde_json",
+ "tokio",
+ "tokio-tungstenite 0.28.0",
+ "tracing",
+]
 
 [[package]]
 name = "form_urlencoded"
@@ -5603,6 +5348,26 @@ dependencies = [
 ]
 
 [[package]]
+name = "networks"
+version = "1.26.4"
+dependencies = [
+ "alloy",
+ "broadcast",
+ "color-eyre",
+ "common",
+ "futures",
+ "kameo",
+ "serde",
+ "serde-constant",
+ "serde_json",
+ "tauri",
+ "tempfile",
+ "tokio",
+ "tracing",
+ "url",
+]
+
+[[package]]
 name = "new_debug_unreachable"
 version = "1.0.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -6885,6 +6650,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "proxy-detect"
+version = "1.26.4"
+dependencies = [
+ "alloy",
+ "lazy_static",
+ "rstest",
+ "thiserror 2.0.12",
+ "tokio",
+]
+
+[[package]]
 name = "quick-error"
 version = "1.2.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -7490,6 +7266,32 @@ checksum = "bb919243f34364b6bd2fc10ef797edbfa75f33c252e7998527479c6d6b47e1ec"
 dependencies = [
  "bytes",
  "rustc-hex",
+]
+
+[[package]]
+name = "rpc"
+version = "1.26.4"
+dependencies = [
+ "alloy",
+ "broadcast",
+ "color-eyre",
+ "common",
+ "connections",
+ "db",
+ "dialogs",
+ "forge",
+ "jsonrpc-core",
+ "networks",
+ "serde",
+ "serde_json",
+ "settings",
+ "simulator",
+ "sync",
+ "tauri",
+ "thiserror 2.0.12",
+ "tracing",
+ "url",
+ "wallets",
 ]
 
 [[package]]
@@ -8237,6 +8039,30 @@ dependencies = [
 ]
 
 [[package]]
+name = "settings"
+version = "1.26.4"
+dependencies = [
+ "alloy",
+ "alloy-chains",
+ "async-trait",
+ "auto-launch",
+ "broadcast",
+ "color-eyre",
+ "common",
+ "foundry-block-explorers",
+ "kameo",
+ "once_cell",
+ "serde",
+ "serde-constant",
+ "serde_json",
+ "tauri",
+ "tempfile",
+ "tokio",
+ "tracing",
+ "tracing-utils",
+]
+
+[[package]]
 name = "sha1"
 version = "0.10.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -8373,6 +8199,23 @@ dependencies = [
  "num-traits",
  "thiserror 2.0.12",
  "time",
+]
+
+[[package]]
+name = "simulator"
+version = "1.26.4"
+dependencies = [
+ "alloy",
+ "color-eyre",
+ "common",
+ "db",
+ "networks",
+ "pretty_assertions",
+ "revm",
+ "serde",
+ "tauri",
+ "tokio",
+ "wallets",
 ]
 
 [[package]]
@@ -8686,6 +8529,35 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a8f112729512f8e442d81f95a8a7ddf2b7c6b8a1a6f509a95864142b30cab2d3"
 
 [[package]]
+name = "stacks"
+version = "1.26.4"
+dependencies = [
+ "alloy",
+ "args",
+ "broadcast",
+ "color-eyre",
+ "common",
+ "db",
+ "futures",
+ "glob",
+ "kameo",
+ "networks",
+ "notify",
+ "notify-debouncer-full",
+ "regex",
+ "reqwest",
+ "serde",
+ "serde_json",
+ "settings",
+ "tauri",
+ "tempfile",
+ "thiserror 2.0.12",
+ "tokio",
+ "tracing",
+ "url",
+]
+
+[[package]]
 name = "static_assertions"
 version = "1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -8813,6 +8685,66 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn 2.0.104",
+]
+
+[[package]]
+name = "sync"
+version = "1.26.4"
+dependencies = [
+ "abis",
+ "alloy",
+ "broadcast",
+ "color-eyre",
+ "common",
+ "db",
+ "networks",
+ "serde",
+ "sync-alchemy",
+ "sync-anvil",
+ "tauri",
+ "tokio",
+ "tracing",
+]
+
+[[package]]
+name = "sync-alchemy"
+version = "1.26.4"
+dependencies = [
+ "alloy",
+ "color-eyre",
+ "common",
+ "db",
+ "once_cell",
+ "reqwest",
+ "serde",
+ "serde_json",
+ "settings",
+ "tokio",
+ "tracing",
+ "url",
+]
+
+[[package]]
+name = "sync-anvil"
+version = "1.26.4"
+dependencies = [
+ "abis",
+ "alloy",
+ "broadcast",
+ "clap",
+ "color-eyre",
+ "common",
+ "db",
+ "futures",
+ "once_cell",
+ "proxy-detect",
+ "reqwest",
+ "serde_json",
+ "serial_test",
+ "tokio",
+ "tracing",
+ "tracing-subscriber 0.3.20",
+ "url",
 ]
 
 [[package]]
@@ -9459,6 +9391,18 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1f3ccbac311fea05f86f61904b462b55fb3df8837a366dfc601a0161d0532f20"
 
 [[package]]
+name = "token-list"
+version = "1.26.4"
+dependencies = [
+ "chrono",
+ "color-eyre",
+ "reqwest",
+ "serde",
+ "serde_json",
+ "tokio",
+]
+
+[[package]]
 name = "tokio"
 version = "1.48.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -9832,6 +9776,17 @@ dependencies = [
  "tracing",
  "tracing-core",
  "tracing-log",
+]
+
+[[package]]
+name = "tracing-utils"
+version = "1.26.4"
+dependencies = [
+ "chrono",
+ "color-eyre",
+ "once_cell",
+ "tracing",
+ "tracing-subscriber 0.3.20",
 ]
 
 [[package]]
@@ -10223,6 +10178,28 @@ checksum = "29790946404f91d9c5d06f9874efddea1dc06c5efe94541a7d6863108e3a5e4b"
 dependencies = [
  "same-file",
  "winapi-util",
+]
+
+[[package]]
+name = "wallets"
+version = "1.26.4"
+dependencies = [
+ "alloy",
+ "async-trait",
+ "broadcast",
+ "coins-bip32 0.13.0",
+ "color-eyre",
+ "common",
+ "crypto",
+ "dialogs",
+ "enum_dispatch",
+ "once_cell",
+ "rstest",
+ "secrets",
+ "serde",
+ "serde_json",
+ "tauri",
+ "tokio",
 ]
 
 [[package]]
@@ -11185,6 +11162,29 @@ dependencies = [
  "windows-core 0.61.2",
  "windows-version",
  "x11-dl",
+]
+
+[[package]]
+name = "ws"
+version = "1.26.4"
+dependencies = [
+ "args",
+ "async-trait",
+ "broadcast",
+ "common",
+ "connections",
+ "futures",
+ "networks",
+ "once_cell",
+ "rpc",
+ "serde",
+ "serde_json",
+ "tauri",
+ "thiserror 2.0.12",
+ "tokio",
+ "tokio-tungstenite 0.28.0",
+ "tracing",
+ "url",
 ]
 
 [[package]]

@@ -7,7 +7,7 @@ use alloy::{
     eips::BlockId,
     providers::{Provider as _, ProviderBuilder},
 };
-use ethui_types::prelude::*;
+use common::prelude::*;
 use revm::{
     context::{result::ExecResultAndState, TxEnv},
     database::{AlloyDB, CacheDB, WrapDatabaseAsync},

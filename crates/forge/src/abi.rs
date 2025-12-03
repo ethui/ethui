@@ -1,6 +1,6 @@
 use std::{ffi::OsStr, fs::File, io::BufReader, path::PathBuf};
 
-use ethui_types::prelude::*;
+use common::prelude::*;
 use kameo::Reply;
 
 #[derive(Debug, Clone, Reply, Serialize, Deserialize)]

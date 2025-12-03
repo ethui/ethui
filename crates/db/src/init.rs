@@ -1,6 +1,6 @@
 use std::{path::PathBuf, sync::Arc};
 
-use ethui_broadcast::InternalMsg;
+use broadcast::InternalMsg;
 use once_cell::sync::OnceCell;
 
 use crate::{Db, DbInner};
@@ -21,7 +21,7 @@ pub fn get() -> Db {
 }
 
 async fn receiver() -> ! {
-    let mut rx = ethui_broadcast::subscribe_internal().await;
+    let mut rx = broadcast::subscribe_internal().await;
 
     loop {
         if let Ok(msg) = rx.recv().await {

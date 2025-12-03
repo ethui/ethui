@@ -1,10 +1,10 @@
 use clap::Parser;
 use color_eyre::eyre::Result;
-use ethui_sync_anvil::tracker::{
+use sync_anvil::tracker::{
     consumer::Consumer,
     worker::{create_worker, Msg},
 };
-use ethui_types::{Network, NetworkStatus};
+use common::{Network, NetworkStatus};
 use tokio::signal;
 use tracing::{info, warn};
 use url::Url;

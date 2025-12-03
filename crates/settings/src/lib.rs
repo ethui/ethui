@@ -7,7 +7,7 @@ pub mod onboarding;
 mod utils;
 
 pub use actor::*;
-use ethui_types::prelude::*;
+use common::prelude::*;
 pub use init::init;
 use migrations::LatestVersion;
 use onboarding::Onboarding;

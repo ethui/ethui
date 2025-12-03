@@ -1,5 +1,5 @@
 [package]
-name = "ethui-stacks"
+name = "stacks"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -9,12 +9,12 @@ exclude.workspace = true
 authors.workspace = true
 
 [dependencies]
-ethui-types.workspace = true
-ethui-settings.workspace = true
-ethui-networks.workspace = true
-ethui-broadcast.workspace = true
-ethui-db.workspace = true
-ethui-args.workspace = true
+common.workspace = true
+settings.workspace = true
+networks.workspace = true
+broadcast.workspace = true
+db.workspace = true
+args.workspace = true
 
 url.workspace = true
 alloy.workspace = true

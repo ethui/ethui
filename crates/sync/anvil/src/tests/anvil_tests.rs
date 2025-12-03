@@ -3,7 +3,7 @@ use std::sync::{
     atomic::{AtomicU32, Ordering},
 };
 
-use ethui_types::{Network, NetworkStatus, prelude::*};
+use common::{Network, NetworkStatus, prelude::*};
 use tokio::time::{Duration, sleep, timeout};
 use url::Url;
 

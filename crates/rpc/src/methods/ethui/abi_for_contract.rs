@@ -1,4 +1,4 @@
-use ethui_types::{Address, Network};
+use common::{Address, Network};
 use serde::Deserialize;
 use serde_json::json;
 
@@ -16,7 +16,7 @@ impl AbiForContract {
     }
 
     pub async fn run(self) -> Result<serde_json::Value> {
-        let db = ethui_db::get();
+        let db = db::get();
 
         let abi = db
             .get_contract_abi(self.network.chain_id(), self.address)

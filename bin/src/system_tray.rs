@@ -34,7 +34,7 @@ fn event_handler(app: &AppHandle, event: MenuEvent) {
             }
         }
         "tray/show" => {
-            tokio::spawn(async { ethui_broadcast::main_window_show().await });
+            tokio::spawn(async { broadcast::main_window_show().await });
         }
         _ => {}
     }

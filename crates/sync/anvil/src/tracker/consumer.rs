@@ -2,7 +2,7 @@ use alloy::{
     providers::{ext::TraceApi as _, Provider as _, ProviderBuilder},
     rpc::types::Filter,
 };
-use ethui_types::{prelude::*, NetworkId};
+use common::{prelude::*, NetworkId};
 use url::Url;
 
 use super::worker::Msg;
@@ -47,7 +47,7 @@ impl Consumer for EthuiConsumer {
             .disable_recommended_fillers()
             .connect(&self.url)
             .await?;
-        let db = ethui_db::get();
+        let db = db::get();
         let mut notify = false;
 
         match msg {
@@ -94,10 +94,10 @@ impl Consumer for EthuiConsumer {
         // don't emit events until we're catching up
         // otherwise we spam too much during that phase
         if notify {
-            ethui_broadcast::ui_notify(UINotify::TxsUpdated).await;
-            ethui_broadcast::ui_notify(UINotify::BalancesUpdated).await;
-            ethui_broadcast::ui_notify(UINotify::ContractsUpdated).await;
-            ethui_broadcast::contract_found().await;
+            broadcast::ui_notify(UINotify::TxsUpdated).await;
+            broadcast::ui_notify(UINotify::BalancesUpdated).await;
+            broadcast::ui_notify(UINotify::ContractsUpdated).await;
+            broadcast::contract_found().await;
         }
 
         Ok(())

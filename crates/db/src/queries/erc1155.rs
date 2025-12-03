@@ -1,6 +1,6 @@
 use std::str::FromStr;
 
-use ethui_types::{Address, Erc1155Token, Erc1155TokenData, U256};
+use common::{Address, Erc1155Token, Erc1155TokenData, U256};
 use sqlx::Row;
 
 use crate::DbInner;

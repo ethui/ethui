@@ -5,9 +5,9 @@ use alloy::signers::{
     Signer as _,
 };
 use async_trait::async_trait;
-use ethui_crypto::{self, EncryptedData};
-use ethui_dialogs::{Dialog, DialogMsg};
-use ethui_types::prelude::*;
+use crypto::{self, EncryptedData};
+use dialogs::{Dialog, DialogMsg};
+use common::prelude::*;
 use secrets::SecretVec;
 use tokio::{
     sync::{Mutex, RwLock},
@@ -130,7 +130,7 @@ impl HDWallet {
         let addresses =
             utils::derive_addresses(&params.mnemonic, &params.derivation_path, params.count);
         let current = addresses.first().unwrap().clone();
-        let ciphertext = ethui_crypto::encrypt(&params.mnemonic, &params.password).unwrap();
+        let ciphertext = crypto::encrypt(&params.mnemonic, &params.password).unwrap();
 
         Ok(Self {
             name: params.name,
@@ -205,7 +205,7 @@ impl HDWallet {
             };
 
             // if password was given, and correctly decrypts the keystore
-            if let Ok(mnemonic) = ethui_crypto::decrypt(&self.ciphertext, &password) {
+            if let Ok(mnemonic) = crypto::decrypt(&self.ciphertext, &password) {
                 self.store_secret(mnemonic).await;
                 return Ok(());
             }

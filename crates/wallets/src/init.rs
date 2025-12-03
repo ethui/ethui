@@ -5,7 +5,7 @@ use std::{
 };
 
 use async_trait::async_trait;
-use ethui_types::GlobalState;
+use common::GlobalState;
 use once_cell::sync::OnceCell;
 use serde::Deserialize;
 use tokio::sync::{RwLock, RwLockReadGuard, RwLockWriteGuard};

@@ -5,7 +5,7 @@ use std::{
 };
 
 use alloy::providers::{Provider as _, ProviderBuilder};
-use ethui_types::prelude::*;
+use common::prelude::*;
 
 use crate::tracker::worker::SyncInfo;
 

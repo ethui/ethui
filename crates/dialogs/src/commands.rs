@@ -1,5 +1,5 @@
 use color_eyre::eyre::ContextCompat as _;
-use ethui_types::TauriResult;
+use common::TauriResult;
 
 use super::global::OPEN_DIALOGS;
 

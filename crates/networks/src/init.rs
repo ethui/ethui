@@ -1,7 +1,7 @@
 use std::{path::PathBuf, time::Duration};
 
-use ethui_broadcast::InternalMsg;
-use ethui_types::{Network, UINotify};
+use broadcast::InternalMsg;
+use common::{Network, UINotify};
 use futures::{StreamExt, stream};
 use kameo::actor::{ActorRef, Spawn as _};
 use tokio::time::{interval, timeout};
@@ -20,7 +20,7 @@ pub async fn init(pathbuf: PathBuf) {
 }
 
 async fn receiver(actor: ActorRef<NetworksActor>) -> ! {
-    let mut rx = ethui_broadcast::subscribe_internal().await;
+    let mut rx = broadcast::subscribe_internal().await;
 
     loop {
         if let Ok(msg) = rx.recv().await {
@@ -28,7 +28,7 @@ async fn receiver(actor: ActorRef<NetworksActor>) -> ! {
 
             match msg {
                 ChainChanged(dedup_chain_id, _domain, affinity) => {
-                    ethui_broadcast::ui_notify(UINotify::PeersUpdated).await;
+                    broadcast::ui_notify(UINotify::PeersUpdated).await;
                     if affinity.is_global() || affinity.is_unset() {
                         let _ = actor.set_current_by_dedup_chain_id(dedup_chain_id).await;
                     }
@@ -80,7 +80,7 @@ async fn status_poller(actor: ActorRef<NetworksActor>) -> ! {
                 tracing::error!("Failed to update network statuses: {}", e);
             }
 
-            ethui_broadcast::ui_notify(UINotify::NetworksChanged).await;
+            broadcast::ui_notify(UINotify::NetworksChanged).await;
         }
     }
 }

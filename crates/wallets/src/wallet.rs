@@ -1,6 +1,6 @@
 use async_trait::async_trait;
 use enum_dispatch::enum_dispatch;
-use ethui_types::prelude::*;
+use common::prelude::*;
 
 use super::wallets::{HDWallet, Impersonator, JsonKeystoreWallet, LedgerWallet, PlaintextWallet};
 use crate::wallets::PrivateKeyWallet;

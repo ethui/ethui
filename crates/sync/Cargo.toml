@@ -1,5 +1,5 @@
 [package]
-name = "ethui-sync"
+name = "sync"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -9,14 +9,14 @@ exclude.workspace = true
 authors.workspace = true
 
 [dependencies]
-ethui-sync-anvil.workspace = true
-ethui-sync-alchemy.workspace = true
+sync-anvil.workspace = true
+sync-alchemy.workspace = true
 tauri.workspace = true
-ethui-db.workspace = true
-ethui-types.workspace = true
-ethui-broadcast.workspace = true
-ethui-networks.workspace = true
-ethui-abis.workspace = true
+db.workspace = true
+common.workspace = true
+broadcast.workspace = true
+networks.workspace = true
+abis.workspace = true
 
 alloy.workspace = true
 tokio.workspace = true

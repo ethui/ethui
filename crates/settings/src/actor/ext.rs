@@ -1,4 +1,4 @@
-use ethui_types::prelude::*;
+use common::prelude::*;
 use kameo::actor::ActorRef;
 
 use crate::{DarkMode, Settings, onboarding::OnboardingStep};

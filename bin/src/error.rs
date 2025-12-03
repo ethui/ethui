@@ -3,23 +3,23 @@ use alloy::transports::{RpcError, TransportErrorKind};
 #[derive(thiserror::Error, Debug)]
 pub enum AppError {
     #[error(transparent)]
-    DB(#[from] ethui_db::Error),
+    DB(#[from] db::Error),
 
     #[error(transparent)]
-    Forge(#[from] ethui_forge::Error),
+    Forge(#[from] forge::Error),
 
     #[cfg(feature = "stacks")]
     #[error(transparent)]
-    Stacks(#[from] ethui_stacks::Error),
+    Stacks(#[from] stacks::Error),
 
     #[error(transparent)]
     FixPathEnv(#[from] fix_path_env::Error),
 
     #[error(transparent)]
-    DetectProxyError(#[from] ethui_proxy_detect::error::DetectProxyError),
+    DetectProxyError(#[from] proxy_detect::error::DetectProxyError),
 
     #[error(transparent)]
-    Network(#[from] ethui_networks::Error),
+    Network(#[from] networks::Error),
 
     #[error("Invalid Network {0}")]
     InvalidNetwork(u32),
@@ -28,10 +28,10 @@ pub enum AppError {
     TauriError(#[from] tauri::Error),
 
     #[error(transparent)]
-    Tracing(#[from] ethui_tracing::TracingError),
+    Tracing(#[from] tracing_utils::TracingError),
 
     #[error(transparent)]
-    Settings(#[from] ethui_settings::Error),
+    Settings(#[from] settings::Error),
 
     #[error("App already running")]
     NamedLock(#[from] named_lock::Error),

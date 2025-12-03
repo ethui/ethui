@@ -1,6 +1,6 @@
 use std::path::PathBuf;
 
-use ethui_types::prelude::*;
+use common::prelude::*;
 use kameo::actor::ActorRef;
 
 use crate::abi::ForgeAbi;

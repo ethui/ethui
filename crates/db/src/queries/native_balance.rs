@@ -1,4 +1,4 @@
-use ethui_types::{Address, U256};
+use common::{Address, U256};
 
 use crate::DbInner;
 

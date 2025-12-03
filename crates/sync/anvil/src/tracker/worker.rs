@@ -3,7 +3,7 @@ use alloy::{
     providers::{Provider as _, RootProvider},
     rpc::types::Header,
 };
-use ethui_types::{Network, prelude::*};
+use common::{Network, prelude::*};
 use futures::{Stream, StreamExt, stream};
 use tokio::{
     sync::{mpsc, oneshot},
@@ -269,7 +269,7 @@ pub fn create_worker(network: Network) -> Worker<AnvilProviderType> {
 
 #[cfg(test)]
 mod tests {
-    use ethui_types::NetworkStatus;
+    use common::NetworkStatus;
     use tokio::{
         sync::mpsc,
         time::{Duration, sleep, timeout},
@@ -290,7 +290,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_worker_from_network() {
-        use ethui_types::Network;
+        use common::Network;
         use url::Url;
 
         // Network with WebSocket URL should create WsWorker
@@ -363,7 +363,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_wait_not_available() {
-        use ethui_types::Network;
+        use common::Network;
         use url::Url;
 
         // Create a network with an unreachable HTTP URL
@@ -435,7 +435,7 @@ mod tests {
             ws_url: Some(url::Url::parse("ws://localhost:8545").unwrap()),
             currency: "ETH".to_string(),
             decimals: 18,
-            status: ethui_types::NetworkStatus::Unknown,
+            status: common::NetworkStatus::Unknown,
             is_stack: false,
         };
 

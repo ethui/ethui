@@ -2,8 +2,8 @@ use alloy::{
     network::Ethereum,
     providers::{Provider as _, ProviderBuilder},
 };
-use ethui_abis::IERC20;
-use ethui_types::{Address, TokenMetadata, U256};
+use abis::IERC20;
+use common::{Address, TokenMetadata, U256};
 
 pub async fn get_native_balance(url: String, address: Address) -> color_eyre::Result<U256> {
     let provider = ProviderBuilder::new().connect(&url).await?;

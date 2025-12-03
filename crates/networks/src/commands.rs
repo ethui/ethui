@@ -1,4 +1,4 @@
-use ethui_types::{NewNetworkParams, prelude::*};
+use common::{NewNetworkParams, prelude::*};
 
 use crate::actor::{networks, NetworksActorExt as _};
 

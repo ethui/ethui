@@ -1,6 +1,6 @@
 use alloy::signers::ledger::{HDPath, LedgerSigner};
 use async_trait::async_trait;
-use ethui_types::prelude::*;
+use common::prelude::*;
 
 use crate::{utils, wallet::WalletCreate, Signer, Wallet, WalletControl};
 

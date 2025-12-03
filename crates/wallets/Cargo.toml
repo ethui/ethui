@@ -1,5 +1,5 @@
 [package]
-name = "ethui-wallets"
+name = "wallets"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -10,10 +10,10 @@ authors.workspace = true
 
 
 [dependencies]
-ethui-types.workspace = true
-ethui-dialogs.workspace = true
-ethui-crypto.workspace = true
-ethui-broadcast.workspace = true
+common.workspace = true
+dialogs.workspace = true
+crypto.workspace = true
+broadcast.workspace = true
 
 alloy.workspace = true
 tauri.workspace = true

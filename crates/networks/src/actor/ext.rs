@@ -1,4 +1,4 @@
-use ethui_types::{Network, NetworkId, NewNetworkParams, prelude::*};
+use common::{Network, NetworkId, NewNetworkParams, prelude::*};
 use kameo::actor::ActorRef;
 
 use super::{

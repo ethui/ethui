@@ -1,4 +1,4 @@
-use ethui_types::TauriResult;
+use common::TauriResult;
 
 use crate::{abi::ForgeAbi, actor::{ForgeActorExt as _, forge}};
 

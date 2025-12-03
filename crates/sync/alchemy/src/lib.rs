@@ -3,8 +3,8 @@ mod networks;
 mod types;
 mod utils;
 
-use ethui_db::Db;
-use ethui_types::prelude::*;
+use db::Db;
+use common::prelude::*;
 pub use networks::supports_network;
 use tracing::instrument;
 pub use types::{Erc20Metadata, ErcMetadataResponse, ErcOwnersResponse};

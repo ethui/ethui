@@ -1,5 +1,5 @@
 [package]
-name = "ethui-simulator"
+name = "simulator"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -9,10 +9,10 @@ exclude.workspace = true
 authors.workspace = true
 
 [dependencies]
-ethui-networks.workspace = true
-ethui-types.workspace = true
-ethui-wallets.workspace = true
-ethui-db.workspace = true
+networks.workspace = true
+common.workspace = true
+wallets.workspace = true
+db.workspace = true
 
 tauri.workspace = true
 tokio.workspace = true

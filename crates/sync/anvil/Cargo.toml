@@ -1,5 +1,5 @@
 [package]
-name = "ethui-sync-anvil"
+name = "sync-anvil"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -13,11 +13,11 @@ name = "anvil-sync-test"
 path = "src/bin/anvil-sync-test.rs"
 
 [dependencies]
-ethui-db.workspace = true
-ethui-abis.workspace = true
-ethui-types.workspace = true
-ethui-broadcast.workspace = true
-ethui-proxy-detect.workspace = true
+db.workspace = true
+abis.workspace = true
+common.workspace = true
+broadcast.workspace = true
+proxy-detect.workspace = true
 
 alloy.workspace = true
 tokio.workspace = true

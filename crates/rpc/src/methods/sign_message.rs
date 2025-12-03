@@ -5,10 +5,10 @@ use alloy::{
     primitives::{Bytes, Signature},
     signers::Signer as _,
 };
-use ethui_dialogs::{Dialog, DialogMsg};
-use ethui_settings::{SettingsActorExt as _, settings};
-use ethui_types::Network;
-use ethui_wallets::{Signer, Wallet, WalletControl};
+use dialogs::{Dialog, DialogMsg};
+use settings::{SettingsActorExt as _, settings};
+use common::Network;
+use wallets::{Signer, Wallet, WalletControl};
 use serde::Serialize;
 
 use crate::{Error, Result};

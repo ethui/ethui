@@ -4,7 +4,7 @@ use alloy::signers::{
 };
 use async_trait::async_trait;
 use coins_bip32::path::DerivationPath;
-use ethui_types::prelude::*;
+use common::prelude::*;
 
 use crate::{utils, wallet::WalletCreate, Signer, Wallet, WalletControl};
 

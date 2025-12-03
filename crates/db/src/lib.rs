@@ -6,7 +6,7 @@ pub mod utils;
 
 use std::{path::PathBuf, sync::Arc};
 
-use ethui_types::NetworkId;
+use common::NetworkId;
 pub use init::{get, init};
 use sqlx::sqlite::{SqliteConnectOptions, SqliteJournalMode, SqlitePoolOptions, SqliteSynchronous};
 

@@ -1,5 +1,5 @@
-use ethui_broadcast::InternalMsg;
-use ethui_settings::{SettingsActorExt as _, settings};
+use broadcast::InternalMsg;
+use settings::{SettingsActorExt as _, settings};
 use kameo::actor::{ActorRef, Spawn as _};
 
 use crate::actor::{ForgeActor, ForgeActorExt as _};
@@ -24,7 +24,7 @@ pub async fn init() -> color_eyre::Result<()> {
 /// Will listen for new ABI updates, and poll the database for new contracts
 /// the work itself is debounced with a 500ms delay, to batch together multiple updates
 async fn receiver(handle: ActorRef<ForgeActor>) -> ! {
-    let mut rx = ethui_broadcast::subscribe_internal().await;
+    let mut rx = broadcast::subscribe_internal().await;
 
     loop {
         if let Ok(msg) = rx.recv().await {

@@ -1,12 +1,12 @@
 use alloy::providers::Provider as _;
 use color_eyre::eyre::{Context as _, ContextCompat as _};
-use ethui_db::{
+use db::{
     Db,
     utils::{fetch_etherscan_abi, fetch_etherscan_contract_name},
 };
-use ethui_forge::{ForgeActorExt as _, forge};
-use ethui_proxy_detect::ProxyType;
-use ethui_types::{Address, TauriResult, UINotify};
+use forge::{ForgeActorExt as _, forge};
+use proxy_detect::ProxyType;
+use common::{Address, TauriResult, UINotify};
 use serde::Serialize;
 
 #[derive(Serialize)]
@@ -44,7 +44,7 @@ pub async fn add_contract(
     address: Address,
     db: tauri::State<'_, Db>,
 ) -> TauriResult<()> {
-    let network = ethui_networks::get_network(chain_id as u32).await?;
+    let network = networks::get_network(chain_id as u32).await?;
     let provider = network.get_alloy_provider().await?;
 
     let code = provider
@@ -52,7 +52,7 @@ pub async fn add_contract(
         .await
         .wrap_err_with(|| format!("Failed to get code at {address}"))?;
 
-    let proxy = ethui_proxy_detect::detect_proxy(address, &provider)
+    let proxy = proxy_detect::detect_proxy(address, &provider)
         .await
         .wrap_err_with(|| format!("Failed to detect proxy type for {address}"))?;
 
@@ -98,7 +98,7 @@ pub async fn add_contract(
     if let Some(proxy_for) = proxy_for {
         Box::pin(add_contract(chain_id, dedup_id, proxy_for, db)).await
     } else {
-        ethui_broadcast::ui_notify(UINotify::ContractsUpdated).await;
+        broadcast::ui_notify(UINotify::ContractsUpdated).await;
         Ok(())
     }
 }
@@ -118,7 +118,7 @@ pub async fn remove_contract(
         Box::pin(remove_contract(chain_id, dedup_id, proxy_for, db)).await?;
     }
 
-    ethui_broadcast::ui_notify(UINotify::ContractsUpdated).await;
+    broadcast::ui_notify(UINotify::ContractsUpdated).await;
     Ok(())
 }
 
@@ -127,7 +127,7 @@ pub async fn logging_get_snapshot(limit: Option<usize>) -> TauriResult<LogSnapsh
     use color_eyre::eyre::WrapErr as _;
 
     let path =
-        ethui_tracing::current_log_path().with_context(|| "log file not ready yet".to_string())?;
+        tracing_utils::current_log_path().with_context(|| "log file not ready yet".to_string())?;
 
     let limit = limit.unwrap_or(64 * 1024);
     let bytes = tokio::fs::read(&path)

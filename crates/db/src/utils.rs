@@ -1,8 +1,8 @@
 use alloy::json_abi::JsonAbi;
 use alloy_chains::Chain;
 use color_eyre::eyre::ContextCompat as _;
-use ethui_settings::{SettingsActorExt as _, settings};
-use ethui_types::prelude::*;
+use settings::{SettingsActorExt as _, settings};
+use common::prelude::*;
 use foundry_block_explorers::errors::EtherscanError;
 
 pub async fn fetch_etherscan_contract_name(

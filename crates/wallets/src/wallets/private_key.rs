@@ -2,9 +2,9 @@ use std::{str::FromStr, sync::Arc, time::Duration};
 
 use alloy::signers::{Signer as _, local::PrivateKeySigner};
 use async_trait::async_trait;
-use ethui_crypto::{self, EncryptedData};
-use ethui_dialogs::{Dialog, DialogMsg};
-use ethui_types::prelude::*;
+use crypto::{self, EncryptedData};
+use dialogs::{Dialog, DialogMsg};
+use common::prelude::*;
 use secrets::SecretVec;
 use tokio::{
     sync::{Mutex, RwLock},
@@ -104,7 +104,7 @@ impl PrivateKeyWallet {
 
         let wallet: PrivateKeySigner = PrivateKeySigner::from_str(&key)?;
 
-        let ciphertext = ethui_crypto::encrypt(&key, &params.password)
+        let ciphertext = crypto::encrypt(&key, &params.password)
             .map_err(|e| eyre!("Failed to encrypt private key: {e}"))?;
 
         Ok(Self {
@@ -148,7 +148,7 @@ impl PrivateKeyWallet {
             };
 
             // if password was given, and correctly decrypts the keystore
-            if let Ok(private_key) = ethui_crypto::decrypt(&self.ciphertext, &password) {
+            if let Ok(private_key) = crypto::decrypt(&self.ciphertext, &password) {
                 self.store_secret(private_key).await;
                 return Ok(());
             }

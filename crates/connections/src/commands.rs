@@ -1,5 +1,5 @@
-use ethui_networks::{networks, NetworksActorExt as _};
-use ethui_types::{prelude::*, Affinity};
+use networks::{networks, NetworksActorExt as _};
+use common::{prelude::*, Affinity};
 
 use crate::Store;
 
@@ -25,7 +25,7 @@ pub async fn connections_set_affinity(domain: &str, affinity: Affinity) -> Tauri
     };
 
     Store::write().await.set_affinity(domain, affinity)?;
-    ethui_broadcast::chain_changed(dedup_chain_id, Some(domain.into()), affinity).await;
+    broadcast::chain_changed(dedup_chain_id, Some(domain.into()), affinity).await;
 
     Ok(())
 }

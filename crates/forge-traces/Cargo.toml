@@ -1,5 +1,5 @@
 [package]
-name = "ethui-forge-traces"
+name = "forge-traces"
 description = "ethui forge test traces integration"
 version.workspace = true
 edition.workspace = true
@@ -10,8 +10,8 @@ exclude.workspace = true
 authors.workspace = true
 
 [dependencies]
-ethui-types.workspace = true
-ethui-args.workspace = true
+common.workspace = true
+args.workspace = true
 color-eyre.workspace = true
 futures.workspace = true
 serde.workspace = true

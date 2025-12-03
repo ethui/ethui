@@ -2,7 +2,7 @@ mod ext;
 
 use std::{fs::File, ops::ControlFlow, path::PathBuf};
 
-use ethui_types::{Affinity, Network, NetworkId, NewNetworkParams, UINotify, prelude::*};
+use common::{Affinity, Network, NetworkId, NewNetworkParams, UINotify, prelude::*};
 pub use ext::NetworksActorExt;
 use kameo::prelude::*;
 
@@ -81,10 +81,10 @@ impl NetworksActor {
 
     async fn on_network_changed(&self) -> color_eyre::Result<()> {
         self.notify_peers();
-        ethui_broadcast::ui_notify(UINotify::CurrentNetworkChanged).await;
+        broadcast::ui_notify(UINotify::CurrentNetworkChanged).await;
 
         let network = self.get_current_inner().clone();
-        ethui_broadcast::current_network_changed(network).await;
+        broadcast::current_network_changed(network).await;
 
         Ok(())
     }
@@ -92,17 +92,17 @@ impl NetworksActor {
     fn notify_peers(&self) {
         let current = self.get_current_inner().clone();
         tokio::spawn(async move {
-            ethui_broadcast::chain_changed(current.dedup_chain_id(), None, Affinity::Global).await;
+            broadcast::chain_changed(current.dedup_chain_id(), None, Affinity::Global).await;
         });
     }
 
     async fn broadcast_init(&self) {
         for network in self.inner.networks.values() {
-            ethui_broadcast::network_added(network.clone()).await;
+            broadcast::network_added(network.clone()).await;
         }
 
         let network = self.get_current_inner().clone();
-        ethui_broadcast::current_network_changed(network).await;
+        broadcast::current_network_changed(network).await;
     }
 
     fn save(&self) -> color_eyre::Result<()> {
@@ -251,8 +251,8 @@ impl NetworksActor {
             .insert(network.name.clone(), network.clone());
 
         self.save()?;
-        ethui_broadcast::network_added(network.clone()).await;
-        ethui_broadcast::ui_notify(UINotify::NetworksChanged).await;
+        broadcast::network_added(network.clone()).await;
+        broadcast::ui_notify(UINotify::NetworksChanged).await;
 
         Ok(())
     }
@@ -276,8 +276,8 @@ impl NetworksActor {
         }
 
         self.save()?;
-        ethui_broadcast::network_updated(network.clone()).await;
-        ethui_broadcast::ui_notify(UINotify::NetworksChanged).await;
+        broadcast::network_updated(network.clone()).await;
+        broadcast::ui_notify(UINotify::NetworksChanged).await;
 
         Ok(())
     }
@@ -301,8 +301,8 @@ impl NetworksActor {
                     self.on_network_changed().await?;
                 }
                 self.save()?;
-                ethui_broadcast::network_removed(network).await;
-                ethui_broadcast::ui_notify(UINotify::NetworksChanged).await;
+                broadcast::network_removed(network).await;
+                broadcast::ui_notify(UINotify::NetworksChanged).await;
             }
             None => {
                 return Err(eyre!("Does not exist"));

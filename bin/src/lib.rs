@@ -11,20 +11,20 @@ mod windows;
 mod updater;
 
 use color_eyre::Result;
-use ethui_args::Command;
+use args::Command;
 
 #[tokio::main]
 pub async fn run() -> Result<()> {
-    ethui_tracing::setup()?;
+    tracing_utils::setup()?;
     fix_path_env::fix()?;
 
-    let args = ethui_args::parse();
+    let args = args::parse();
 
     match args.command() {
         Command::App => app::EthUIApp::start_or_open(args).await?,
 
         #[cfg(feature = "forge-traces")]
-        Command::Forge { cmd } => ethui_forge_traces::handle_forge_command(&cmd, &args).await?,
+        Command::Forge { cmd } => forge_traces::handle_forge_command(&cmd, &args).await?,
     }
 
     Ok(())

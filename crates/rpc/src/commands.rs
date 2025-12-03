@@ -1,4 +1,4 @@
-use ethui_types::prelude::*;
+use common::prelude::*;
 
 use super::{Handler, Result, utils};
 

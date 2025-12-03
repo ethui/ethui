@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use ethui_types::eyre;
+use common::eyre;
 use once_cell::sync::Lazy;
 use url::Url;
 

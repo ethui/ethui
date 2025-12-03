@@ -1,4 +1,4 @@
-use ethui_types::prelude::*;
+use common::prelude::*;
 
 #[derive(Debug, Clone, Serialize, PartialEq, Eq)]
 pub struct Permission {

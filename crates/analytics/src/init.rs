@@ -1,4 +1,4 @@
-use ethui_broadcast::{InternalMsg, UIMsg};
+use broadcast::{InternalMsg, UIMsg};
 use tauri::{AppHandle, Manager};
 
 use crate::track_event;
@@ -16,8 +16,8 @@ pub async fn init(handle: &AppHandle) {
 }
 
 async fn receiver(handle: AppHandle) -> ! {
-    let mut internal_rx = ethui_broadcast::subscribe_internal().await;
-    let mut ui_rx = ethui_broadcast::subscribe_ui().await;
+    let mut internal_rx = broadcast::subscribe_internal().await;
+    let mut ui_rx = broadcast::subscribe_ui().await;
 
     loop {
         tokio::select! {

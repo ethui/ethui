@@ -1,5 +1,5 @@
 use async_trait::async_trait;
-use ethui_types::prelude::*;
+use common::prelude::*;
 use once_cell::sync::Lazy;
 
 use super::{Feeds, feed::Feed};

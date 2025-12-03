@@ -3,7 +3,7 @@ use alloy::{
     providers::{Provider as _, ProviderBuilder, RootProvider},
     rpc::types::Header,
 };
-use ethui_types::{prelude::*, Network};
+use common::{prelude::*, Network};
 use futures::{stream, Stream, StreamExt};
 
 use crate::tracker::{provider::AnvilProvider, worker::SyncInfo};

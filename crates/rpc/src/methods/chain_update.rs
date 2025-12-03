@@ -1,6 +1,6 @@
-use ethui_dialogs::{Dialog, DialogMsg};
-use ethui_networks::{networks, NetworksActorExt as _};
-use ethui_types::{Network, NewNetworkParams};
+use dialogs::{Dialog, DialogMsg};
+use networks::{networks, NetworksActorExt as _};
+use common::{Network, NewNetworkParams};
 use serde::Serialize;
 
 use super::chain_add::Params;

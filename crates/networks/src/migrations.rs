@@ -5,7 +5,7 @@ use std::{
     path::{Path, PathBuf},
 };
 
-use ethui_types::{Network, NetworkStatus};
+use common::{Network, NetworkStatus};
 use serde::{Deserialize, Serialize};
 use serde_constant::ConstI64;
 use serde_json::json;

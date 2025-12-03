@@ -6,7 +6,7 @@ use std::{
     path::{Path, PathBuf},
 };
 
-use ethui_types::prelude::*;
+use common::prelude::*;
 use kameo::prelude::*;
 
 use crate::{
@@ -50,7 +50,7 @@ impl Actor for SettingsActor {
 
         // make sure OS's autostart is synced with settings
         crate::autostart::update(actor.inner.autostart)?;
-        ethui_tracing::reload(&actor.inner.rust_log)?;
+        tracing_utils::reload(&actor.inner.rust_log)?;
 
         Ok(actor)
     }
@@ -72,7 +72,7 @@ pub(crate) enum SetValue {
     FastMode(bool),
     FinishOnboardingStep(OnboardingStep),
     FinishOnboarding,
-    Alias(ethui_types::Address, Option<String>),
+    Alias(common::Address, Option<String>),
     RunLocalStacks(bool),
 }
 
@@ -85,8 +85,8 @@ impl SettingsActor {
         let file = File::create(path)?;
 
         serde_json::to_writer_pretty(file, &self.inner)?;
-        ethui_broadcast::settings_updated().await;
-        ethui_broadcast::ui_notify(UINotify::SettingsChanged).await;
+        broadcast::settings_updated().await;
+        broadcast::ui_notify(UINotify::SettingsChanged).await;
 
         Ok(())
     }
@@ -97,7 +97,7 @@ impl SettingsActor {
     }
 
     #[message]
-    fn get_alias(&self, address: ethui_types::Address) -> Option<String> {
+    fn get_alias(&self, address: common::Address) -> Option<String> {
         self.inner.aliases.get(&address).cloned()
     }
 
@@ -171,7 +171,7 @@ impl SettingsActor {
                 }
                 if let Some(v) = map.get("rustLog") {
                     let value: String = serde_json::from_value(v.clone()).unwrap();
-                    ethui_tracing::reload(&value)?;
+                    tracing_utils::reload(&value)?;
                     self.inner.rust_log = value;
                 }
                 if let Some(v) = map.get("runLocalStacks") {

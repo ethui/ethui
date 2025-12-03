@@ -1,7 +1,7 @@
 use std::str::FromStr;
 
 use alloy::{json_abi::JsonAbi, primitives::Bytes};
-use ethui_types::{prelude::*, Contract, ContractWithAbi};
+use common::{prelude::*, Contract, ContractWithAbi};
 use tracing::instrument;
 
 use crate::DbInner;

@@ -48,30 +48,30 @@ clap = { version = "4.5", default-features = false, features = [
   "derive",
   "env",
 ] }
-ethui-analytics = { path = "crates/analytics" }
-ethui-forge = { path = "crates/forge" }
-ethui-forge-traces = { path = "crates/forge-traces" }
-ethui-crypto = { path = "crates/crypto" }
-ethui-settings = { path = "crates/settings" }
-ethui-networks = { path = "crates/networks" }
-ethui-wallets = { path = "crates/wallets" }
-ethui-simulator = { path = "crates/simulator" }
-ethui-ws = { path = "crates/ws" }
-ethui-rpc = { path = "crates/rpc" }
-ethui-connections = { path = "crates/connections" }
-ethui-dialogs = { path = "crates/dialogs" }
-ethui-types = { path = "crates/types" }
-ethui-abis = { path = "crates/abis" }
-ethui-db = { path = "crates/db" }
-ethui-sync = { path = "crates/sync" }
-ethui-sync-anvil = { path = "crates/sync/anvil" }
-ethui-sync-alchemy = { path = "crates/sync/alchemy" }
-ethui-broadcast = { path = "crates/broadcast" }
-ethui-tracing = { path = "crates/tracing" }
-ethui-args = { path = "crates/args" }
-ethui-token-list = { path = "crates/token-list" }
-ethui-proxy-detect = { path = "crates/proxy-detect" }
-ethui-stacks = { path = "crates/stacks" }
+analytics = { path = "crates/analytics" }
+forge = { path = "crates/forge" }
+forge-traces = { path = "crates/forge-traces" }
+crypto = { path = "crates/crypto" }
+settings = { path = "crates/settings" }
+networks = { path = "crates/networks" }
+wallets = { path = "crates/wallets" }
+simulator = { path = "crates/simulator" }
+ws = { path = "crates/ws" }
+rpc = { path = "crates/rpc" }
+connections = { path = "crates/connections" }
+dialogs = { path = "crates/dialogs" }
+common = { path = "crates/types" }
+abis = { path = "crates/abis" }
+db = { path = "crates/db" }
+sync = { path = "crates/sync" }
+sync-anvil = { path = "crates/sync/anvil" }
+sync-alchemy = { path = "crates/sync/alchemy" }
+broadcast = { path = "crates/broadcast" }
+tracing-utils = { path = "crates/tracing" }
+args = { path = "crates/args" }
+token-list = { path = "crates/token-list" }
+proxy-detect = { path = "crates/proxy-detect" }
+stacks = { path = "crates/stacks" }
 tokio = { version = "1.48", features = ["rt-multi-thread", "sync", "signal"] }
 thiserror = "2.0"
 sqlx = { version = "0.8", default-features = false, features = [

@@ -1,4 +1,4 @@
-use ethui_types::{Address, GlobalState, Json, SerializableError, TauriResult};
+use common::{Address, GlobalState, Json, SerializableError, TauriResult};
 
 use super::{Wallet, WalletControl, Wallets, utils};
 

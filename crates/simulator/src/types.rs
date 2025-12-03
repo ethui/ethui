@@ -1,5 +1,5 @@
 use alloy::primitives::Log;
-use ethui_types::prelude::*;
+use common::prelude::*;
 
 /// Simulation request
 #[derive(Debug, Clone, Serialize, Deserialize)]

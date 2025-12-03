@@ -1,4 +1,4 @@
-use ethui_types::{Affinity, GlobalState};
+use common::{Affinity, GlobalState};
 
 use crate::Store;
 

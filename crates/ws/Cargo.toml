@@ -1,5 +1,5 @@
 [package]
-name = "ethui-ws"
+name = "ws"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -9,12 +9,12 @@ exclude.workspace = true
 authors.workspace = true
 
 [dependencies]
-ethui-types.workspace = true
-ethui-rpc.workspace = true
-ethui-broadcast.workspace = true
-ethui-networks.workspace = true
-ethui-connections.workspace = true
-ethui-args.workspace = true
+common.workspace = true
+rpc.workspace = true
+broadcast.workspace = true
+networks.workspace = true
+connections.workspace = true
+args.workspace = true
 
 tokio.workspace = true
 tauri.workspace = true

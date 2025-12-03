@@ -16,25 +16,25 @@ crate-type = ["staticlib", "cdylib", "rlib"]
 name = "ethui"
 
 [dependencies]
-ethui-analytics.workspace = true
-ethui-forge.workspace = true
-ethui-forge-traces = { workspace = true, optional = true }
-ethui-settings.workspace = true
-ethui-networks.workspace = true
-ethui-wallets.workspace = true
-ethui-dialogs.workspace = true
-ethui-rpc.workspace = true
-ethui-ws.workspace = true
-ethui-connections.workspace = true
-ethui-types.workspace = true
-ethui-db.workspace = true
-ethui-sync.workspace = true
-ethui-tracing.workspace = true
-ethui-broadcast.workspace = true
-ethui-simulator.workspace = true
-ethui-args.workspace = true
-ethui-proxy-detect.workspace = true
-ethui-stacks = { workspace = true, optional = true }
+analytics.workspace = true
+forge.workspace = true
+forge-traces = { workspace = true, optional = true }
+settings.workspace = true
+networks.workspace = true
+wallets.workspace = true
+dialogs.workspace = true
+rpc.workspace = true
+ws.workspace = true
+connections.workspace = true
+common.workspace = true
+db.workspace = true
+sync.workspace = true
+tracing-utils.workspace = true
+broadcast.workspace = true
+simulator.workspace = true
+args.workspace = true
+proxy-detect.workspace = true
+stacks = { workspace = true, optional = true }
 
 alloy.workspace = true
 serde.workspace = true
@@ -55,21 +55,21 @@ tauri-plugin-process = { version = "2" }
 
 [build-dependencies]
 tauri-build = { version = "2.4", default-features = false, features = [] }
-ethui-token-list.workspace = true
+token-list.workspace = true
 
 [features]
 default = []
 production = ["aptabase", "updater"]
 forge-traces = [
-  "dep:ethui-forge-traces",
-  "ethui-args/forge-traces",
-  "ethui-rpc/forge-traces",
+  "dep:forge-traces",
+  "args/forge-traces",
+  "rpc/forge-traces",
 ]
 # this feature is used for production builds or when `devPath` points to the filesystem
 # DO NOT REMOVE!!
 custom-protocol = ["tauri/custom-protocol"]
-aptabase = ["dep:tauri-plugin-aptabase", "ethui-analytics/aptabase"]
-stacks = ["dep:ethui-stacks"]
+aptabase = ["dep:tauri-plugin-aptabase", "analytics/aptabase"]
+stacks = ["dep:stacks"]
 updater = ["dep:tauri-plugin-updater"]
 test = []
 

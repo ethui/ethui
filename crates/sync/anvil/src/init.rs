@@ -1,4 +1,4 @@
-use ethui_broadcast::InternalMsg;
+use broadcast::InternalMsg;
 
 use crate::tracker;
 
@@ -7,7 +7,7 @@ pub fn init() {
 }
 
 async fn receiver() -> ! {
-    let mut rx = ethui_broadcast::subscribe_internal().await;
+    let mut rx = broadcast::subscribe_internal().await;
 
     loop {
         match rx.recv().await {

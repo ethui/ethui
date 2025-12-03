@@ -1,7 +1,7 @@
 use async_trait::async_trait;
-use ethui_args::Args;
-use ethui_broadcast::InternalMsg;
-use ethui_types::GlobalState;
+use args::Args;
+use broadcast::InternalMsg;
+use common::GlobalState;
 use once_cell::sync::Lazy;
 use tokio::sync::{RwLock, RwLockReadGuard, RwLockWriteGuard};
 
@@ -28,7 +28,7 @@ impl GlobalState for Peers {
 }
 
 async fn receiver() -> ! {
-    let mut rx = ethui_broadcast::subscribe_internal().await;
+    let mut rx = broadcast::subscribe_internal().await;
 
     loop {
         if let Ok(msg) = rx.recv().await {

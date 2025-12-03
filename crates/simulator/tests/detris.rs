@@ -1,6 +1,6 @@
 use alloy::primitives::{Log, LogData};
-use ethui_simulator::*;
-use ethui_types::prelude::*;
+use simulator::*;
+use common::prelude::*;
 use pretty_assertions::assert_eq;
 
 #[tokio::test(flavor = "multi_thread")]
@@ -16,7 +16,7 @@ async fn simulate_detris() {
         gas_limit: 0,
     };
 
-    let res = ethui_simulator::simulate_once(tx, fork_url, fork_block_number)
+    let res = simulator::simulate_once(tx, fork_url, fork_block_number)
         .await
         .unwrap();
 

@@ -1,7 +1,7 @@
 use std::process::Command;
 
-use ethui_args::Forge;
-use ethui_types::prelude::*;
+use args::Forge;
+use common::prelude::*;
 use futures::{SinkExt, StreamExt};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
@@ -121,7 +121,7 @@ impl ForgeTestRunner {
 
         let rpc_request = json!({
             "jsonrpc": "2.0",
-            "method": "ethui_forgeTestSubmitRun",
+            "method": "forgeTestSubmitRun",
             "params": {
                 "traces": traces
             },
@@ -138,11 +138,11 @@ impl ForgeTestRunner {
     }
 }
 
-pub async fn handle_forge_command(subcommand: &Forge, args: &ethui_args::Args) -> Result<()> {
+pub async fn handle_forge_command(subcommand: &Forge, args: &args::Args) -> Result<()> {
     use std::env;
 
     match subcommand {
-        Forge::Test(ethui_args::ForgeTest { args: test_args }) => {
+        Forge::Test(args::ForgeTest { args: test_args }) => {
             let current_dir = env::current_dir().expect("failed to get current dir");
             let forge_test_runner =
                 ForgeTestRunner::new(current_dir.to_string_lossy().to_string(), args.ws_port);

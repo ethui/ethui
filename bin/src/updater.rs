@@ -2,8 +2,8 @@
 
 use std::time::Duration;
 
-use ethui_settings::{SettingsActorExt as _, settings};
-use ethui_types::UINotify;
+use settings::{SettingsActorExt as _, settings};
+use common::UINotify;
 use tauri_plugin_updater::UpdaterExt as _;
 use tokio::time::interval;
 use tracing::{info, instrument};
@@ -48,7 +48,7 @@ async fn update(handle: &tauri::AppHandle) -> color_eyre::Result<()> {
             )
             .await?;
 
-        ethui_broadcast::ui_notify(UINotify::UpdateReady {
+        broadcast::ui_notify(UINotify::UpdateReady {
             version: update.version,
         })
         .await;

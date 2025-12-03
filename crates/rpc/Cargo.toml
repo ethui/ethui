@@ -1,5 +1,5 @@
 [package]
-name = "ethui-rpc"
+name = "rpc"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -9,17 +9,17 @@ exclude.workspace = true
 authors.workspace = true
 
 [dependencies]
-ethui-types.workspace = true
-ethui-settings.workspace = true
-ethui-db.workspace = true
-ethui-dialogs.workspace = true
-ethui-networks.workspace = true
-ethui-wallets.workspace = true
-ethui-connections.workspace = true
-ethui-simulator.workspace = true
-ethui-sync.workspace = true
-ethui-forge.workspace = true
-ethui-broadcast.workspace = true
+common.workspace = true
+settings.workspace = true
+db.workspace = true
+dialogs.workspace = true
+networks.workspace = true
+wallets.workspace = true
+connections.workspace = true
+simulator.workspace = true
+sync.workspace = true
+forge.workspace = true
+broadcast.workspace = true
 
 alloy.workspace = true
 tauri.workspace = true

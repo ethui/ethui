@@ -1,7 +1,7 @@
 use std::net::SocketAddr;
 
-use ethui_networks::{networks, NetworksActorExt as _};
-use ethui_types::{Affinity, NetworkId, prelude::*};
+use networks::{networks, NetworksActorExt as _};
+use common::{Affinity, NetworkId, prelude::*};
 use serde_json::json;
 use tokio::sync::mpsc;
 
@@ -49,7 +49,7 @@ impl Peer {
     }
 }
 
-impl From<Peer> for ethui_rpc::Handler {
+impl From<Peer> for rpc::Handler {
     fn from(value: Peer) -> Self {
         Self::new(value.domain())
     }
@@ -66,19 +66,19 @@ impl Peers {
     /// Adds a new peer
     pub async fn add_peer(&mut self, peer: Peer) {
         self.map.insert(peer.socket, peer);
-        ethui_broadcast::peer_added().await;
-        ethui_broadcast::ui_notify(UINotify::PeersUpdated).await;
+        broadcast::peer_added().await;
+        broadcast::ui_notify(UINotify::PeersUpdated).await;
     }
 
     /// Removes an existing peer
     pub async fn remove_peer(&mut self, peer: SocketAddr) {
         self.map.remove(&peer);
-        ethui_broadcast::ui_notify(UINotify::PeersUpdated).await;
+        broadcast::ui_notify(UINotify::PeersUpdated).await;
     }
 
     pub async fn peer_alive(&mut self, peer: Peer) {
         self.map.get_mut(&peer.socket).unwrap().alive = true;
-        ethui_broadcast::ui_notify(UINotify::PeersUpdated).await;
+        broadcast::ui_notify(UINotify::PeersUpdated).await;
     }
 
     /// Broadcasts an `accountsChanged` event to all peers
@@ -112,7 +112,7 @@ impl Peers {
             });
 
             for (_, peer) in self.map.iter() {
-                if ethui_connections::utils::affinity_matches(peer.domain(), &domain, affinity)
+                if connections::utils::affinity_matches(peer.domain(), &domain, affinity)
                     .await
                 {
                     tracing::info!(

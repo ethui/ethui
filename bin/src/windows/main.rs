@@ -1,4 +1,4 @@
-use ethui_settings::{SettingsActorExt as _, settings};
+use settings::{SettingsActorExt as _, settings};
 use tauri::{AppHandle, Manager};
 
 use super::build_window;

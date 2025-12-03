@@ -1,6 +1,6 @@
-use ethui_db::Db;
-use ethui_networks::{networks, NetworksActorExt as _};
-use ethui_types::prelude::*;
+use db::Db;
+use networks::{networks, NetworksActorExt as _};
+use common::prelude::*;
 
 use crate::types::{Request, SimResult};
 
@@ -20,7 +20,7 @@ pub async fn simulator_get_call_count(
     to: Address,
     db: tauri::State<'_, Db>,
 ) -> TauriResult<u32> {
-    let addrs = ethui_wallets::Wallets::read()
+    let addrs = wallets::Wallets::read()
         .await
         .get_all_addresses()
         .await;

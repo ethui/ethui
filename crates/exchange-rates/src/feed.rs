@@ -1,4 +1,4 @@
-use ethui_types::Address;
+use common::Address;
 use serde::Deserialize;
 
 #[derive(Debug, Deserialize)]
