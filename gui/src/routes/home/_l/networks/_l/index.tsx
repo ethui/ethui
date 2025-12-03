@@ -20,6 +20,7 @@ import { WithHelpTooltip } from "#/components/WithHelpTooltip";
 import { useInvoke } from "#/hooks/useInvoke";
 import { useNetworks } from "#/store/useNetworks";
 import { useSettings } from "#/store/useSettings";
+import { formatExplorerUrl } from "#/utils";
 
 const columnHelper = createColumnHelper<Network>();
 
@@ -47,11 +48,12 @@ function NetworksTable({
       cell: ({ row }) => (
         <div className="flex items-center gap-2">
           <ChainIcon
+            className="shrink-0"
             chainId={row.original.id.chain_id}
             status={row.original.status}
           />
-          <span className="font-medium">{row.original.name}</span>
-          <Badge variant="outline" className="font-mono text-xs">
+          <span className="truncate font-medium">{row.original.name}</span>
+          <Badge variant="outline" className="shrink-0 font-mono text-xs">
             {row.original.id.chain_id}
           </Badge>
         </div>
@@ -89,36 +91,41 @@ function NetworksTable({
       id: "actions",
       header: "Actions",
       size: 80,
-      cell: ({ row }) => (
-        <div className="flex items-center justify-end gap-2">
-          {row.original.explorer_url && (
+      cell: ({ row }) => {
+        const explorerUrl =
+          row.original.explorer_url ??
+          formatExplorerUrl(row.original.ws_url, row.original.http_url);
+        return (
+          <div className="flex items-center gap-2">
             <Tooltip>
               <TooltipTrigger asChild>
-                <a
-                  href={row.original.explorer_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <Link
+                  to={editPath(row.original.name)}
                   className="text-muted-foreground hover:text-foreground"
                 >
-                  <Globe className="h-4 w-4" />
-                </a>
+                  <Pencil className="h-4 w-4" />
+                </Link>
               </TooltipTrigger>
-              <TooltipContent>Open Explorer</TooltipContent>
+              <TooltipContent>Edit</TooltipContent>
             </Tooltip>
-          )}
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Link
-                to={editPath(row.original.name)}
-                className="text-muted-foreground hover:text-foreground"
-              >
-                <Pencil className="h-4 w-4" />
-              </Link>
-            </TooltipTrigger>
-            <TooltipContent>Edit</TooltipContent>
-          </Tooltip>
-        </div>
-      ),
+            {explorerUrl && (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <a
+                    href={explorerUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-muted-foreground hover:text-foreground"
+                  >
+                    <Globe className="h-4 w-4" />
+                  </a>
+                </TooltipTrigger>
+                <TooltipContent>Open Explorer</TooltipContent>
+              </Tooltip>
+            )}
+          </div>
+        );
+      },
     }),
   ];
 
@@ -189,7 +196,7 @@ function NetworksIndex() {
         </div>
         {regularNetworks.length > 0 ? (
           <NetworksTable
-            networks={regularNetworks}
+            networks={regularNetworks.reverse()}
             editPath={(name) => `/home/networks/${name}/edit`}
           />
         ) : (
