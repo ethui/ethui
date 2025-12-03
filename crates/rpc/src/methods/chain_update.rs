@@ -1,6 +1,6 @@
 use ethui_dialogs::{Dialog, DialogMsg};
-use ethui_networks::Networks;
-use ethui_types::{GlobalState, Network, NewNetworkParams};
+use ethui_networks::{networks, NetworksActorExt as _};
+use ethui_types::{Network, NewNetworkParams};
 use serde::Serialize;
 
 use super::chain_add::Params;
@@ -33,9 +33,8 @@ impl ChainUpdate {
                 match msg {
                     DialogMsg::Data(msg) => {
                         if let Some("accept") = msg.as_str() {
-                            let mut networks = Networks::write().await;
-                            networks
-                                .add_network(self.new_network_params.clone().unwrap())
+                            networks()
+                                .add(self.new_network_params.clone().unwrap())
                                 .await?;
                             break;
                         }
@@ -53,8 +52,7 @@ impl ChainUpdate {
             match msg {
                 DialogMsg::Data(msg) => {
                     if let Some("accept") = msg.as_str() {
-                        let mut networks = Networks::write().await;
-                        networks
+                        networks()
                             .set_current_by_dedup_chain_id(self.network.dedup_chain_id())
                             .await?;
                         break;
@@ -68,8 +66,10 @@ impl ChainUpdate {
     }
 
     pub async fn get_switch_data(&self) -> NetworkSwitch {
-        let networks = Networks::read().await;
-        let current_chain = networks.get_current();
+        let current_chain = networks()
+            .get_current()
+            .await
+            .expect("networks actor not available");
         NetworkSwitch {
             old_id: current_chain.chain_id(),
             new_id: self.network.chain_id(),
@@ -77,13 +77,20 @@ impl ChainUpdate {
     }
 
     async fn already_active(&self) -> bool {
-        let networks = Networks::read().await;
-        networks.get_current().chain_id() == self.network.chain_id()
+        networks()
+            .get_current()
+            .await
+            .expect("networks actor not available")
+            .chain_id()
+            == self.network.chain_id()
     }
 
     async fn already_exists(&self) -> bool {
-        let networks = Networks::read().await;
-        networks.get_network_by_name(&self.network.name).is_some()
+        networks()
+            .get_by_name(self.network.name.clone())
+            .await
+            .expect("networks actor not available")
+            .is_some()
     }
 }
 
@@ -112,7 +119,6 @@ impl ChainUpdateBuilder {
     }
 
     pub async fn build(self) -> ChainUpdate {
-        let networks = Networks::read().await;
         let params = self.params.unwrap();
         let chain_name = params.chain_name.clone();
 
@@ -141,14 +147,15 @@ impl ChainUpdateBuilder {
             is_stack: false,
         };
 
-        let deduplication_id = networks
-            .get_network_by_name(&chain_name)
-            .map(|network| network.dedup_chain_id().dedup_id());
+        let deduplication_id = networks()
+            .get_by_name(chain_name)
+            .await
+            .expect("networks actor not available")
+            .map(|network| network.dedup_chain_id().dedup_id())
+            .unwrap_or(0);
 
         ChainUpdate {
-            network: new_network_params
-                .clone()
-                .into_network(deduplication_id.unwrap_or_default()),
+            network: new_network_params.clone().into_network(deduplication_id),
             new_network_params: Some(new_network_params),
         }
     }

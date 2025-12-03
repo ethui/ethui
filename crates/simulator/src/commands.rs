@@ -1,16 +1,15 @@
 use ethui_db::Db;
-use ethui_networks::Networks;
+use ethui_networks::{networks, NetworksActorExt as _};
 use ethui_types::prelude::*;
 
 use crate::types::{Request, SimResult};
 
 #[tauri::command]
 pub async fn simulator_run(chain_id: u32, request: Request) -> TauriResult<SimResult> {
-    let network = Networks::read()
-        .await
-        .get_network(chain_id)
-        .cloned()
-        .unwrap();
+    let network = networks()
+        .get(chain_id)
+        .await?
+        .with_context(|| "Network not found")?;
 
     Ok(crate::simulate_once(request, network.http_url.to_string(), None).await?)
 }
