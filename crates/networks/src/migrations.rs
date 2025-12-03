@@ -164,16 +164,12 @@ fn migrate_networks_from_v2_to_v3(
 
 #[cfg(test)]
 mod tests {
-    use std::{
-        fs::File,
-        io::{BufReader, Write},
-    };
+    use std::io::Write;
 
     use serde_json::json;
     use tempfile::NamedTempFile;
 
     use super::load_and_migrate;
-    use crate::SerializedNetworks;
 
     #[test]
     fn it_converts_from_v0_to_v3() {
@@ -196,20 +192,16 @@ mod tests {
 
         write!(tempfile, "{networks_v0}").unwrap();
 
-        if let Ok(_networks) = load_and_migrate(&tempfile.path().to_path_buf()) {
-            let file = File::open(tempfile.path()).unwrap();
-            let reader = BufReader::new(file);
-
-            let updated_networks: serde_json::Value = serde_json::from_reader(reader).unwrap();
-            assert_eq!(updated_networks["version"], 3);
-        }
+        let networks = load_and_migrate(&tempfile.path().to_path_buf()).unwrap();
+        assert_eq!(networks.current, "Anvil");
+        assert!(networks.networks.contains_key("Mainnet"));
     }
 
     #[test]
     fn it_returns_v3_from_v3() {
         let mut tempfile = NamedTempFile::new().unwrap();
 
-        let networks_v0 = json!({
+        let networks_v3 = json!({
             "version": 3,
             "current": "Anvil",
             "networks": {
@@ -225,15 +217,11 @@ mod tests {
             }
         });
 
-        write!(tempfile, "{networks_v0}").unwrap();
+        write!(tempfile, "{networks_v3}").unwrap();
 
-        if let Ok(_networks) = load_and_migrate(&tempfile.path().to_path_buf()) {
-            let file = File::open(tempfile.path()).unwrap();
-            let reader = BufReader::new(file);
-
-            let updated_networks: serde_json::Value = serde_json::from_reader(reader).unwrap();
-            assert_eq!(updated_networks["version"], 3);
-        }
+        let networks = load_and_migrate(&tempfile.path().to_path_buf()).unwrap();
+        assert_eq!(networks.current, "Anvil");
+        assert!(networks.networks.contains_key("Mainnet"));
     }
 
     #[test]
@@ -267,7 +255,7 @@ mod tests {
     fn it_migrates_network_to_include_internal_id() {
         let mut tempfile = NamedTempFile::new().unwrap();
 
-        let networks_v0 = json!({
+        let networks_v1 = json!({
             "version": 1,
             "current": "Anvil",
             "networks": {
@@ -283,16 +271,11 @@ mod tests {
             }
         });
 
-        write!(tempfile, "{networks_v0}").unwrap();
+        write!(tempfile, "{networks_v1}").unwrap();
 
-        if let Ok(_networks) = load_and_migrate(&tempfile.path().to_path_buf()) {
-            let file = File::open(tempfile.path()).unwrap();
-            let reader = BufReader::new(file);
+        let networks = load_and_migrate(&tempfile.path().to_path_buf()).unwrap();
+        let mainnet = networks.networks.get("Mainnet").unwrap();
 
-            let updated_networks: SerializedNetworks = serde_json::from_reader(reader).unwrap();
-            let mainnet = updated_networks.networks.get("Mainnet").unwrap();
-
-            assert_eq!(mainnet.dedup_chain_id(), (mainnet.chain_id(), 0u32).into());
-        }
+        assert_eq!(mainnet.dedup_chain_id(), (mainnet.chain_id(), 0u32).into());
     }
 }
