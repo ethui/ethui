@@ -6,7 +6,7 @@ use alloy::{
     rpc::{client::ClientBuilder, types::anvil::ForkedNetwork},
     transports::layers::RetryBackoffLayer,
 };
-pub use id::NetworkId;
+pub use id::{NetworkId, NetworkIdOrName};
 use tracing::instrument;
 use url::Url;
 

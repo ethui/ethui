@@ -38,3 +38,35 @@ impl From<NetworkId> for (u32, u32) {
         (id.chain_id, id.dedup_id)
     }
 }
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum NetworkIdOrName {
+    Id(NetworkId),
+    ChainId(u32),
+    Name(String),
+}
+
+impl From<NetworkId> for NetworkIdOrName {
+    fn from(id: NetworkId) -> Self {
+        NetworkIdOrName::Id(id)
+    }
+}
+
+impl From<u32> for NetworkIdOrName {
+    fn from(chain_id: u32) -> Self {
+        NetworkIdOrName::ChainId(chain_id)
+    }
+}
+
+impl From<String> for NetworkIdOrName {
+    fn from(name: String) -> Self {
+        NetworkIdOrName::Name(name)
+    }
+}
+
+impl From<&str> for NetworkIdOrName {
+    fn from(name: &str) -> Self {
+        NetworkIdOrName::Name(name.to_string())
+    }
+}

@@ -30,7 +30,7 @@ async fn receiver(actor: ActorRef<NetworksActor>) -> ! {
                 ChainChanged(id, _domain, affinity) => {
                     ethui_broadcast::ui_notify(UINotify::PeersUpdated).await;
                     if affinity.is_global() || affinity.is_unset() {
-                        let _ = actor.set_current_by_id(id).await;
+                        let _ = actor.set_current(id).await;
                     }
                 }
                 StackAdd(params) => {
