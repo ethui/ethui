@@ -47,7 +47,7 @@ pub trait WalletCreate {
 }
 
 #[enum_dispatch]
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, kameo::Reply)]
 #[serde(tag = "type", rename_all = "camelCase")]
 pub enum Wallet {
     Plaintext(PlaintextWallet),

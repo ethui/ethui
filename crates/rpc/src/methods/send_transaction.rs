@@ -9,7 +9,7 @@ use ethui_connections::Ctx;
 use ethui_dialogs::{Dialog, DialogMsg};
 use ethui_settings::{SettingsActorExt as _, settings};
 use ethui_types::prelude::*;
-use ethui_wallets::{WalletControl, WalletType, Wallets};
+use ethui_wallets::{WalletControl, WalletType, WalletsActorExt as _, wallets};
 
 use crate::{Error, Result};
 
@@ -49,13 +49,12 @@ impl SendTransaction {
     }
 
     pub async fn finish(&mut self) -> Result<PendingTransactionBuilder<Ethereum>> {
-        let wallet_is_dev = {
-            let wallets = Wallets::read().await;
-            let wallet = wallets
-                .get(&self.wallet_name)
-                .ok_or_else(|| Error::WalletNameNotFound(self.wallet_name.clone()))?;
-            wallet.is_dev()
-        };
+        let wallet = wallets()
+            .get(self.wallet_name.clone())
+            .await
+            .map_err(|e| eyre!("{}", e))?
+            .ok_or_else(|| Error::WalletNameNotFound(self.wallet_name.clone()))?;
+        let wallet_is_dev = wallet.is_dev();
 
         let skip = self.network.is_dev().await
             && wallet_is_dev
@@ -153,13 +152,11 @@ impl SendTransaction {
             return Ok(());
         }
 
-        let wallet = {
-            let wallets = Wallets::read().await;
-            wallets
-                .get(&self.wallet_name)
-                .ok_or(Error::WalletNameNotFound(self.wallet_name.clone()))?
-                .clone()
-        };
+        let wallet = wallets()
+            .get(self.wallet_name.clone())
+            .await
+            .map_err(|e| eyre!("{}", e))?
+            .ok_or_else(|| Error::WalletNameNotFound(self.wallet_name.clone()))?;
 
         let url = self
             .network
@@ -209,13 +206,11 @@ impl SendTransaction {
     }
 
     async fn from(&self) -> Result<Address> {
-        let wallet = {
-            let wallets = Wallets::read().await;
-            wallets
-                .get(&self.wallet_name)
-                .ok_or_else(|| Error::WalletNameNotFound(self.wallet_name.clone()))?
-                .clone()
-        };
+        let wallet = wallets()
+            .get(self.wallet_name.clone())
+            .await
+            .map_err(|_| Error::CannotSimulate)?
+            .ok_or_else(|| Error::WalletNameNotFound(self.wallet_name.clone()))?;
 
         wallet
             .get_address(&self.wallet_path)

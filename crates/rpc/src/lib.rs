@@ -6,7 +6,7 @@ pub mod utils;
 use alloy::{dyn_abi::TypedData, hex, providers::Provider as _};
 use ethui_connections::{permissions::PermissionRequest, Ctx};
 use ethui_types::prelude::*;
-use ethui_wallets::{WalletControl, Wallets};
+use ethui_wallets::{WalletControl, WalletsActorExt as _, wallets};
 use jsonrpc_core::{MetaIoHandler, Params};
 use serde_json::json;
 
@@ -143,8 +143,7 @@ impl Handler {
     }
 
     async fn accounts(_: Params, _: Ctx) -> jsonrpc_core::Result<serde_json::Value> {
-        let wallets = Wallets::read().await;
-        let address = wallets.get_current_wallet().get_current_address().await;
+        let address = wallets().get_current_address().await.map_err(error::to_jsonrpc_error)?;
 
         Ok(json!([address]))
     }
@@ -158,10 +157,8 @@ impl Handler {
         _: Params,
         ctx: Ctx,
     ) -> jsonrpc_core::Result<serde_json::Value> {
-        let wallets = Wallets::read().await;
-
         let network = ctx.network().await;
-        let address = wallets.get_current_wallet().get_current_address().await;
+        let address = wallets().get_current_address().await.map_err(error::to_jsonrpc_error)?;
 
         Ok(json!({
             "isUnlocked": true,
@@ -337,10 +334,8 @@ impl Handler {
     }
 
     async fn ethui_provider_state(_: Params, ctx: Ctx) -> jsonrpc_core::Result<serde_json::Value> {
-        let wallets = Wallets::read().await;
-
         let network = ctx.network().await;
-        let address = wallets.get_current_wallet().get_current_address().await;
+        let address = wallets().get_current_address().await.map_err(error::to_jsonrpc_error)?;
 
         Ok(json!({
             "ethui": {

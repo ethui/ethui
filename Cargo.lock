@@ -3544,6 +3544,7 @@ dependencies = [
  "ethui-crypto",
  "ethui-dialogs",
  "ethui-types",
+ "kameo",
  "once_cell",
  "rstest",
  "secrets",
@@ -3551,6 +3552,7 @@ dependencies = [
  "serde_json",
  "tauri",
  "tokio",
+ "tracing",
 ]
 
 [[package]]

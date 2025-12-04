@@ -2,7 +2,7 @@ use ethui_dialogs::{Dialog, DialogMsg};
 use ethui_networks::{networks, NetworksActorExt as _};
 use ethui_sync::{get_alchemy, Erc20Metadata, ErcMetadataResponse, ErcOwnersResponse};
 use ethui_types::{prelude::*, TokenMetadata};
-use ethui_wallets::{WalletControl, Wallets};
+use ethui_wallets::{WalletsActorExt as _, wallets};
 
 use crate::{Error, Result};
 
@@ -47,8 +47,10 @@ impl TokenAdd {
     }
 
     pub async fn get_current_wallet_address(&self) -> Address {
-        let wallets = Wallets::read().await;
-        wallets.get_current_wallet().get_current_address().await
+        wallets()
+            .get_current_address()
+            .await
+            .expect("wallets actor not available")
     }
 
     pub async fn get_erc20_metadata(&self, chain_id: u32) -> Result<Erc20Metadata> {

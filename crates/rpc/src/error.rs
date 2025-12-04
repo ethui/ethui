@@ -147,3 +147,11 @@ pub(crate) fn alloy_to_jsonrpc_error(e: RpcError<TransportErrorKind>) -> jsonrpc
         jsonrpc_core::Error::internal_error()
     }
 }
+
+pub(crate) fn to_jsonrpc_error(e: color_eyre::Report) -> jsonrpc_core::Error {
+    jsonrpc_core::Error {
+        code: ErrorCode::InternalError,
+        data: None,
+        message: e.to_string(),
+    }
+}
