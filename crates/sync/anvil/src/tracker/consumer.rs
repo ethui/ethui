@@ -1,8 +1,8 @@
 use alloy::{
-    providers::{ext::TraceApi as _, Provider as _, ProviderBuilder},
+    providers::{Provider as _, ProviderBuilder, ext::TraceApi as _},
     rpc::types::Filter,
 };
-use ethui_types::{prelude::*, NetworkId};
+use ethui_types::{NetworkId, prelude::*};
 use url::Url;
 
 use super::worker::Msg;
@@ -20,15 +20,15 @@ pub trait Consumer: Send + Clone + 'static {
 
 #[derive(Clone)]
 pub struct EthuiConsumer {
-    dedup_chain_id: NetworkId,
+    id: NetworkId,
     url: String,
     caught_up: bool,
 }
 
 impl EthuiConsumer {
-    pub fn new(dedup_chain_id: NetworkId, url: Url) -> Self {
+    pub fn new(id: NetworkId, url: Url) -> Self {
         Self {
-            dedup_chain_id,
+            id,
             url: url.to_string(),
             caught_up: false,
         }
@@ -52,12 +52,8 @@ impl Consumer for EthuiConsumer {
 
         match msg {
             Msg::Reset => {
-                trace!(
-                    "resetting {} {}",
-                    self.dedup_chain_id.chain_id(),
-                    self.dedup_chain_id.dedup_id()
-                );
-                let _ = db.truncate_events(self.dedup_chain_id).await;
+                trace!("resetting {:?}", self.id);
+                let _ = db.truncate_events(self.id).await;
                 notify = true;
             }
             Msg::CaughtUp => {
@@ -71,8 +67,8 @@ impl Consumer for EthuiConsumer {
                 let logs = provider.get_logs(&Filter::new().select(hash)).await?;
                 let log_events = expand_logs(logs);
 
-                db.save_events(self.dedup_chain_id, trace_events).await?;
-                db.save_events(self.dedup_chain_id, log_events).await?;
+                db.save_events(self.id, trace_events).await?;
+                db.save_events(self.id, log_events).await?;
                 if self.caught_up {
                     notify = true;
                 }
@@ -80,13 +76,13 @@ impl Consumer for EthuiConsumer {
         }
 
         for address in db
-            .get_erc20_missing_metadata(self.dedup_chain_id.chain_id())
+            .get_erc20_missing_metadata(self.id.chain_id())
             .await?
             .into_iter()
         {
             let metadata = fetch_erc20_metadata(address, &provider).await;
 
-            db.save_erc20_metadata(self.dedup_chain_id.chain_id(), metadata)
+            db.save_erc20_metadata(self.id.chain_id(), metadata)
                 .await
                 .unwrap();
         }

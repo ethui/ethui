@@ -1,9 +1,9 @@
-use ethui_networks::{networks, NetworksActorExt as _};
-use ethui_types::{eyre, Affinity, GlobalState, Network, NetworkId};
+use ethui_networks::{NetworksActorExt as _, networks};
+use ethui_types::{Affinity, GlobalState, Network, NetworkId, eyre};
 
 use crate::{
-    permissions::{Permission, PermissionRequest, RequestedPermission},
     Store,
+    permissions::{Permission, PermissionRequest, RequestedPermission},
 };
 
 /// Context for a provider connection
@@ -85,7 +85,7 @@ impl Ctx {
 
     pub async fn chain_id(&self) -> u32 {
         match self.get_affinity().await {
-            Affinity::Sticky(dedup_chain_id) => dedup_chain_id.chain_id(),
+            Affinity::Sticky(id) => id.chain_id(),
             _ => networks()
                 .get_current()
                 .await

@@ -276,6 +276,6 @@ mod tests {
         let networks = load_and_migrate(&tempfile.path().to_path_buf()).unwrap();
         let mainnet = networks.networks.get("Mainnet").unwrap();
 
-        assert_eq!(mainnet.dedup_chain_id(), (mainnet.chain_id(), 0u32).into());
+        assert_eq!(mainnet.id(), (mainnet.chain_id(), 0u32).into());
     }
 }

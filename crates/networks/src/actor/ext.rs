@@ -2,8 +2,8 @@ use ethui_types::{Network, NetworkId, NewNetworkParams, prelude::*};
 use kameo::actor::ActorRef;
 
 use super::{
-    Add, Get, GetByDedupChainId, GetByName, GetCurrent, GetList, GetLowestDedupId, NetworksActor,
-    Remove, SetCurrentByDedupChainId, SetCurrentByName, Update, UpdateStatuses, ValidateChainId,
+    Add, Get, GetById, GetByName, GetCurrent, GetList, GetLowestDedupId, NetworksActor, Remove,
+    SetCurrentById, SetCurrentByName, Update, UpdateStatuses, ValidateChainId,
 };
 
 #[allow(async_fn_in_trait)]
@@ -13,13 +13,13 @@ pub trait NetworksActorExt {
     async fn get_list(&self) -> Result<Vec<Network>>;
     async fn get(&self, chain_id: u32) -> Result<Option<Network>>;
     async fn get_by_name(&self, name: String) -> Result<Option<Network>>;
-    async fn get_by_dedup_chain_id(&self, dedup_chain_id: NetworkId) -> Result<Option<Network>>;
+    async fn get_by_id(&self, id: NetworkId) -> Result<Option<Network>>;
     async fn validate_chain_id(&self, chain_id: u32) -> Result<bool>;
     async fn get_lowest_dedup_id(&self, chain_id: u32) -> Result<u32>;
 
     // Write operations
     async fn set_current_by_name(&self, new_current_network: String) -> Result<()>;
-    async fn set_current_by_dedup_chain_id(&self, dedup_chain_id: NetworkId) -> Result<()>;
+    async fn set_current_by_id(&self, id: NetworkId) -> Result<()>;
     async fn add(&self, network: NewNetworkParams) -> Result<()>;
     async fn update(&self, old_name: String, network: Network) -> Result<()>;
     async fn remove(&self, name: String) -> Result<()>;
@@ -43,8 +43,8 @@ impl NetworksActorExt for ActorRef<NetworksActor> {
         Ok(self.ask(GetByName { name }).await?)
     }
 
-    async fn get_by_dedup_chain_id(&self, dedup_chain_id: NetworkId) -> Result<Option<Network>> {
-        Ok(self.ask(GetByDedupChainId { dedup_chain_id }).await?)
+    async fn get_by_id(&self, id: NetworkId) -> Result<Option<Network>> {
+        Ok(self.ask(GetById { id }).await?)
     }
 
     async fn validate_chain_id(&self, chain_id: u32) -> Result<bool> {
@@ -57,14 +57,14 @@ impl NetworksActorExt for ActorRef<NetworksActor> {
 
     async fn set_current_by_name(&self, new_current_network: String) -> Result<()> {
         Ok(self
-            .tell(SetCurrentByName { new_current_network })
+            .tell(SetCurrentByName {
+                new_current_network,
+            })
             .await?)
     }
 
-    async fn set_current_by_dedup_chain_id(&self, dedup_chain_id: NetworkId) -> Result<()> {
-        Ok(self
-            .tell(SetCurrentByDedupChainId { dedup_chain_id })
-            .await?)
+    async fn set_current_by_id(&self, id: NetworkId) -> Result<()> {
+        Ok(self.tell(SetCurrentById { id }).await?)
     }
 
     async fn add(&self, network: NewNetworkParams) -> Result<()> {

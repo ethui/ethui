@@ -1,5 +1,5 @@
 use ethui_dialogs::{Dialog, DialogMsg};
-use ethui_networks::{networks, NetworksActorExt as _};
+use ethui_networks::{NetworksActorExt as _, networks};
 use ethui_types::{Network, NewNetworkParams};
 use serde::Serialize;
 
@@ -52,9 +52,7 @@ impl ChainUpdate {
             match msg {
                 DialogMsg::Data(msg) => {
                     if let Some("accept") = msg.as_str() {
-                        networks()
-                            .set_current_by_dedup_chain_id(self.network.dedup_chain_id())
-                            .await?;
+                        networks().set_current_by_id(self.network.id()).await?;
                         break;
                     }
                 }
@@ -151,7 +149,7 @@ impl ChainUpdateBuilder {
             .get_by_name(chain_name)
             .await
             .expect("networks actor not available")
-            .map(|network| network.dedup_chain_id().dedup_id())
+            .map(|network| network.id().dedup_id())
             .unwrap_or(0);
 
         ChainUpdate {

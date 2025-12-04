@@ -35,9 +35,9 @@ impl DbInner {
         Ok(db)
     }
 
-    pub async fn truncate_events(&self, dedup_chain_id: NetworkId) -> color_eyre::Result<()> {
-        let chain_id = dedup_chain_id.chain_id();
-        let dedup_id = dedup_chain_id.dedup_id();
+    pub async fn truncate_events(&self, id: NetworkId) -> color_eyre::Result<()> {
+        let chain_id = id.chain_id();
+        let dedup_id = id.dedup_id();
         sqlx::query!(r#"DELETE FROM transactions WHERE chain_id = ?"#, chain_id)
             .execute(self.pool())
             .await?;

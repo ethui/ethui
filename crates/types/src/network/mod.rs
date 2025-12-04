@@ -89,12 +89,16 @@ impl Network {
         vec![Self::anvil(0), Self::mainnet(0), Self::sepolia(0)]
     }
 
-    pub fn dedup_chain_id(&self) -> NetworkId {
+    pub fn id(&self) -> NetworkId {
         self.id
     }
 
     pub fn chain_id(&self) -> u32 {
         self.id.chain_id()
+    }
+
+    pub fn dedup_id(&self) -> u32 {
+        self.id.dedup_id()
     }
 
     pub fn chain_id_hex(&self) -> String {
