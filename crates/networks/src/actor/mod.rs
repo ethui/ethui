@@ -1,12 +1,13 @@
 mod ext;
+mod types;
 
 use std::{fs::File, ops::ControlFlow, path::PathBuf};
 
-use ethui_types::{Affinity, Network, NetworkIdOrName, NewNetworkParams, UINotify, prelude::*};
+use ethui_types::{Affinity, Network, NewNetworkParams, UINotify, prelude::*};
 pub use ext::NetworksActorExt;
 use kameo::prelude::*;
 
-use crate::{SerializedNetworks, migrations::load_and_migrate};
+use crate::{SerializedNetworks, actor::types::NetworkGetKey, migrations::load_and_migrate};
 
 #[derive(Debug)]
 pub struct NetworksActor {
@@ -135,19 +136,22 @@ impl NetworksActor {
 
     #[message]
     #[tracing::instrument(skip(self))]
-    fn get(&self, id_or_name: NetworkIdOrName) -> Option<Network> {
+    fn get(&self, key: NetworkGetKey) -> Option<Network> {
         trace!("");
-        match id_or_name {
-            NetworkIdOrName::Id(id) => self.inner.networks.values().find(|n| n.id == id).cloned(),
-            NetworkIdOrName::ChainId(chain_id) => self
+        match key {
+            NetworkGetKey::Id(id) => self.inner.networks.values().find(|n| n.id == id).cloned(),
+            NetworkGetKey::ChainId(chain_id) => self
                 .inner
                 .networks
                 .values()
                 .find(|n| n.chain_id() == chain_id)
                 .cloned(),
-            NetworkIdOrName::Name(name) => {
-                self.inner.networks.values().find(|n| n.name == name).cloned()
-            }
+            NetworkGetKey::Name(name) => self
+                .inner
+                .networks
+                .values()
+                .find(|n| n.name == name)
+                .cloned(),
         }
     }
 
@@ -176,11 +180,11 @@ impl NetworksActor {
 
     #[message]
     #[tracing::instrument(skip(self))]
-    async fn set_current(&mut self, id_or_name: NetworkIdOrName) -> color_eyre::Result<()> {
+    async fn set_current(&mut self, id_or_name: NetworkGetKey) -> color_eyre::Result<()> {
         trace!("");
         let new_current_network = match id_or_name {
-            NetworkIdOrName::Name(name) => name,
-            NetworkIdOrName::Id(id) => self
+            NetworkGetKey::Name(name) => name,
+            NetworkGetKey::Id(id) => self
                 .inner
                 .networks
                 .values()
@@ -188,7 +192,7 @@ impl NetworksActor {
                 .with_context(|| format!("Network with id {id:?} not found"))?
                 .name
                 .clone(),
-            NetworkIdOrName::ChainId(chain_id) => self
+            NetworkGetKey::ChainId(chain_id) => self
                 .inner
                 .networks
                 .values()

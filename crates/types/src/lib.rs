@@ -16,7 +16,7 @@ pub use contracts::{Contract, ContractWithAbi};
 pub use error::{SerializableError, TauriResult};
 pub use events::Event;
 pub use global_state::GlobalState;
-pub use network::{Network, NetworkId, NetworkIdOrName, NetworkStatus};
+pub use network::{Network, NetworkId, NetworkStatus};
 pub use new_network_params::NewNetworkParams;
 pub use tokens::{
     Erc721Collection, Erc721Token, Erc721TokenData, Erc721TokenDetails, Erc1155Token,
