@@ -30,3 +30,4 @@ extension/*.zip
 CLAUDE.md
 AGENT.md
 .claude/
+worktrees
