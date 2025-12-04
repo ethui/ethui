@@ -27,10 +27,10 @@ async fn receiver(actor: ActorRef<NetworksActor>) -> ! {
             use InternalMsg::*;
 
             match msg {
-                ChainChanged(dedup_chain_id, _domain, affinity) => {
+                ChainChanged(id, _domain, affinity) => {
                     ethui_broadcast::ui_notify(UINotify::PeersUpdated).await;
                     if affinity.is_global() || affinity.is_unset() {
-                        let _ = actor.set_current_by_dedup_chain_id(dedup_chain_id).await;
+                        let _ = actor.set_current_by_id(id).await;
                     }
                 }
                 StackAdd(params) => {

@@ -47,6 +47,7 @@ function Content({ network }: { network: NetworkInputs }) {
     await invoke("networks_remove", { name: network.name });
     router.history.back();
   };
+  console.log(network);
 
   // TODO: fix remove button
   return (
@@ -57,7 +58,7 @@ function Content({ network }: { network: NetworkInputs }) {
           className="[&::-webkit-inner-spin-button]:appearance-none"
           disabled={true}
           label="Chain Id"
-          name="dedup_chain_id.chain_id"
+          name="id.chain_id"
         />
       </div>
 

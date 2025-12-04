@@ -1,7 +1,7 @@
 use std::str::FromStr;
 
 use alloy::{json_abi::JsonAbi, primitives::Bytes};
-use ethui_types::{prelude::*, Contract, ContractWithAbi};
+use ethui_types::{Contract, ContractWithAbi, prelude::*};
 use tracing::instrument;
 
 use crate::DbInner;
@@ -103,7 +103,7 @@ impl DbInner {
     #[instrument(level = "trace", skip(self, abi))]
     pub async fn insert_contract_with_abi(
         &self,
-        dedup_chain_id: NetworkId,
+        id: NetworkId,
         address: Address,
         code: Option<&Bytes>,
         abi: Option<String>,
@@ -113,8 +113,8 @@ impl DbInner {
         let address = format!("0x{address:x}");
         let proxy_for = proxy_for.map(|p| format!("0x{p:x}"));
         let code = code.map(|c| format!("0x{c:x}"));
-        let chain_id = dedup_chain_id.chain_id();
-        let dedup_id = dedup_chain_id.dedup_id();
+        let chain_id = id.chain_id();
+        let dedup_id = id.dedup_id();
 
         sqlx::query!(
             r#" INSERT INTO contracts (address, chain_id, dedup_id, code, abi, name, proxy_for)

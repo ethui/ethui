@@ -5,12 +5,8 @@ use crate::DbInner;
 
 impl DbInner {
     #[instrument(level = "trace", skip(self, events))]
-    pub async fn save_events(
-        &self,
-        dedup_chain_id: NetworkId,
-        events: Vec<Event>,
-    ) -> color_eyre::Result<()> {
-        let chain_id = dedup_chain_id.chain_id();
+    pub async fn save_events(&self, id: NetworkId, events: Vec<Event>) -> color_eyre::Result<()> {
+        let chain_id = id.chain_id();
 
         for tx in events.iter() {
             // TODO: report this errors in await?. Currently they're being silently ignored, because the task just gets killed
@@ -21,7 +17,7 @@ impl DbInner {
 
                 Event::ContractDeployed(tx) => {
                     self.insert_contract_with_abi(
-                        dedup_chain_id,
+                        id,
                         tx.address,
                         tx.code.as_ref(),
                         None,

@@ -1,6 +1,6 @@
 use ethui_types::{NewNetworkParams, prelude::*};
 
-use crate::actor::{networks, NetworksActorExt as _};
+use crate::actor::{NetworksActorExt as _, networks};
 
 #[tauri::command]
 pub async fn networks_get_current() -> TauriResult<Network> {
@@ -37,7 +37,7 @@ pub async fn networks_remove(name: String) -> TauriResult<()> {
 #[tauri::command]
 pub async fn networks_is_dev(id: NetworkId) -> TauriResult<bool> {
     let network = networks()
-        .get_by_dedup_chain_id(id)
+        .get_by_id(id)
         .await?
         .with_context(|| "Network not found")?;
 

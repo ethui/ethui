@@ -92,7 +92,7 @@ impl NetworksActor {
     fn notify_peers(&self) {
         let current = self.get_current_inner().clone();
         tokio::spawn(async move {
-            ethui_broadcast::chain_changed(current.dedup_chain_id(), None, Affinity::Global).await;
+            ethui_broadcast::chain_changed(current.id(), None, Affinity::Global).await;
         });
     }
 
@@ -157,13 +157,9 @@ impl NetworksActor {
 
     #[message]
     #[tracing::instrument(skip(self))]
-    fn get_by_dedup_chain_id(&self, dedup_chain_id: NetworkId) -> Option<Network> {
+    fn get_by_id(&self, id: NetworkId) -> Option<Network> {
         trace!("");
-        self.inner
-            .networks
-            .values()
-            .find(|n| n.id == dedup_chain_id)
-            .cloned()
+        self.inner.networks.values().find(|n| n.id == id).cloned()
     }
 
     #[message]
@@ -208,17 +204,14 @@ impl NetworksActor {
 
     #[message]
     #[tracing::instrument(skip(self))]
-    async fn set_current_by_dedup_chain_id(
-        &mut self,
-        dedup_chain_id: NetworkId,
-    ) -> color_eyre::Result<()> {
+    async fn set_current_by_id(&mut self, id: NetworkId) -> color_eyre::Result<()> {
         trace!("");
         let new_network = self
             .inner
             .networks
             .values()
-            .find(|n| n.dedup_chain_id() == dedup_chain_id)
-            .with_context(|| format!("Network with dedup_chain_id {dedup_chain_id:?} not found"))?;
+            .find(|n| n.id() == id)
+            .with_context(|| format!("Network with id {id:?} not found"))?;
 
         self.set_current_by_name(new_network.name.clone()).await?;
 
@@ -236,13 +229,7 @@ impl NetworksActor {
         let deduplication_id = self.get_chain_id_count(network.chain_id) as u32;
         let network = network.into_network(deduplication_id);
 
-        if !network.is_dev().await
-            && self
-                .inner
-                .networks
-                .values()
-                .any(|n| n.id == network.dedup_chain_id())
-        {
+        if !network.is_dev().await && self.inner.networks.values().any(|n| n.id == network.id()) {
             return Err(eyre!("Already exists"));
         }
 
