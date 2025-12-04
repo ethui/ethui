@@ -47,7 +47,6 @@ function Content({ network }: { network: NetworkInputs }) {
     await invoke("networks_remove", { name: network.name });
     router.history.back();
   };
-  console.log(network);
 
   // TODO: fix remove button
   return (
