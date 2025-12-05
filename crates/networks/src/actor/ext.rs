@@ -45,12 +45,8 @@ impl NetworksActorExt for ActorRef<NetworksActor> {
         Ok(self.ask(GetLowestDedupId { chain_id }).await?)
     }
 
-    async fn set_current(&self, id_or_name: impl Into<NetworkGetKey>) -> Result<()> {
-        Ok(self
-            .tell(SetCurrent {
-                id_or_name: id_or_name.into(),
-            })
-            .await?)
+    async fn set_current(&self, key: impl Into<NetworkGetKey>) -> Result<()> {
+        Ok(self.tell(SetCurrent { key: key.into() }).await?)
     }
 
     async fn add(&self, network: NewNetworkParams) -> Result<()> {

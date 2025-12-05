@@ -180,9 +180,9 @@ impl NetworksActor {
 
     #[message]
     #[tracing::instrument(skip(self))]
-    async fn set_current(&mut self, id_or_name: NetworkGetKey) -> color_eyre::Result<()> {
+    async fn set_current(&mut self, key: NetworkGetKey) -> color_eyre::Result<()> {
         trace!("");
-        let new_current_network = match id_or_name {
+        let new_current_network = match key {
             NetworkGetKey::Name(name) => name,
             NetworkGetKey::Id(id) => self
                 .inner
