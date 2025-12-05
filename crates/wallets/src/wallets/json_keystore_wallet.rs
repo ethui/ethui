@@ -2,7 +2,7 @@ use std::{fs::File, io::BufReader, path::PathBuf, str::FromStr, sync::Arc, time:
 
 use alloy::{
     primitives::B256,
-    signers::{local::LocalSigner, Signer as _},
+    signers::{Signer as _, local::LocalSigner},
 };
 use async_trait::async_trait;
 use coins_bip32::ecdsa;
@@ -14,7 +14,7 @@ use tokio::{
     task::JoinHandle,
 };
 
-use crate::{wallet::WalletCreate, Signer, Wallet, WalletControl};
+use crate::{Signer, Wallet, WalletControl, wallet::WalletCreate};
 
 #[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
 pub struct JsonKeystoreWallet {
@@ -80,7 +80,7 @@ impl WalletControl for JsonKeystoreWallet {
         vec![("default".into(), self.get_current_address().await)]
     }
 
-    async fn build_signer(&self, chain_id: u32, _path: &str) -> color_eyre::Result<Signer> {
+    async fn build_signer(&self, chain_id: u64, _path: &str) -> color_eyre::Result<Signer> {
         self.unlock().await?;
 
         let secret = self.secret.read().await;
@@ -88,7 +88,7 @@ impl WalletControl for JsonKeystoreWallet {
 
         let mut signer = signer_from_secret(&secret);
         // TODO: use u64 for chain id
-        signer.set_chain_id(Some(chain_id.into()));
+        signer.set_chain_id(Some(chain_id));
         Ok(Signer::Local(signer))
     }
 }

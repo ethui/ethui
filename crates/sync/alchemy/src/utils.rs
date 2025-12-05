@@ -13,7 +13,7 @@ pub async fn get_current_api_key() -> color_eyre::Result<Option<String>> {
         .filter(|s| !s.is_empty()))
 }
 
-pub async fn get_alchemy(chain_id: u32) -> color_eyre::Result<Alchemy> {
+pub async fn get_alchemy(chain_id: u64) -> color_eyre::Result<Alchemy> {
     let api_key = match get_current_api_key().await {
         Ok(Some(api_key)) => api_key,
         _ => return Err(eyre!("Alchemy API Key not found")),

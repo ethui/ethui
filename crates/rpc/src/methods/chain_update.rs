@@ -95,8 +95,8 @@ impl ChainUpdate {
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct NetworkSwitch {
-    pub old_id: u32,
-    pub new_id: u32,
+    pub old_id: u64,
+    pub new_id: u64,
 }
 
 #[derive(Default)]
@@ -120,7 +120,7 @@ impl ChainUpdateBuilder {
         let params = self.params.unwrap();
         let chain_name = params.chain_name.clone();
 
-        let chain_id = TryInto::<u32>::try_into(params.chain_id).unwrap();
+        let chain_id = TryInto::<u64>::try_into(params.chain_id).unwrap();
         let new_network_params = NewNetworkParams {
             chain_id,
             name: chain_name.clone(),

@@ -46,7 +46,7 @@ impl Ctx {
             .expect("network not found for chain_id")
     }
 
-    pub async fn switch_chain(&mut self, new_chain_id: u32) -> color_eyre::Result<()> {
+    pub async fn switch_chain(&mut self, new_chain_id: u64) -> color_eyre::Result<()> {
         if self.chain_id().await == new_chain_id {
             return Ok(());
         }
@@ -83,7 +83,7 @@ impl Ctx {
         }
     }
 
-    pub async fn chain_id(&self) -> u32 {
+    pub async fn chain_id(&self) -> u64 {
         match self.get_affinity().await {
             Affinity::Sticky(id) => id.chain_id(),
             _ => networks()
