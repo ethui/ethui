@@ -11,7 +11,7 @@ pub(crate) use chain_update::ChainUpdate;
 use ethui_connections::Ctx;
 use ethui_types::Json;
 use jsonrpc_core::Params;
-pub(crate) use send_call::SendCall;
+pub(crate) use send_call::{CallParams, SendCall};
 pub(crate) use send_transaction::SendTransaction;
 pub(crate) use sign_message::{EthSign, EthSignTypedData};
 pub(crate) use token_add::TokenAdd;

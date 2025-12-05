@@ -19,7 +19,7 @@ pub async fn rpc_send_transaction(params: Json) -> Result<Json> {
 
 #[tauri::command]
 pub async fn rpc_eth_call(params: Json) -> Result<Bytes> {
-    let params: methods::send_call::CallParams = serde_json::from_value(params)?;
+    let params: methods::CallParams = serde_json::from_value(params)?;
     let network = utils::get_current_network().await;
 
     let mut sender = methods::SendCall::new(network, params.into());

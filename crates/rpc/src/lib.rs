@@ -2,7 +2,6 @@ pub mod commands;
 mod error;
 mod methods;
 mod params;
-mod rpc_request;
 mod utils;
 
 use alloy::providers::Provider as _;
