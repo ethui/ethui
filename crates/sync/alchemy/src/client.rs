@@ -4,7 +4,7 @@ use alloy::{
     rpc::client::ClientBuilder,
     transports::layers::RetryBackoffLayer,
 };
-use ethui_types::{events::Tx, eyre, Address, TokenMetadata, U256};
+use ethui_types::{Address, TokenMetadata, U256, events::Tx, eyre};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 use url::Url;
@@ -26,7 +26,7 @@ pub(crate) enum Direction {
 }
 
 impl Client {
-    pub fn new(chain_id: u32, api_key: &str) -> color_eyre::Result<Self> {
+    pub fn new(chain_id: u64, api_key: &str) -> color_eyre::Result<Self> {
         let v2_url = networks::get_endpoint(chain_id, "v2/", api_key)?;
         let v2_client = ClientBuilder::default()
             .layer(RetryBackoffLayer::new(10, 500, 300))

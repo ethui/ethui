@@ -7,10 +7,11 @@ use tracing::instrument;
 use crate::DbInner;
 
 impl DbInner {
-    pub async fn get_contracts(&self, chain_id: u32, dedup_id: i32) -> Result<Vec<Contract>> {
+    pub async fn get_contracts(&self, chain_id: u64, dedup_id: i32) -> Result<Vec<Contract>> {
+        let chain_id_i64 = chain_id as i64;
         let rows = sqlx::query!(
             r#"SELECT address, name, proxy_for, proxied_by FROM contracts WHERE chain_id = ? AND dedup_id = ?"#,
-            chain_id, dedup_id
+            chain_id_i64, dedup_id
         ).fetch_all(self.pool())
         .await?;
 
@@ -29,16 +30,17 @@ impl DbInner {
 
     pub async fn get_contract(
         &self,
-        chain_id: u32,
+        chain_id: u64,
         dedup_id: i32,
         address: Address,
     ) -> Result<Option<ContractWithAbi>> {
+        let chain_id_i64 = chain_id as i64;
         let address = format!("0x{address:x}");
         let res = sqlx::query!(
             r#" SELECT abi, name, address
                 FROM contracts
                 WHERE chain_id = ? AND dedup_id = ? AND address = ? "#,
-            chain_id,
+            chain_id_i64,
             dedup_id,
             address
         )
@@ -57,8 +59,9 @@ impl DbInner {
         }
     }
 
-    pub async fn get_contract_abi(&self, chain_id: u32, address: Address) -> Result<JsonAbi> {
+    pub async fn get_contract_abi(&self, chain_id: u64, address: Address) -> Result<JsonAbi> {
         let address = format!("0x{address:x}");
+        let chain_id = chain_id as i64;
 
         let res = sqlx::query!(
             r#" SELECT abi
@@ -76,7 +79,7 @@ impl DbInner {
         }
     }
 
-    pub async fn get_contract_impl_abi(&self, chain_id: u32, address: Address) -> Result<JsonAbi> {
+    pub async fn get_contract_impl_abi(&self, chain_id: u64, address: Address) -> Result<JsonAbi> {
         let address = format!("0x{address:x}");
 
         let res = sqlx::query!(
@@ -113,8 +116,8 @@ impl DbInner {
         let address = format!("0x{address:x}");
         let proxy_for = proxy_for.map(|p| format!("0x{p:x}"));
         let code = code.map(|c| format!("0x{c:x}"));
-        let chain_id = id.chain_id();
-        let dedup_id = id.dedup_id();
+        let chain_id = id.chain_id() as i64;
+        let dedup_id = id.dedup_id() as i64;
 
         sqlx::query!(
             r#" INSERT INTO contracts (address, chain_id, dedup_id, code, abi, name, proxy_for)
@@ -154,7 +157,7 @@ impl DbInner {
 
     pub async fn get_incomplete_contracts(
         &self,
-    ) -> Result<Vec<((u32, u32), Address, Option<Bytes>)>> {
+    ) -> Result<Vec<((u64, u64), Address, Option<Bytes>)>> {
         let rows = sqlx::query!(
             r#"SELECT address, chain_id, dedup_id, code FROM contracts WHERE name IS NULL or ABI IS NULL"#,
         )
@@ -165,7 +168,7 @@ impl DbInner {
             .into_iter()
             .map(|r| {
                 (
-                    (r.chain_id as u32, r.dedup_id.unwrap() as u32),
+                    (r.chain_id as u64, r.dedup_id.unwrap() as u64),
                     Address::from_str(&r.address).unwrap(),
                     r.code
                         .map(|c| Bytes::from_str(c.trim_start_matches("0x")).unwrap()),
@@ -174,7 +177,9 @@ impl DbInner {
             .collect())
     }
 
-    pub async fn remove_contracts(&self, chain_id: u32, dedup_id: u32) -> Result<()> {
+    pub async fn remove_contracts(&self, chain_id: u64, dedup_id: u64) -> Result<()> {
+        let chain_id = chain_id as i64;
+        let dedup_id = dedup_id as i64;
         sqlx::query!(
             r#"DELETE FROM contracts where chain_id = ? AND dedup_id = ?"#,
             chain_id,
@@ -188,11 +193,12 @@ impl DbInner {
 
     pub async fn remove_contract(
         &self,
-        chain_id: u32,
+        chain_id: u64,
         dedup_id: i32,
         address: Address,
     ) -> Result<()> {
         let address = format!("0x{address:x}");
+        let chain_id = chain_id as i64;
 
         sqlx::query!(
             r#"DELETE FROM contracts WHERE chain_id = ? AND dedup_id = ? AND address = ?"#,
@@ -208,11 +214,12 @@ impl DbInner {
 
     pub async fn get_proxy(
         &self,
-        chain_id: u32,
+        chain_id: u64,
         dedup_id: i32,
         address: Address,
     ) -> Option<Address> {
         let address = format!("0x{address:x}");
+        let chain_id = chain_id as i64;
 
         let result = sqlx::query_scalar!(
             r#"SELECT proxy_for FROM contracts WHERE chain_id = ? AND dedup_id = ? AND address = ?"#,
@@ -229,9 +236,10 @@ impl DbInner {
 
     pub async fn get_contract_addresses(
         &self,
-        chain_id: u32,
-        dedup_id: u32,
+        chain_id: u64,
+        dedup_id: i64,
     ) -> Result<Vec<Address>> {
+        let chain_id = chain_id as i64;
         let addresses = sqlx::query_scalar!(
             r#"SELECT DISTINCT address FROM contracts WHERE chain_id = ? AND dedup_id = ?"#,
             chain_id,

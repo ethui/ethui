@@ -8,14 +8,14 @@ use crate::DbInner;
 impl DbInner {
     pub async fn read_erc1155_balance(
         &self,
-        chain_id: u32,
+        chain_id: u64,
         contract: Address,
         owner: Address,
         token_id: U256,
     ) -> color_eyre::Result<U256> {
         let row = sqlx::query(
             r#"SELECT balance FROM erc1155_tokens WHERE chain_id = ? AND contract = ? AND owner = ? AND token_id = ?"#)
-            .bind(chain_id)
+            .bind(chain_id as i64)
             .bind(format!("0x{contract:x}"))
             .bind(format!("0x{owner:x}"))
             .bind(format!("0x{token_id:x}"))
@@ -27,13 +27,13 @@ impl DbInner {
 
     pub async fn read_erc1155_uri(
         &self,
-        chain_id: u32,
+        chain_id: u64,
         contract: Address,
         token_id: U256,
     ) -> color_eyre::Result<String> {
         let row = sqlx::query(
             r#"SELECT balance FROM erc1155_tokens WHERE chain_id = ? AND contract = ? AND token_id = ?"#)
-            .bind(chain_id)
+            .bind(chain_id as i64)
             .bind(format!("0x{contract:x}"))
             .bind(format!("0x{token_id:x}"))
             .fetch_one(self.pool())
@@ -43,13 +43,13 @@ impl DbInner {
 
     pub async fn read_erc1155_metadata(
         &self,
-        chain_id: u32,
+        chain_id: u64,
         contract: Address,
         token_id: U256,
     ) -> color_eyre::Result<String> {
         let row = sqlx::query(
             r#"SELECT balance FROM erc1155_tokens WHERE chain_id = ? AND contract = ? AND token_id = ?"#)
-            .bind(chain_id)
+            .bind(chain_id as i64)
             .bind(format!("0x{contract:x}"))
             .bind(format!("0x{token_id:x}"))
             .fetch_one(self.pool())
@@ -59,7 +59,7 @@ impl DbInner {
 
     pub async fn save_erc1155_balance(
         &self,
-        chain_id: u32,
+        chain_id: u64,
         contract: Address,
         owner: Address,
         token_id: U256,
@@ -70,7 +70,7 @@ impl DbInner {
                 VALUES (?,?,?,?) "#,
         )
         .bind(format!("0x{contract:x}"))
-        .bind(chain_id)
+        .bind(chain_id as i64)
         .bind(format!("0x{token_id:x}"))
         .bind(format!("0x{owner:x}"))
         .bind(balance.to_string())
@@ -82,7 +82,7 @@ impl DbInner {
 
     pub async fn process_erc1155_transfer(
         &self,
-        chain_id: u32,
+        chain_id: u64,
         contract: Address,
         from: Address,
         to: Address,
@@ -114,7 +114,7 @@ impl DbInner {
                 r#" DELETE FROM erc1155_tokens 
                 WHERE chain_id = ? AND contract = ? AND token_id = ? AND owner = ?"#,
             )
-            .bind(chain_id)
+            .bind(chain_id as i64)
             .bind(format!("0x{contract:x}"))
             .bind(format!("0x{token_id:x}"))
             .bind(format!("0x{from:x}"))
@@ -130,13 +130,13 @@ impl DbInner {
 
     pub async fn get_erc1155_tokens_with_missing_data(
         &self,
-        chain_id: u32,
+        chain_id: u64,
     ) -> color_eyre::Result<Vec<Erc1155Token>> {
         let res: Vec<_> = sqlx::query(
             r#"SELECT * FROM erc1155_tokens
             WHERE chain_id = ? AND (uri IS NULL OR metadata IS NULL)"#,
         )
-        .bind(chain_id)
+        .bind(chain_id as i64)
         .map(|row| row.try_into().unwrap())
         .fetch_all(self.pool())
         .await?;
@@ -147,7 +147,7 @@ impl DbInner {
     pub async fn save_erc1155_token_data(
         &self,
         contract: Address,
-        chain_id: u32,
+        chain_id: u64,
         token_id: U256,
         owner: Address,
         balance: U256,
@@ -159,7 +159,7 @@ impl DbInner {
                 VALUES (?,?,?,?,?,?,?) "#,
         )
         .bind(format!("0x{contract:x}"))
-        .bind(chain_id)
+        .bind(chain_id as i64)
         .bind(format!("0x{token_id:x}"))
         .bind(format!("0x{owner:x}"))
         .bind(balance.to_string())
@@ -173,7 +173,7 @@ impl DbInner {
 
     pub async fn get_erc1155_collections_with_missing_data(
         &self,
-        chain_id: u32,
+        chain_id: u64,
     ) -> color_eyre::Result<Vec<Address>> {
         let res: Vec<Address> = sqlx::query(
             r#"SELECT DISTINCT contract 
@@ -182,8 +182,8 @@ impl DbInner {
                 AND contract NOT IN
                 (SELECT contract FROM erc1155_collections WHERE chain_id = ?) "#,
         )
-        .bind(chain_id)
-        .bind(chain_id)
+        .bind(chain_id as i64)
+        .bind(chain_id as i64)
         .map(|row| Address::from_str(row.get::<&str, _>("contract")).unwrap())
         .fetch_all(self.pool())
         .await?;
@@ -193,7 +193,7 @@ impl DbInner {
     pub async fn save_erc1155_collection(
         &self,
         contract: Address,
-        chain_id: u32,
+        chain_id: u64,
         name: String,
         symbol: String,
     ) -> color_eyre::Result<()> {
@@ -202,7 +202,7 @@ impl DbInner {
                       VALUES (?,?,?,?) "#,
         )
         .bind(format!("0x{contract:x}"))
-        .bind(chain_id)
+        .bind(chain_id as i64)
         .bind(name)
         .bind(symbol)
         .execute(self.pool())
@@ -213,7 +213,7 @@ impl DbInner {
 
     pub async fn get_erc1155_tokens(
         &self,
-        chain_id: u32,
+        chain_id: u64,
         owner: Address,
     ) -> color_eyre::Result<Vec<Erc1155TokenData>> {
         let res: Vec<Erc1155TokenData> = sqlx::query(
@@ -223,7 +223,7 @@ impl DbInner {
                 ON collection.contract = erc1155_tokens.contract AND collection.chain_id = erc1155_tokens.chain_id
                 WHERE erc1155_tokens.chain_id = ? AND erc1155_tokens.owner = ?"#,
       )
-      .bind(chain_id)
+      .bind(chain_id as i64)
       .bind(format!("0x{owner:x}"))
       .map(|row| row.try_into().unwrap())
       .fetch_all(self.pool())

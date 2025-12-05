@@ -111,7 +111,7 @@ impl NetworksActor {
         Ok(())
     }
 
-    fn get_chain_id_count(&self, chain_id: u32) -> usize {
+    fn get_chain_id_count(&self, chain_id: u64) -> usize {
         self.inner
             .networks
             .values()
@@ -135,7 +135,7 @@ impl NetworksActor {
 
     #[message]
     #[tracing::instrument(skip(self))]
-    fn get(&self, chain_id: u32) -> Option<Network> {
+    fn get(&self, chain_id: u64) -> Option<Network> {
         trace!("");
         self.inner
             .networks
@@ -164,7 +164,7 @@ impl NetworksActor {
 
     #[message]
     #[tracing::instrument(skip(self))]
-    fn validate_chain_id(&self, chain_id: u32) -> bool {
+    fn validate_chain_id(&self, chain_id: u64) -> bool {
         trace!("");
         self.inner
             .networks
@@ -174,7 +174,7 @@ impl NetworksActor {
 
     #[message]
     #[tracing::instrument(skip(self))]
-    fn get_lowest_dedup_id(&self, chain_id: u32) -> u32 {
+    fn get_lowest_dedup_id(&self, chain_id: u64) -> u64 {
         trace!("");
         self.inner
             .networks
@@ -226,7 +226,7 @@ impl NetworksActor {
             return Err(eyre!("Already exists"));
         }
 
-        let deduplication_id = self.get_chain_id_count(network.chain_id) as u32;
+        let deduplication_id = self.get_chain_id_count(network.chain_id) as u64;
         let network = network.into_network(deduplication_id);
 
         if !network.is_dev().await && self.inner.networks.values().any(|n| n.id == network.id()) {

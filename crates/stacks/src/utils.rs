@@ -5,7 +5,7 @@ struct GetChainIdResponse {
     result: String,
 }
 
-pub async fn get_chain_id(rpc_url: &str) -> color_eyre::Result<u32> {
+pub async fn get_chain_id(rpc_url: &str) -> color_eyre::Result<u64> {
     let client = reqwest::Client::new();
     let response = client
         .post(rpc_url)
@@ -20,7 +20,7 @@ pub async fn get_chain_id(rpc_url: &str) -> color_eyre::Result<u32> {
 
     let result: GetChainIdResponse = response?.json().await?;
 
-    let chain_id = u32::from_str_radix(&result.result[2..], 16)?;
+    let chain_id = u64::from_str_radix(&result.result[2..], 16)?;
     Ok(chain_id)
 }
 

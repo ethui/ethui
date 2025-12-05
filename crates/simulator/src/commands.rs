@@ -1,11 +1,11 @@
 use ethui_db::Db;
-use ethui_networks::{networks, NetworksActorExt as _};
+use ethui_networks::{NetworksActorExt as _, networks};
 use ethui_types::prelude::*;
 
 use crate::types::{Request, SimResult};
 
 #[tauri::command]
-pub async fn simulator_run(chain_id: u32, request: Request) -> TauriResult<SimResult> {
+pub async fn simulator_run(chain_id: u64, request: Request) -> TauriResult<SimResult> {
     let network = networks()
         .get(chain_id)
         .await?
@@ -16,7 +16,7 @@ pub async fn simulator_run(chain_id: u32, request: Request) -> TauriResult<SimRe
 
 #[tauri::command]
 pub async fn simulator_get_call_count(
-    chain_id: u32,
+    chain_id: u64,
     to: Address,
     db: tauri::State<'_, Db>,
 ) -> TauriResult<u32> {
