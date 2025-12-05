@@ -4,7 +4,7 @@ mod methods;
 pub mod utils;
 
 use alloy::{dyn_abi::TypedData, hex, providers::Provider as _};
-use ethui_connections::{permissions::PermissionRequest, Ctx};
+use ethui_connections::{Ctx, permissions::PermissionRequest};
 use ethui_types::prelude::*;
 use ethui_wallets::{WalletControl, Wallets};
 use jsonrpc_core::{MetaIoHandler, Params};
@@ -40,9 +40,9 @@ impl Handler {
                 self.io
                     .add_method_with_meta($name, |params: Params, ctx: Ctx| async move {
                         info!(method = $name, params = serde_json::to_string(&params).unwrap());
-                        let ret = $fn(params, ctx).await;
+                        let ret: Result<Json> = $fn(params, ctx).await;
                         info!(result = ?ret);
-                        ret
+                        ret.map_err(Into::into)
                     });
             };
         }
@@ -53,8 +53,8 @@ impl Handler {
                     .add_method_with_meta($name, |params: Params, ctx: Ctx| async move {
                         let provider = ctx.network().await.get_provider();
 
-                        let res: jsonrpc_core::Result<serde_json::Value> = provider
-                            .raw_request::<_, serde_json::Value>($name.into(), params)
+                        let res: jsonrpc_core::Result<Json> = provider
+                            .raw_request::<_, Json>($name.into(), params)
                             .await
                             .map_err(error::alloy_to_jsonrpc_error);
                         res
@@ -142,22 +142,19 @@ impl Handler {
         );
     }
 
-    async fn accounts(_: Params, _: Ctx) -> jsonrpc_core::Result<serde_json::Value> {
+    async fn accounts(_: Params, _: Ctx) -> Result<Json> {
         let wallets = Wallets::read().await;
         let address = wallets.get_current_wallet().get_current_address().await;
 
         Ok(json!([address]))
     }
 
-    async fn chain_id(_: Params, ctx: Ctx) -> jsonrpc_core::Result<serde_json::Value> {
+    async fn chain_id(_: Params, ctx: Ctx) -> Result<Json> {
         let network = ctx.network().await;
         Ok(json!(network.chain_id_hex()))
     }
 
-    async fn metamask_provider_state(
-        _: Params,
-        ctx: Ctx,
-    ) -> jsonrpc_core::Result<serde_json::Value> {
+    async fn metamask_provider_state(_: Params, ctx: Ctx) -> Result<Json> {
         let wallets = Wallets::read().await;
 
         let network = ctx.network().await;
@@ -172,10 +169,7 @@ impl Handler {
     }
 
     #[tracing::instrument(skip(params))]
-    async fn request_permissions(
-        params: Params,
-        mut ctx: Ctx,
-    ) -> jsonrpc_core::Result<serde_json::Value> {
+    async fn request_permissions(params: Params, mut ctx: Ctx) -> Result<Json> {
         let request = params.parse::<PermissionRequest>().unwrap();
         let ret = ctx.request_permissions(request);
 
@@ -183,10 +177,7 @@ impl Handler {
     }
 
     #[tracing::instrument(skip(params))]
-    async fn revoke_permissions(
-        params: Params,
-        mut ctx: Ctx,
-    ) -> jsonrpc_core::Result<serde_json::Value> {
+    async fn revoke_permissions(params: Params, mut ctx: Ctx) -> Result<Json> {
         let request = params.parse::<PermissionRequest>().unwrap();
         let ret = ctx.revoke_permissions(request);
 
@@ -194,12 +185,12 @@ impl Handler {
     }
 
     #[tracing::instrument(skip(_params, ctx))]
-    async fn get_permissions(_params: Params, ctx: Ctx) -> jsonrpc_core::Result<serde_json::Value> {
+    async fn get_permissions(_params: Params, ctx: Ctx) -> Result<Json> {
         Ok(json!(ctx.get_permissions()))
     }
 
     #[tracing::instrument(skip(params, _ctx))]
-    async fn add_chain(params: Params, _ctx: Ctx) -> jsonrpc_core::Result<serde_json::Value> {
+    async fn add_chain(params: Params, _ctx: Ctx) -> Result<Json> {
         let method = methods::ChainAdd::build()
             .set_params(params.into())?
             .build()
@@ -207,11 +198,11 @@ impl Handler {
 
         method.run().await?;
 
-        Ok(serde_json::Value::Null)
+        Ok(Json::Null)
     }
 
     #[tracing::instrument()]
-    async fn update_chain(params: Params, ctx: Ctx) -> jsonrpc_core::Result<serde_json::Value> {
+    async fn update_chain(params: Params, _ctx: Ctx) -> Result<Json> {
         let method = methods::ChainUpdate::build()
             .set_params(params.into())?
             .build()
@@ -223,7 +214,7 @@ impl Handler {
     }
 
     #[tracing::instrument()]
-    async fn switch_chain(params: Params, mut ctx: Ctx) -> jsonrpc_core::Result<serde_json::Value> {
+    async fn switch_chain(params: Params, mut ctx: Ctx) -> Result<Json> {
         let params = params.parse::<Vec<HashMap<String, String>>>().unwrap();
         let chain_id_str = params[0].get("chainId").unwrap().clone();
         let new_chain_id = u32::from_str_radix(&chain_id_str[2..], 16).unwrap();
@@ -231,16 +222,13 @@ impl Handler {
         // TODO future work
         // multiple networks with same chain id should display a dialog so user can select which
         // network to switch to
-        let res = ctx
-            .switch_chain(new_chain_id)
-            .await
-            .map(|_| serde_json::Value::Null);
+        ctx.switch_chain(new_chain_id).await?;
 
-        Ok(res.map_err(Error::from)?)
+        Ok(Json::Null)
     }
 
     #[tracing::instrument()]
-    async fn add_token(params: Params, ctx: Ctx) -> jsonrpc_core::Result<serde_json::Value> {
+    async fn add_token(params: Params, _ctx: Ctx) -> Result<Json> {
         let method = methods::TokenAdd::build()
             .set_params(params.into())?
             .build()
@@ -251,10 +239,7 @@ impl Handler {
         Ok(true.into())
     }
 
-    async fn send_transaction<T: Into<serde_json::Value>>(
-        params: T,
-        ctx: Ctx,
-    ) -> jsonrpc_core::Result<serde_json::Value> {
+    async fn send_transaction<T: Into<Json>>(params: T, ctx: Ctx) -> Result<Json> {
         // TODO: check that requested wallet is authorized
         let mut sender = methods::SendTransaction::build(&ctx)
             .set_request(params.into())
@@ -268,7 +253,7 @@ impl Handler {
         Ok(format!("0x{:x}", result.tx_hash()).into())
     }
 
-    async fn send_call(params: serde_json::Value, ctx: Ctx) -> jsonrpc_core::Result<Bytes> {
+    async fn send_call(params: Json, ctx: Ctx) -> Result<Bytes> {
         let mut sender = methods::SendCall::build(&ctx)
             .set_request(params)
             .await
@@ -276,11 +261,10 @@ impl Handler {
             .build()
             .await;
 
-        Ok(sender.finish().await?)
+        sender.finish().await
     }
 
-
-    async fn eth_sign(params: Params, ctx: Ctx) -> jsonrpc_core::Result<serde_json::Value> {
+    async fn eth_sign(params: Params, ctx: Ctx) -> Result<Json> {
         let params = params.parse::<Vec<Option<String>>>().unwrap();
         let msg = params[0].as_ref().cloned().unwrap();
         // TODO where should this be used?
@@ -304,10 +288,7 @@ impl Handler {
         Ok(format!("0x{}", hex::encode(result.as_bytes())).into())
     }
 
-    async fn eth_sign_typed_data_v4(
-        params: Params,
-        ctx: Ctx,
-    ) -> jsonrpc_core::Result<serde_json::Value> {
+    async fn eth_sign_typed_data_v4(params: Params, ctx: Ctx) -> Result<Json> {
         let params = params.parse::<Vec<Option<String>>>().unwrap();
         // TODO where should this be used?
         // let address = Address::from_str(&params[0].as_ref().cloned().unwrap()).unwrap();
@@ -330,13 +311,13 @@ impl Handler {
         Ok(format!("0x{}", hex::encode(result.as_bytes())).into())
     }
 
-    async fn unimplemented(params: Params, _: Ctx) -> jsonrpc_core::Result<serde_json::Value> {
+    async fn unimplemented(params: Params, _: Ctx) -> Result<Json> {
         tracing::warn!("unimplemented method called: {:?}", params);
 
-        Err(jsonrpc_core::Error::internal_error())
+        Err(Error::JsonRpc(jsonrpc_core::Error::internal_error()))
     }
 
-    async fn ethui_provider_state(_: Params, ctx: Ctx) -> jsonrpc_core::Result<serde_json::Value> {
+    async fn ethui_provider_state(_: Params, ctx: Ctx) -> Result<Json> {
         let wallets = Wallets::read().await;
 
         let network = ctx.network().await;
@@ -353,10 +334,7 @@ impl Handler {
         }))
     }
 
-    async fn ethui_get_abi_for_contract(
-        params: Params,
-        ctx: Ctx,
-    ) -> jsonrpc_core::Result<serde_json::Value> {
+    async fn ethui_get_abi_for_contract(params: Params, ctx: Ctx) -> Result<Json> {
         let network = ctx.network().await;
 
         let method = methods::ethui::AbiForContract::build()
@@ -364,25 +342,19 @@ impl Handler {
             .set_params(params.into())
             .build()?;
 
-        Ok(method.run().await?)
+        method.run().await
     }
 
-    async fn ethui_get_address_alias(
-        params: Params,
-        _ctx: Ctx,
-    ) -> jsonrpc_core::Result<serde_json::Value> {
+    async fn ethui_get_address_alias(params: Params, _ctx: Ctx) -> Result<Json> {
         let method = methods::ethui::AddressAlias::build()
             .set_params(params.into())
             .build()?;
 
-        Ok(method.run().await?)
+        method.run().await
     }
 
     #[cfg(feature = "forge-traces")]
-    async fn ethui_forge_test_submit_run(
-        params: Params,
-        _ctx: Ctx,
-    ) -> jsonrpc_core::Result<serde_json::Value> {
+    async fn ethui_forge_test_submit_run(params: Params, _ctx: Ctx) -> Result<Json> {
         let method = methods::ethui::ForgeTestTraces::build()
             .set_params(params.into())
             .build()?;
