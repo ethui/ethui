@@ -1,0 +1,110 @@
+{
+  "db_name": "SQLite",
+  "query": " SELECT hash, trace_address, from_address, to_address, data as 'data?', value as 'value?', block_number, position, gas_limit, gas_used, max_fee_per_gas, max_priority_fee_per_gas, type, nonce, status, incomplete as 'incomplete!'\n                FROM transactions\n                WHERE chain_id = ? AND hash = ? ",
+  "describe": {
+    "columns": [
+      {
+        "name": "hash",
+        "ordinal": 0,
+        "type_info": "Text"
+      },
+      {
+        "name": "trace_address",
+        "ordinal": 1,
+        "type_info": "Text"
+      },
+      {
+        "name": "from_address",
+        "ordinal": 2,
+        "type_info": "Text"
+      },
+      {
+        "name": "to_address",
+        "ordinal": 3,
+        "type_info": "Text"
+      },
+      {
+        "name": "data?",
+        "ordinal": 4,
+        "type_info": "Text"
+      },
+      {
+        "name": "value?",
+        "ordinal": 5,
+        "type_info": "Text"
+      },
+      {
+        "name": "block_number",
+        "ordinal": 6,
+        "type_info": "Integer"
+      },
+      {
+        "name": "position",
+        "ordinal": 7,
+        "type_info": "Integer"
+      },
+      {
+        "name": "gas_limit",
+        "ordinal": 8,
+        "type_info": "Text"
+      },
+      {
+        "name": "gas_used",
+        "ordinal": 9,
+        "type_info": "Text"
+      },
+      {
+        "name": "max_fee_per_gas",
+        "ordinal": 10,
+        "type_info": "Text"
+      },
+      {
+        "name": "max_priority_fee_per_gas",
+        "ordinal": 11,
+        "type_info": "Text"
+      },
+      {
+        "name": "type",
+        "ordinal": 12,
+        "type_info": "Integer"
+      },
+      {
+        "name": "nonce",
+        "ordinal": 13,
+        "type_info": "Integer"
+      },
+      {
+        "name": "status",
+        "ordinal": 14,
+        "type_info": "Integer"
+      },
+      {
+        "name": "incomplete!",
+        "ordinal": 15,
+        "type_info": "Bool"
+      }
+    ],
+    "parameters": {
+      "Right": 2
+    },
+    "nullable": [
+      true,
+      true,
+      false,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+    ]
+  },
+  "hash": "c00ba0ff7d0138a8a83613ed6b271a8acd148c0e599d9e6629293e40e761de6e"
+}
