@@ -7,7 +7,7 @@ use serde::{Deserialize, Serialize};
 use tracing::info;
 use url::Url;
 
-use crate::{Error, Result, params::extract_single_param, methods::Method};
+use crate::{Error, Result, methods::Method, params::extract_single_param};
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
@@ -38,12 +38,12 @@ impl Method for ChainAdd {
 
         // TODO how to handle dedup_id
         // if the network already exists, we may want to add a new one anyway
-        if self.already_exists().await {
+        if self.already_exists().await? {
             info!("Network already exists");
             return Ok(Json::Null);
         }
 
-        let dialog = Dialog::new("chain-add", serde_json::to_value(&network).unwrap());
+        let dialog = Dialog::new("chain-add", serde_json::to_value(&network)?);
         dialog.open().await?;
 
         while let Some(msg) = dialog.recv().await {
@@ -64,12 +64,9 @@ impl Method for ChainAdd {
 }
 
 impl ChainAdd {
-    async fn already_exists(&self) -> bool {
-        let chain_id: u64 = self.chain_id.try_into().unwrap();
-        networks()
-            .validate_chain_id(chain_id)
-            .await
-            .expect("networks actor not available")
+    async fn already_exists(&self) -> Result<bool> {
+        let chain_id: u64 = self.chain_id.try_into().map_err(|_| Error::ParseError)?;
+        Ok(networks().validate_chain_id(chain_id).await?)
     }
 }
 
