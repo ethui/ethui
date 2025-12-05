@@ -359,6 +359,6 @@ impl Handler {
             .set_params(params.into())
             .build()?;
 
-        Ok(method.run().await?)
+        method.run().await?
     }
 }
