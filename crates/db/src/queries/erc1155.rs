@@ -15,7 +15,7 @@ impl DbInner {
     ) -> color_eyre::Result<U256> {
         let row = sqlx::query(
             r#"SELECT balance FROM erc1155_tokens WHERE chain_id = ? AND contract = ? AND owner = ? AND token_id = ?"#)
-            .bind(chain_id as u32)
+            .bind(chain_id as i64)
             .bind(format!("0x{contract:x}"))
             .bind(format!("0x{owner:x}"))
             .bind(format!("0x{token_id:x}"))
@@ -33,7 +33,7 @@ impl DbInner {
     ) -> color_eyre::Result<String> {
         let row = sqlx::query(
             r#"SELECT balance FROM erc1155_tokens WHERE chain_id = ? AND contract = ? AND token_id = ?"#)
-            .bind(chain_id as u32)
+            .bind(chain_id as i64)
             .bind(format!("0x{contract:x}"))
             .bind(format!("0x{token_id:x}"))
             .fetch_one(self.pool())
@@ -49,7 +49,7 @@ impl DbInner {
     ) -> color_eyre::Result<String> {
         let row = sqlx::query(
             r#"SELECT balance FROM erc1155_tokens WHERE chain_id = ? AND contract = ? AND token_id = ?"#)
-            .bind(chain_id as u32)
+            .bind(chain_id as i64)
             .bind(format!("0x{contract:x}"))
             .bind(format!("0x{token_id:x}"))
             .fetch_one(self.pool())
@@ -70,7 +70,7 @@ impl DbInner {
                 VALUES (?,?,?,?) "#,
         )
         .bind(format!("0x{contract:x}"))
-        .bind(chain_id as u32)
+        .bind(chain_id as i64)
         .bind(format!("0x{token_id:x}"))
         .bind(format!("0x{owner:x}"))
         .bind(balance.to_string())
@@ -114,7 +114,7 @@ impl DbInner {
                 r#" DELETE FROM erc1155_tokens 
                 WHERE chain_id = ? AND contract = ? AND token_id = ? AND owner = ?"#,
             )
-            .bind(chain_id as u32)
+            .bind(chain_id as i64)
             .bind(format!("0x{contract:x}"))
             .bind(format!("0x{token_id:x}"))
             .bind(format!("0x{from:x}"))
@@ -136,7 +136,7 @@ impl DbInner {
             r#"SELECT * FROM erc1155_tokens
             WHERE chain_id = ? AND (uri IS NULL OR metadata IS NULL)"#,
         )
-        .bind(chain_id as u32)
+        .bind(chain_id as i64)
         .map(|row| row.try_into().unwrap())
         .fetch_all(self.pool())
         .await?;
@@ -159,7 +159,7 @@ impl DbInner {
                 VALUES (?,?,?,?,?,?,?) "#,
         )
         .bind(format!("0x{contract:x}"))
-        .bind(chain_id as u32)
+        .bind(chain_id as i64)
         .bind(format!("0x{token_id:x}"))
         .bind(format!("0x{owner:x}"))
         .bind(balance.to_string())
@@ -182,8 +182,8 @@ impl DbInner {
                 AND contract NOT IN
                 (SELECT contract FROM erc1155_collections WHERE chain_id = ?) "#,
         )
-        .bind(chain_id as u32)
-        .bind(chain_id as u32)
+        .bind(chain_id as i64)
+        .bind(chain_id as i64)
         .map(|row| Address::from_str(row.get::<&str, _>("contract")).unwrap())
         .fetch_all(self.pool())
         .await?;
@@ -202,7 +202,7 @@ impl DbInner {
                       VALUES (?,?,?,?) "#,
         )
         .bind(format!("0x{contract:x}"))
-        .bind(chain_id as u32)
+        .bind(chain_id as i64)
         .bind(name)
         .bind(symbol)
         .execute(self.pool())
@@ -223,7 +223,7 @@ impl DbInner {
                 ON collection.contract = erc1155_tokens.contract AND collection.chain_id = erc1155_tokens.chain_id
                 WHERE erc1155_tokens.chain_id = ? AND erc1155_tokens.owner = ?"#,
       )
-      .bind(chain_id as u32)
+      .bind(chain_id as i64)
       .bind(format!("0x{owner:x}"))
       .map(|row| row.try_into().unwrap())
       .fetch_all(self.pool())

@@ -4,7 +4,7 @@ use crate::DbInner;
 
 impl DbInner {
     pub async fn get_tip(&self, chain_id: u64, addr: Address) -> Result<u64> {
-        let chain_id = chain_id as u32;
+        let chain_id = chain_id as i64;
         let addr = addr.to_string();
 
         let row = sqlx::query!(
@@ -22,7 +22,7 @@ impl DbInner {
     pub async fn set_tip(&self, chain_id: u64, addr: Address, tip: u64) -> Result<()> {
         let addr = addr.to_string();
         let tip = format!("0x{tip:x}");
-        let chain_id = chain_id as u32;
+        let chain_id = chain_id as i64;
 
         sqlx::query!(
             r#"INSERT OR REPLACE INTO tips (owner, chain_id, tip) 

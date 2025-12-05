@@ -164,7 +164,7 @@ pub async fn db_clear_erc20_blacklist(
 #[tauri::command]
 pub async fn db_get_contract_addresses(
     chain_id: u64,
-    dedup_id: u32,
+    dedup_id: i64,
     db: tauri::State<'_, Db>,
 ) -> TauriResult<Vec<Address>> {
     Ok(db.get_contract_addresses(chain_id, dedup_id).await?)

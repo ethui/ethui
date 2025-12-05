@@ -19,7 +19,7 @@ impl DbInner {
             sqlx::query(
                 r#" DELETE FROM erc721_tokens WHERE chain_id = ? AND contract = ? AND token_id = ? "#,
             )
-            .bind(chain_id as u32)
+            .bind(chain_id as i64)
             .bind(format!("0x{contract:x}"))
             .bind(format!("0x{token_id:x}"))
             .execute(self.pool()).await?;
@@ -30,7 +30,7 @@ impl DbInner {
                         VALUES (?,?,?,?)"#,
             )
             .bind(format!("0x{contract:x}"))
-            .bind(chain_id as u32)
+            .bind(chain_id as i64)
             .bind(format!("0x{token_id:x}"))
             .bind(format!("0x{to:x}"))
             .execute(self.pool())
@@ -48,7 +48,7 @@ impl DbInner {
         FROM erc721_tokens
         WHERE chain_id = ? AND (uri IS NULL OR metadata IS NULL)"#,
         )
-        .bind(chain_id as u32)
+        .bind(chain_id as i64)
         .map(|row| row.try_into().unwrap())
         .fetch_all(self.pool())
         .await?;
@@ -69,7 +69,7 @@ impl DbInner {
                         VALUES (?,?,?,?,?,?) "#,
     )
     .bind(format!("0x{address:x}"))
-    .bind(chain_id as u32)
+    .bind(chain_id as i64)
     .bind(format!("0x{token_id:x}"))
     .bind(format!("0x{owner:x}"))
     .bind(uri)
@@ -90,8 +90,8 @@ impl DbInner {
           AND contract NOT IN
             (SELECT contract FROM erc721_collections WHERE chain_id = ?) "#,
         )
-        .bind(chain_id as u32)
-        .bind(chain_id as u32)
+        .bind(chain_id as i64)
+        .bind(chain_id as i64)
         .map(|row| Address::from_str(row.get::<&str, _>("contract")).unwrap())
         .fetch_all(self.pool())
         .await?;
@@ -110,7 +110,7 @@ impl DbInner {
                       VALUES (?,?,?,?) "#,
         )
         .bind(format!("0x{address:x}"))
-        .bind(chain_id as u32)
+        .bind(chain_id as i64)
         .bind(name)
         .bind(symbol)
         .execute(self.pool())
@@ -131,7 +131,7 @@ impl DbInner {
         ON collection.contract = erc721_tokens.contract AND collection.chain_id = erc721_tokens.chain_id
       WHERE erc721_tokens.chain_id = ? AND erc721_tokens.owner = ?"#,
       )
-      .bind(chain_id as u32)
+      .bind(chain_id as i64)
       .bind(format!("0x{owner:x}"))
       .map(|row| row.try_into().unwrap())
       .fetch_all(self.pool())

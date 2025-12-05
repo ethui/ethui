@@ -11,7 +11,7 @@ impl DbInner {
     ) -> color_eyre::Result<()> {
         let balance = balance.to_string();
         let address = format!("0x{address:x}");
-        let chain_id = chain_id as u32;
+        let chain_id = chain_id as i64;
 
         sqlx::query!(
             r#" INSERT OR REPLACE INTO native_balances (balance, chain_id, owner)
@@ -28,7 +28,7 @@ impl DbInner {
 
     pub async fn get_native_balance(&self, chain_id: u64, address: Address) -> U256 {
         let address = address.to_string();
-        let chain_id = chain_id as u32;
+        let chain_id = chain_id as i64;
 
         let res = sqlx::query!(
             r#" SELECT balance

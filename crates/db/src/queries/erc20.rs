@@ -12,7 +12,7 @@ impl DbInner {
         contract: Address,
         address: Address,
     ) -> Result<U256> {
-        let chain_id = chain_id as u32;
+        let chain_id = chain_id as i64;
         let contract = contract.to_string();
         let address = address.to_string();
 
@@ -35,7 +35,7 @@ impl DbInner {
         address: Address,
         balance: U256,
     ) -> Result<()> {
-        let chain_id = chain_id as u32;
+        let chain_id = chain_id as i64;
         let contract = contract.to_string();
         let address = address.to_string();
         let balance = balance.to_string();
@@ -104,7 +104,7 @@ impl DbInner {
         include_blacklisted: bool,
     ) -> Result<Vec<TokenBalance>> {
         let address_str = address.to_string();
-        let chain_id = chain_id as u32;
+        let chain_id = chain_id as i64;
 
         let rows = sqlx::query!(
             r#"SELECT balances.contract, balances.balance, meta.decimals, meta.name, meta.symbol
@@ -155,7 +155,7 @@ impl DbInner {
         address: Address,
     ) -> Result<Vec<TokenBalance>> {
         let address_str = address.to_string();
-        let chain_id = chain_id as u32;
+        let chain_id = chain_id as i64;
 
         let rows = sqlx::query!(
             r#"SELECT balances.contract, balances.balance, meta.decimals, meta.name, meta.symbol
@@ -199,7 +199,7 @@ impl DbInner {
     }
 
     pub async fn get_erc20_missing_metadata(&self, chain_id: u64) -> Result<Vec<Address>> {
-        let chain_id = chain_id as u32;
+        let chain_id = chain_id as i64;
         let res: Vec<_> = sqlx::query!(
             r#"SELECT DISTINCT balances.contract
                 FROM balances
@@ -223,7 +223,7 @@ impl DbInner {
         chain_id: u64,
     ) -> Result<TokenMetadata> {
         let contract = address.to_string();
-        let chain_id = chain_id as u32;
+        let chain_id = chain_id as i64;
 
         let row = sqlx::query!(
             r#"SELECT decimals as 'decimals?', name as 'name?', symbol as 'symbol?'
@@ -256,7 +256,7 @@ impl DbInner {
 
     pub async fn save_erc20_metadata(&self, chain_id: u64, metadata: TokenMetadata) -> Result<()> {
         let address = metadata.address.to_string();
-        let chain_id = chain_id as u32;
+        let chain_id = chain_id as i64;
 
         sqlx::query!(
             r#" INSERT OR REPLACE INTO tokens_metadata (contract, chain_id, decimals, name, symbol)
@@ -280,7 +280,7 @@ impl DbInner {
         blacklisted: bool,
     ) -> Result<()> {
         let address = address.to_string();
-        let chain_id = chain_id as u32;
+        let chain_id = chain_id as i64;
 
         sqlx::query!(
             r#"INSERT INTO erc20_blacklist (chain_id,address,blacklisted) VALUES (?,?,?) ON CONFLICT DO UPDATE set blacklisted = ?"#,
@@ -297,7 +297,7 @@ impl DbInner {
 
     pub async fn clear_erc20_blacklist(&self, chain_id: u64, address: Address) -> Result<()> {
         let address = address.to_string();
-        let chain_id = chain_id as u32;
+        let chain_id = chain_id as i64;
 
         sqlx::query!(
             r#"DELETE FROM erc20_blacklist WHERE chain_id = ? AND address = ?"#,
