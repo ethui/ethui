@@ -1,21 +1,29 @@
-use ethui_types::{Address, Network};
+use ethui_connections::Ctx;
+use ethui_types::{Address, Json, Network};
+use jsonrpc_core::Params as RpcParams;
 use serde::Deserialize;
 use serde_json::json;
 
-use crate::error::{Error, Result};
+use crate::{params::extract_single_param, rpc_request::Method, Result};
 
-#[derive(Debug)]
-pub struct AbiForContract {
+#[derive(Debug, Deserialize)]
+pub(crate) struct AbiForContract {
     network: Network,
     address: Address,
 }
 
-impl AbiForContract {
-    pub fn build() -> Builder {
-        Builder::default()
+impl Method for AbiForContract {
+    async fn build(params: RpcParams, ctx: Ctx) -> Result<Self> {
+        let parsed: Params = serde_json::from_value(extract_single_param(params))?;
+        let network = ctx.network().await;
+
+        Ok(Self {
+            network,
+            address: parsed.address,
+        })
     }
 
-    pub async fn run(self) -> Result<serde_json::Value> {
+    async fn run(self) -> Result<Json> {
         let db = ethui_db::get();
 
         let abi = db
@@ -27,38 +35,7 @@ impl AbiForContract {
     }
 }
 
-#[derive(Default)]
-pub struct Builder {
-    network: Option<Network>,
-    params: Option<serde_json::Value>,
-}
-
-impl Builder {
-    pub fn set_network(mut self, network: Network) -> Self {
-        self.network = Some(network);
-        self
-    }
-
-    pub fn set_params(mut self, params: serde_json::Value) -> Self {
-        self.params = Some(params);
-        self
-    }
-
-    pub fn build(self) -> Result<AbiForContract> {
-        let network = self.network.ok_or(Error::InvalidParams)?;
-
-        let params = self.params.ok_or(Error::InvalidParams)?;
-        let parsed_params: ParsedParams =
-            serde_json::from_value(params).map_err(|_| Error::InvalidParams)?;
-
-        Ok(AbiForContract {
-            network,
-            address: parsed_params.address,
-        })
-    }
-}
-
 #[derive(Deserialize)]
-pub struct ParsedParams {
+struct Params {
     address: Address,
 }

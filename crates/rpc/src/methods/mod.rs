@@ -1,14 +1,14 @@
-mod chain_add;
+pub(crate) mod chain_add;
 mod chain_update;
-pub mod ethui;
-mod send_call;
-mod send_transaction;
-mod sign_message;
-mod token_add;
+pub(crate) mod ethui;
+pub(crate) mod send_call;
+pub(crate) mod send_transaction;
+pub(crate) mod sign_message;
+pub(crate) mod token_add;
 
-pub use chain_add::ChainAdd;
-pub use chain_update::ChainUpdate;
-pub use send_call::SendCall;
-pub use send_transaction::SendTransaction;
-pub use sign_message::SignMessage;
-pub use token_add::TokenAdd;
+pub(crate) use chain_add::ChainAdd;
+pub(crate) use chain_update::ChainUpdate;
+pub(crate) use send_call::SendCall;
+pub(crate) use send_transaction::SendTransaction;
+pub(crate) use sign_message::{EthSign, EthSignTypedData};
+pub(crate) use token_add::TokenAdd;

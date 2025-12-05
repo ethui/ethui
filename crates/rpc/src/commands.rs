@@ -1,15 +1,30 @@
 use ethui_types::prelude::*;
 
-use super::{Handler, Result, utils};
+use super::{Result, methods, rpc_request::Method, utils};
 
 #[tauri::command]
-pub async fn rpc_send_transaction(params: serde_json::Value) -> Result<serde_json::Value> {
-    Ok(Handler::send_transaction(params, Default::default()).await?)
+pub async fn rpc_send_transaction(params: Json) -> Result<Json> {
+    let params: methods::send_call::CallParams = serde_json::from_value(params)?;
+    let (from, request) = params.into_request_with_from().await?;
+    let network = utils::get_current_network().await;
+
+    let method = methods::SendTransaction {
+        network,
+        from,
+        request,
+    };
+
+    method.run().await
 }
 
 #[tauri::command]
-pub async fn rpc_eth_call(params: serde_json::Value) -> Result<Bytes> {
-    Ok(Handler::send_call(params, Default::default()).await?)
+pub async fn rpc_eth_call(params: Json) -> Result<Bytes> {
+    let params: methods::send_call::CallParams = serde_json::from_value(params)?;
+    let network = utils::get_current_network().await;
+
+    let mut sender = methods::SendCall::new(network, params.into());
+
+    sender.finish().await
 }
 
 #[tauri::command]
