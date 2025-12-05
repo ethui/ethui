@@ -257,15 +257,16 @@ impl<'a> SendTransactionBuilder<'a> {
             let address = Address::from_str(from).unwrap();
             self.request.set_from(address);
 
-            let (wallet, path) = ethui_wallets::find_wallet(address)
-                .await
+            let (wallet, path) = wallets()
+                .find(address)
+                .await?
                 .ok_or(Error::WalletNotFound(address))?;
 
             self.wallet_name = Some(wallet.name());
             self.wallet_path = Some(path);
             self.wallet_type = Some((&wallet).into());
         } else {
-            let wallet = ethui_wallets::get_current_wallet().await;
+            let wallet = wallets().get_current().await?;
             let current_path = wallet.get_current_path();
 
             self.wallet_path = Some(current_path);

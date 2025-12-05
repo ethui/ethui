@@ -27,6 +27,11 @@ pub trait WalletsActorExt {
     async fn set_current_path(&self, key: String) -> Result<()>;
 }
 
+// fn force<T>(res: Result<T>) -> T {
+//     res.with_context(|e| color_eyre::eyre::eyre!("{}", e))
+//         .expect("cannot ")
+// }
+
 impl WalletsActorExt for ActorRef<WalletsActor> {
     async fn get_all(&self) -> Result<Vec<Wallet>> {
         Ok(self.ask(GetAll).await?)

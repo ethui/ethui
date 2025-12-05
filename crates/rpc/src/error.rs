@@ -126,6 +126,12 @@ impl From<Error> for jsonrpc_core::Error {
     }
 }
 
+// impl From<color_eyre::Report> for Error {
+//     fn from(err: color_eyre::Report) -> Self {
+//         Self::from(err.to_string())
+//     }
+// }
+
 impl serde::Serialize for Error {
     fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>
     where
