@@ -14,7 +14,7 @@ use ethui_wallets::{Signer, Wallet, WalletControl};
 use jsonrpc_core::Params as RpcParams;
 use serde::Serialize;
 
-use crate::{rpc_request::Method, Error, Result};
+use crate::{Error, Result, methods::Method};
 
 #[derive(Serialize, Debug)]
 #[serde(rename_all = "camelCase")]

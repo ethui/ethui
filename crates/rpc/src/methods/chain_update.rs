@@ -7,7 +7,7 @@ use serde::{Deserialize, Serialize};
 use url::Url;
 
 use super::chain_add::Currency;
-use crate::{Error, Result, params::extract_single_param, rpc_request::Method, utils};
+use crate::{Error, Result, methods::Method, params::extract_single_param, utils};
 
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]

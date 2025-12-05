@@ -6,7 +6,7 @@ use ethui_wallets::{WalletControl, Wallets};
 use jsonrpc_core::Params as RpcParams;
 use serde::{Deserialize, Serialize};
 
-use crate::{params::extract_single_param, rpc_request::Method, utils, Error, Result};
+use crate::{params::extract_single_param, methods::Method, utils, Error, Result};
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]

@@ -1,6 +1,6 @@
 use ethui_types::prelude::*;
 
-use super::{Result, methods, rpc_request::Method, utils};
+use super::{Result, methods, methods::Method, utils};
 
 #[tauri::command]
 pub async fn rpc_send_transaction(params: Json) -> Result<Json> {

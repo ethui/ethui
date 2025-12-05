@@ -13,7 +13,7 @@ use ethui_wallets::{WalletControl, WalletType, Wallets};
 use jsonrpc_core::Params as RpcParams;
 
 use super::send_call::CallParams;
-use crate::{Error, Result, params::extract_single_param, rpc_request::Method};
+use crate::{Error, Result, methods::Method, params::extract_single_param};
 
 /// Orchestrates the signing of a transaction
 pub(crate) struct SendTransaction {

@@ -7,7 +7,7 @@ use serde::{Deserialize, Serialize};
 use tracing::info;
 use url::Url;
 
-use crate::{Error, Result, params::extract_single_param, rpc_request::Method};
+use crate::{Error, Result, params::extract_single_param, methods::Method};
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]

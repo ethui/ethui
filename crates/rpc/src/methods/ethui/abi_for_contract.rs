@@ -4,7 +4,7 @@ use jsonrpc_core::Params as RpcParams;
 use serde::Deserialize;
 use serde_json::json;
 
-use crate::{params::extract_single_param, rpc_request::Method, Result};
+use crate::{params::extract_single_param, methods::Method, Result};
 
 #[derive(Debug, Deserialize)]
 pub(crate) struct AbiForContract {

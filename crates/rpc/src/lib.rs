@@ -14,8 +14,8 @@ use serde_json::json;
 
 pub use self::error::{Error, Result};
 use self::{
+    methods::Method,
     params::{Empty, PermissionRequestParams, SwitchChainParams},
-    rpc_request::Method,
 };
 
 pub struct Handler {
