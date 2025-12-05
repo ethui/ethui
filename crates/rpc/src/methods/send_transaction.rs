@@ -2,7 +2,7 @@ use std::str::FromStr;
 
 use alloy::{
     network::{Ethereum, TransactionBuilder as _},
-    providers::{PendingTransactionBuilder, Provider, ProviderBuilder, ext::AnvilApi},
+    providers::{DynProvider, PendingTransactionBuilder, Provider, ProviderBuilder, ext::AnvilApi},
     rpc::types::TransactionRequest,
 };
 use ethui_connections::Ctx;
@@ -178,10 +178,7 @@ impl SendTransaction {
         Ok(pending)
     }
 
-    async fn build_provider(
-        &mut self,
-        resolved: &ResolvedWallet,
-    ) -> Result<Box<dyn Provider<Ethereum>>> {
+    async fn build_provider(&mut self, resolved: &ResolvedWallet) -> Result<DynProvider> {
         let wallet = {
             let wallets = Wallets::read().await;
             wallets
@@ -190,29 +187,28 @@ impl SendTransaction {
                 .clone()
         };
 
-        let url = self
-            .network
-            .http_url
-            .to_string()
-            .parse()
-            .map_err(|_| Error::CannotParseUrl(self.network.http_url.to_string().clone()))?;
+        let url = self.network.http_url.to_string();
+        // .parse()
+        // .map_err(|_| Error::CannotParseUrl(self.network.http_url.to_string().clone()))?;
 
         if self.network.is_dev().await {
             // TODO: maybe we can find a way to only do this once for every account,
             // or only call anvil_autoImpersonate once for the whole network,
             // instead of making this request for every single transaction.
             // this is just a minor optimization, though
-            let provider = ProviderBuilder::new().connect_http(url);
+            let provider = ProviderBuilder::new().connect(&url).await?.erased();
             provider.anvil_auto_impersonate_account(true).await?;
-            Ok(Box::new(provider))
+            Ok(provider)
         } else {
             let signer = wallet
                 .build_signer(self.network.chain_id(), &resolved.path)
                 .await?;
             let provider = ProviderBuilder::new()
                 .wallet(signer.to_wallet())
-                .connect_http(url);
-            Ok(Box::new(provider))
+                .connect(&url)
+                .await?
+                .erased();
+            Ok(provider)
         }
     }
 
