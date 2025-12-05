@@ -6,7 +6,7 @@ use serde::{Deserialize, Serialize};
 #[serde(untagged)]
 pub enum NetworkGetKey {
     Id(NetworkId),
-    ChainId(u32),
+    ChainId(u64),
     Name(String),
 }
 
@@ -16,8 +16,8 @@ impl From<NetworkId> for NetworkGetKey {
     }
 }
 
-impl From<u32> for NetworkGetKey {
-    fn from(chain_id: u32) -> Self {
+impl From<u64> for NetworkGetKey {
+    fn from(chain_id: u64) -> Self {
         NetworkGetKey::ChainId(chain_id)
     }
 }

@@ -136,13 +136,7 @@ impl NetworksActor {
 
     #[message]
     #[tracing::instrument(skip(self))]
-<<<<<<< HEAD
     fn get(&self, key: NetworkGetKey) -> Option<Network> {
-||||||| parent of 2cc58eeb (refactor: use u64 for chain ids, consistent with alloy (#1514))
-    fn get(&self, chain_id: u32) -> Option<Network> {
-=======
-    fn get(&self, chain_id: u64) -> Option<Network> {
->>>>>>> 2cc58eeb (refactor: use u64 for chain ids, consistent with alloy (#1514))
         trace!("");
         match key {
             NetworkGetKey::Id(id) => self.inner.networks.values().find(|n| n.id == id).cloned(),
