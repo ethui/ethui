@@ -226,7 +226,7 @@ impl Handler {
     async fn switch_chain(params: Params, mut ctx: Ctx) -> jsonrpc_core::Result<serde_json::Value> {
         let params = params.parse::<Vec<HashMap<String, String>>>().unwrap();
         let chain_id_str = params[0].get("chainId").unwrap().clone();
-        let new_chain_id = u32::from_str_radix(&chain_id_str[2..], 16).unwrap();
+        let new_chain_id = u64::from_str_radix(&chain_id_str[2..], 16).unwrap();
 
         // TODO future work
         // multiple networks with same chain id should display a dialog so user can select which

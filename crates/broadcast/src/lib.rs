@@ -25,10 +25,10 @@ pub enum InternalMsg {
 
     PeerAdded,
 
-    TransactionSubmitted(u32), // chain_id
+    TransactionSubmitted(u64), // chain_id
 
     /// Request a full update of a TX. oneshot channel included to notify when job is done
-    FetchFullTxSync(u32, B256, Arc<Mutex<Option<oneshot::Sender<()>>>>),
+    FetchFullTxSync(u64, B256, Arc<Mutex<Option<oneshot::Sender<()>>>>),
     FetchERC20Metadata(u32, Address),
 
     ContractFound,
@@ -126,7 +126,7 @@ mod internal_msgs {
         send(WalletConnected(wallet_type)).await;
     }
 
-    pub async fn transaction_submitted(chain_id: u32) {
+    pub async fn transaction_submitted(chain_id: u64) {
         send(TransactionSubmitted(chain_id)).await;
     }
 
@@ -139,7 +139,7 @@ mod internal_msgs {
     }
 
     #[instrument(level = "trace")]
-    pub async fn fetch_full_tx_sync(chain_id: u32, hash: B256) {
+    pub async fn fetch_full_tx_sync(chain_id: u64, hash: B256) {
         let (tx, rx) = oneshot::channel();
         send(FetchFullTxSync(
             chain_id,

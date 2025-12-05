@@ -6,7 +6,7 @@
 // impl Db {
 //     pub async fn save_alchemy_transfers(
 //         &self,
-//         chain_id: u32,
+//         chain_id: u64,
 //         transfers: Vec<AlchemyAssetTransfer>,
 //     ) -> color_eyre::Result<()> {
 //         for transfer in transfers {

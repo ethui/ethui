@@ -20,13 +20,13 @@ pub async fn init() {
 
 #[derive(Debug)]
 enum Msg {
-    FetchFullTxSync(u32, B256, Arc<Mutex<Option<oneshot::Sender<()>>>>),
+    FetchFullTxSync(u64, B256, Arc<Mutex<Option<oneshot::Sender<()>>>>),
     TrackAddress(Address),
     UntrackAddress(Address),
-    TrackNetwork(u32),
-    UntrackNetwork(u32),
+    TrackNetwork(u64),
+    UntrackNetwork(u64),
     PollAddress(Address),
-    PollNetwork(u32),
+    PollNetwork(u64),
 }
 
 impl TryFrom<InternalMsg> for Msg {

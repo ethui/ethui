@@ -11,7 +11,7 @@ pub struct TokenAdd {
     erc20_token: Option<TokenMetadata>,
     erc721_token: Option<ERC721Data>,
     erc1155_token: Option<ERC1155Data>,
-    chain_id: Option<u32>,
+    chain_id: Option<u64>,
     _type: String,
 }
 
@@ -38,7 +38,7 @@ impl TokenAdd {
         TokenAddBuilder::default()
     }
 
-    pub async fn get_current_chain_id(&self) -> u32 {
+    pub async fn get_current_chain_id(&self) -> u64 {
         networks()
             .get_current()
             .await
@@ -51,7 +51,7 @@ impl TokenAdd {
         wallets.get_current_wallet().get_current_address().await
     }
 
-    pub async fn get_erc20_metadata(&self, chain_id: u32) -> Result<Erc20Metadata> {
+    pub async fn get_erc20_metadata(&self, chain_id: u64) -> Result<Erc20Metadata> {
         if let Some(erc20_token) = &self.erc20_token {
             let alchemy = get_alchemy(chain_id).await.map_err(|_| Error::ParseError)?;
             let metadata = alchemy
@@ -64,7 +64,7 @@ impl TokenAdd {
         }
     }
 
-    pub async fn get_erc_metadata(&self, chain_id: u32) -> Result<ErcMetadataResponse> {
+    pub async fn get_erc_metadata(&self, chain_id: u64) -> Result<ErcMetadataResponse> {
         let alchemy = get_alchemy(chain_id).await.map_err(|_| Error::ParseError)?;
         match self._type.as_str() {
             "ERC721" => {
@@ -101,7 +101,7 @@ impl TokenAdd {
         }
     }
 
-    pub async fn get_erc_owners(&self, chain_id: u32) -> Result<ErcOwnersResponse> {
+    pub async fn get_erc_owners(&self, chain_id: u64) -> Result<ErcOwnersResponse> {
         let alchemy = get_alchemy(chain_id).await.map_err(|_| Error::ParseError)?;
         match self._type.as_str() {
             "ERC721" => {
@@ -130,7 +130,7 @@ impl TokenAdd {
         }
     }
 
-    pub async fn get_erc1155_balances(&self, chain_id: u32) -> Result<U256> {
+    pub async fn get_erc1155_balances(&self, chain_id: u64) -> Result<U256> {
         if let Some(erc1155_token) = &self.erc1155_token {
             let wallet_address = self.get_current_wallet_address().await;
             let balances_response = self.get_erc_owners(chain_id).await.unwrap();
@@ -242,7 +242,7 @@ impl TokenAdd {
         Ok(())
     }
 
-    pub async fn check_erc_owner(&self, chain_id: u32) -> Result<()> {
+    pub async fn check_erc_owner(&self, chain_id: u64) -> Result<()> {
         let wallet_address = self.get_current_wallet_address().await;
         let owners_response = self.get_erc_owners(chain_id).await.unwrap();
 
@@ -359,7 +359,7 @@ impl TokenAdd {
 
     pub async fn on_accept_erc20(
         &self,
-        chain_id: u32,
+        chain_id: u64,
         erc20_full_data: Option<Erc20FullData>,
     ) -> Result<()> {
         let db = ethui_db::get();
@@ -381,7 +381,7 @@ impl TokenAdd {
 
     pub async fn on_accept_erc721(
         &self,
-        chain_id: u32,
+        chain_id: u64,
         full_data: ErcMetadataResponse,
     ) -> Result<()> {
         let db = ethui_db::get();
@@ -421,7 +421,7 @@ impl TokenAdd {
 
     pub async fn on_accept_erc1155(
         &self,
-        chain_id: u32,
+        chain_id: u64,
         full_data: ErcMetadataResponse,
     ) -> Result<()> {
         let db = ethui_db::get();
@@ -480,7 +480,7 @@ pub enum TokenOptions {
 #[serde(rename_all = "camelCase")]
 pub struct ERC20Options {
     address: Address,
-    chain_id: Option<u32>,
+    chain_id: Option<u64>,
     name: Option<String>,
     symbol: Option<String>,
     decimals: Option<u8>,
@@ -490,7 +490,7 @@ pub struct ERC20Options {
 #[serde(rename_all = "camelCase")]
 pub struct ERC721Options {
     address: Address,
-    chain_id: Option<u32>,
+    chain_id: Option<u64>,
     token_id: U256,
 }
 
@@ -498,7 +498,7 @@ pub struct ERC721Options {
 #[serde(rename_all = "camelCase")]
 pub struct ERC1155Options {
     address: Address,
-    chain_id: Option<u32>,
+    chain_id: Option<u64>,
     token_id: U256,
 }
 

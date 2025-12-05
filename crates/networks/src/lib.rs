@@ -3,13 +3,12 @@ pub mod commands;
 mod init;
 mod migrations;
 
+pub use actor::{NetworksActorExt, networks, try_networks};
 use ethui_types::prelude::*;
+pub use init::init;
 use migrations::LatestVersion;
 
-pub use actor::{networks, try_networks, NetworksActorExt};
-pub use init::init;
-
-pub async fn get_network(chain_id: u32) -> Result<Network> {
+pub async fn get_network(chain_id: u64) -> Result<Network> {
     networks()
         .get(chain_id)
         .await?
@@ -18,7 +17,7 @@ pub async fn get_network(chain_id: u32) -> Result<Network> {
 
 /// Get a provider for a network by chain_id.
 /// Acquires and releases the lock, then creates the provider.
-pub async fn get_provider(chain_id: u32) -> Result<RootProvider<Ethereum>> {
+pub async fn get_provider(chain_id: u64) -> Result<RootProvider<Ethereum>> {
     let network = get_network(chain_id).await?;
     network.get_alloy_provider().await
 }

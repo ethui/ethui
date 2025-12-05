@@ -93,11 +93,11 @@ impl Network {
         self.id
     }
 
-    pub fn chain_id(&self) -> u32 {
+    pub fn chain_id(&self) -> u64 {
         self.id.chain_id()
     }
 
-    pub fn dedup_id(&self) -> u32 {
+    pub fn dedup_id(&self) -> u64 {
         self.id.dedup_id()
     }
 

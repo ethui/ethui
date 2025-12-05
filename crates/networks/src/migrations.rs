@@ -48,7 +48,7 @@ enum Versions {
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct NetworkV0 {
     pub name: String,
-    pub chain_id: u32,
+    pub chain_id: u64,
     pub explorer_url: Option<String>,
     pub http_url: Url,
     pub ws_url: Option<Url>,
@@ -60,7 +60,7 @@ pub struct NetworkV0 {
 pub struct NetworkV1 {
     pub deduplication_id: u32,
     pub name: String,
-    pub chain_id: u32,
+    pub chain_id: u64,
     pub explorer_url: Option<String>,
     pub http_url: Url,
     pub ws_url: Option<Url>,

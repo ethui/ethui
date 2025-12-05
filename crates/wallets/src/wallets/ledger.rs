@@ -2,7 +2,7 @@ use alloy::signers::ledger::{HDPath, LedgerSigner};
 use async_trait::async_trait;
 use ethui_types::prelude::*;
 
-use crate::{utils, wallet::WalletCreate, Signer, Wallet, WalletControl};
+use crate::{Signer, Wallet, WalletControl, utils, wallet::WalletCreate};
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
@@ -74,9 +74,8 @@ impl WalletControl for LedgerWallet {
             .with_context(|| format!("unknown wallet key: {path}"))
     }
 
-    async fn build_signer(&self, chain_id: u32, path: &str) -> color_eyre::Result<Signer> {
-        // TODO: use u64 for chain id
-        let ledger = LedgerSigner::new(HDPath::Other(path.into()), Some(chain_id.into()))
+    async fn build_signer(&self, chain_id: u64, path: &str) -> color_eyre::Result<Signer> {
+        let ledger = LedgerSigner::new(HDPath::Other(path.into()), Some(chain_id))
             .await
             .map_err(|e| eyre!("Ledger error: {}", e))?;
 
