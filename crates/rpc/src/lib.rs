@@ -201,7 +201,7 @@ impl Handler {
         Ok(Json::Null)
     }
 
-    #[tracing::instrument()]
+    #[tracing::instrument(skip(_ctx))]
     async fn update_chain(params: Params, _ctx: Ctx) -> Result<Json> {
         let method = methods::ChainUpdate::build()
             .set_params(params.into())?
@@ -227,7 +227,7 @@ impl Handler {
         Ok(Json::Null)
     }
 
-    #[tracing::instrument()]
+    #[tracing::instrument(skip(params, _ctx))]
     async fn add_token(params: Params, _ctx: Ctx) -> Result<Json> {
         let method = methods::TokenAdd::build()
             .set_params(params.into())?
