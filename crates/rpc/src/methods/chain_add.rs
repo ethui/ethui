@@ -28,7 +28,7 @@ pub(crate) struct ChainAdd {
 }
 
 impl Method for ChainAdd {
-    async fn build(params: RpcParams, _ctx: Ctx) -> Result<Self> {)
+    async fn build(params: RpcParams, _ctx: Ctx) -> Result<Self> {
         Ok(serde_json::from_value(extract_single_param(params))?)
     }
 
@@ -76,7 +76,7 @@ impl TryFrom<ChainAdd> for NewNetworkParams {
         Ok(Self {
             name: params.chain_name,
             // Using 0 for dedup_id since at this time no duplicate chain_id is allowed
-            chain_id: TryInto::<u64>::try_into(params.chain_id)?,
+            chain_id: TryInto::<u64>::try_into(params.chain_id).map_err(|_| Error::ParseError)?,
             explorer_url: params
                 .block_explorer_urls
                 .unwrap_or_default()

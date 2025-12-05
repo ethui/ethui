@@ -32,24 +32,21 @@ impl Method for ChainUpdate {
     }
 
     async fn run(self) -> Result<Json> {
-        let (network, new_network_params) = self.build_network().await;
+        let (network, new_network_params) = self.build_network().await?;
 
         if self.already_active(&network).await {
             return Ok(true.into());
         }
 
         if !self.already_exists(&network).await {
-            let add_dialog = Dialog::new(
-                "chain-add",
-                serde_json::to_value(&new_network_params).unwrap(),
-            );
+            let add_dialog = Dialog::new("chain-add", serde_json::to_value(&new_network_params)?);
             add_dialog.open().await?;
 
             while let Some(msg) = add_dialog.recv().await {
                 match msg {
                     DialogMsg::Data(msg) => {
                         if let Some("accept") = msg.as_str() {
-                            networks().add(new_network_params.clone().unwrap()).await?;
+                            networks().add(new_network_params.clone()).await?;
                             break;
                         }
                     }
@@ -59,7 +56,7 @@ impl Method for ChainUpdate {
         }
 
         let switch_data = self.get_switch_data(&network).await;
-        let switch_dialog = Dialog::new("chain-switch", serde_json::to_value(switch_data).unwrap());
+        let switch_dialog = Dialog::new("chain-switch", serde_json::to_value(switch_data)?);
         switch_dialog.open().await?;
 
         while let Some(msg) = switch_dialog.recv().await {
@@ -79,10 +76,10 @@ impl Method for ChainUpdate {
 }
 
 impl ChainUpdate {
-    async fn build_network(&self) -> (Network, Option<NewNetworkParams>) {
+    async fn build_network(&self) -> Result<(Network, NewNetworkParams)> {
         let chain_name = self.chain_name.clone();
 
-        let chain_id = TryInto::<u64>::try_into(self.chain_id).unwrap();
+        let chain_id = TryInto::<u64>::try_into(self.chain_id).map_err(|_| Error::ParseError)?;
         let new_network_params = NewNetworkParams {
             chain_id,
             name: chain_name.clone(),
@@ -108,17 +105,17 @@ impl ChainUpdate {
             is_stack: false,
         };
 
-        let deduplication_id = networks()
+        let dedup_id = networks()
             .get_by_name(chain_name)
             .await
             .expect("networks actor not available")
             .map(|network| network.id().dedup_id())
             .unwrap_or(0);
 
-        (
-            new_network_params.clone().into_network(deduplication_id),
-            Some(new_network_params),
-        )
+        Ok((
+            new_network_params.clone().into_network(dedup_id),
+            new_network_params,
+        ))
     }
 
     async fn get_switch_data(&self, network: &Network) -> NetworkSwitch {
