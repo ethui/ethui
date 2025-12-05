@@ -30,7 +30,6 @@ jsonrpc-core.workspace = true
 thiserror.workspace = true
 color-eyre.workspace = true
 url.workspace = true
-bon.workspace = true
 
 [features]
 default = []
