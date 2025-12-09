@@ -1,77 +1,81 @@
-use alloy::{
-    network::TransactionBuilder as _, providers::Provider as _, rpc::types::TransactionRequest,
-};
-use ethui_connections::Ctx;
+use alloy::{network::TransactionBuilder as _, providers::Provider as _, rpc::types::TransactionRequest};
 use ethui_types::prelude::*;
+use ethui_wallets::WalletControl;
+use serde::Deserialize;
 
 use crate::Result;
 
-/// Orchestrates the signing of a transaction
-/// Takes references to both the wallet and network where this
+/// Raw call/transaction parameters from RPC
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub(crate) struct CallParams {
+    from: Option<Address>,
+    to: Option<Address>,
+    value: Option<U256>,
+    data: Option<Bytes>,
+    gas: Option<u64>,
+}
+
+impl CallParams {
+    /// Convert to TransactionRequest, resolving `from` address from current wallet if not provided
+    pub(crate) async fn into_request_with_from(self) -> Result<(Address, TransactionRequest)> {
+        let mut request: TransactionRequest = self.into();
+
+        let from = if let Some(addr) = request.from {
+            addr
+        } else {
+            let wallet = ethui_wallets::get_current_wallet().await;
+            let addr = wallet.get_current_address().await;
+            request.set_from(addr);
+            addr
+        };
+
+        Ok((from, request))
+    }
+}
+
+impl From<CallParams> for TransactionRequest {
+    fn from(params: CallParams) -> Self {
+        let mut request = TransactionRequest::default();
+
+        if let Some(from) = params.from {
+            request.set_from(from);
+        }
+        if let Some(to) = params.to {
+            request.set_to(to);
+        }
+        if let Some(value) = params.value {
+            request.set_value(value);
+        }
+        if let Some(data) = params.data {
+            request.set_input(data);
+        }
+        if let Some(gas) = params.gas {
+            request.set_gas_limit(gas);
+        }
+
+        request
+    }
+}
+
+/// Orchestrates eth_call
 #[derive(Debug)]
-pub struct SendCall {
-    pub network: Network,
-    pub request: TransactionRequest,
+pub(crate) struct SendCall {
+    network: Network,
+    request: TransactionRequest,
 }
 
 impl SendCall {
-    pub fn build(ctx: &Ctx) -> SendCallBuilder<'_> {
-        SendCallBuilder::new(ctx)
+    pub(crate) fn new(network: Network, request: TransactionRequest) -> Self {
+        Self { network, request }
     }
 
-    pub async fn finish(&mut self) -> Result<Bytes> {
+    pub(crate) async fn finish(&mut self) -> Result<Bytes> {
         self.send().await
     }
 
     async fn send(&mut self) -> Result<Bytes> {
         let provider = self.network.get_alloy_provider().await?;
         Ok(provider.call(self.request.clone()).await?)
-    }
-}
-
-pub struct SendCallBuilder<'a> {
-    ctx: &'a Ctx,
-    pub request: TransactionRequest,
-}
-
-impl<'a> SendCallBuilder<'a> {
-    pub fn new(ctx: &'a Ctx) -> Self {
-        Self {
-            ctx,
-            request: Default::default(),
-        }
-    }
-
-    pub async fn set_request(mut self, params: serde_json::Value) -> Result<SendCallBuilder<'a>> {
-        // TODO: why is this an array?
-        let params = if params.is_array() {
-            params.as_array().unwrap()[0].clone()
-        } else {
-            params
-        };
-
-        if let Some(from) = params["from"].as_str() {
-            self.request.set_from(Address::from_str(from).unwrap());
-        }
-        if let Some(to) = params["to"].as_str() {
-            self.request.set_to(Address::from_str(to).unwrap());
-        }
-
-        if let Some(value) = params["value"].as_str() {
-            self.request.set_value(U256::from_str(value).unwrap());
-        }
-
-        if let Some(data) = params["data"].as_str() {
-            self.request.set_input(Bytes::from_str(data).unwrap());
-        }
-
-        Ok(self)
-    }
-
-    pub async fn build(self) -> SendCall {
-        SendCall {
-            network: self.ctx.network().await,
-            request: self.request,
-        }
     }
 }

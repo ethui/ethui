@@ -1,39 +1,56 @@
+use ethui_connections::Ctx;
 use ethui_dialogs::{Dialog, DialogMsg};
-use ethui_networks::{networks, NetworksActorExt as _};
-use ethui_types::{NewNetworkParams, U64};
+use ethui_networks::{NetworksActorExt as _, networks};
+use ethui_types::{Json, NewNetworkParams, U64};
+use jsonrpc_core::Params as RpcParams;
 use serde::{Deserialize, Serialize};
 use tracing::info;
 use url::Url;
 
-use crate::{Error, Result};
+use crate::{Error, Result, methods::Method, params::extract_single_param};
 
-#[derive(Debug)]
-pub struct ChainAdd {
-    network: NewNetworkParams,
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub(crate) struct Currency {
+    pub name: String,
+    pub symbol: String,
+    pub decimals: u64,
 }
 
-impl ChainAdd {
-    pub fn build() -> ChainAddBuilder {
-        ChainAddBuilder::default()
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub(crate) struct ChainAdd {
+    chain_id: U64,
+    chain_name: String,
+    rpc_urls: Vec<Url>,
+    native_currency: Currency,
+    block_explorer_urls: Option<Vec<Url>>,
+}
+
+impl Method for ChainAdd {
+    async fn build(params: RpcParams, _ctx: Ctx) -> Result<Self> {
+        Ok(serde_json::from_value(extract_single_param(params))?)
     }
 
     #[tracing::instrument(skip(self))]
-    pub async fn run(self) -> Result<()> {
+    async fn run(self) -> Result<Json> {
+        let network: NewNetworkParams = self.clone().try_into()?;
+
         // TODO how to handle dedup_id
         // if the network already exists, we may want to add a new one anyway
-        if self.already_exists().await {
+        if self.already_exists().await? {
             info!("Network already exists");
-            return Ok(());
+            return Ok(Json::Null);
         }
 
-        let dialog = Dialog::new("chain-add", serde_json::to_value(&self.network).unwrap());
+        let dialog = Dialog::new("chain-add", serde_json::to_value(&network)?);
         dialog.open().await?;
 
         while let Some(msg) = dialog.recv().await {
             match msg {
                 DialogMsg::Data(msg) => {
                     if let Some("accept") = msg.as_str() {
-                        self.on_accept().await?;
+                        networks().add(network).await?;
                         break;
                     }
                 }
@@ -42,72 +59,24 @@ impl ChainAdd {
             }
         }
 
-        Ok(())
-    }
-
-    pub async fn already_exists(&self) -> bool {
-        networks()
-            .validate_chain_id(self.network.chain_id)
-            .await
-            .expect("networks actor not available")
-    }
-
-    pub async fn on_accept(&self) -> Result<()> {
-        networks().add(self.network.clone()).await?;
-
-        Ok(())
+        Ok(Json::Null)
     }
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
-#[serde(rename_all = "camelCase")]
-pub struct Params {
-    pub chain_id: U64,
-    pub chain_name: String,
-    pub rpc_urls: Vec<Url>,
-    pub native_currency: Currency,
-    pub block_explorer_urls: Option<Vec<Url>>,
-}
-
-#[derive(Debug, Serialize, Deserialize, Clone)]
-#[serde(rename_all = "camelCase")]
-pub struct Currency {
-    pub name: String,
-    pub symbol: String,
-    pub decimals: u64,
-}
-
-#[derive(Debug, Default)]
-pub struct ChainAddBuilder {
-    params: Option<Params>,
-}
-
-impl ChainAddBuilder {
-    pub fn set_params(mut self, params: serde_json::Value) -> Result<Self> {
-        let params: serde_json::Value = if params.is_array() {
-            params.as_array().unwrap()[0].clone()
-        } else {
-            params
-        };
-
-        self.params = Some(serde_json::from_value(params)?);
-        Ok(self)
-    }
-
-    pub async fn build(self) -> ChainAdd {
-        ChainAdd {
-            network: self.params.unwrap().try_into().unwrap(),
-        }
+impl ChainAdd {
+    async fn already_exists(&self) -> Result<bool> {
+        let chain_id: u64 = self.chain_id.try_into().map_err(|_| Error::ParseError)?;
+        Ok(networks().validate_chain_id(chain_id).await?)
     }
 }
 
-impl TryFrom<Params> for NewNetworkParams {
+impl TryFrom<ChainAdd> for NewNetworkParams {
     type Error = Error;
-    fn try_from(params: Params) -> Result<Self> {
+    fn try_from(params: ChainAdd) -> Result<Self> {
         Ok(Self {
             name: params.chain_name,
             // Using 0 for dedup_id since at this time no duplicate chain_id is allowed
-            chain_id: TryInto::<u64>::try_into(params.chain_id).unwrap(),
+            chain_id: TryInto::<u64>::try_into(params.chain_id).map_err(|_| Error::ParseError)?,
             explorer_url: params
                 .block_explorer_urls
                 .unwrap_or_default()
