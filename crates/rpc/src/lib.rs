@@ -62,7 +62,7 @@ impl Handler {
                         let method = <$method as Method>::build(params, ctx).await?;
                         let ret = method.run().await;
                         info!(result = ?ret);
-                        ret.map_err(|e| e.into())
+                        ret.map_err(Into::into)
                     });
             };
         }

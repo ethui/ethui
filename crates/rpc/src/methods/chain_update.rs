@@ -38,7 +38,7 @@ impl Method for ChainUpdate {
             return Ok(true.into());
         }
 
-        if !self.already_exists(&network).await {
+        if !self.already_exists(&network).await? {
             let add_dialog = Dialog::new("chain-add", serde_json::to_value(&new_network_params)?);
             add_dialog.open().await?;
 
@@ -130,11 +130,10 @@ impl ChainUpdate {
         utils::get_current_network().await.chain_id() == network.chain_id()
     }
 
-    async fn already_exists(&self, network: &Network) -> bool {
-        networks()
+    async fn already_exists(&self, network: &Network) -> Result<bool> {
+        Ok(networks()
             .get_by_name(network.name.clone())
-            .await
-            .expect("networks actor not available")
-            .is_some()
+            .await?
+            .is_some())
     }
 }

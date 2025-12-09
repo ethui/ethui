@@ -40,7 +40,8 @@ impl Method for EthSign {
         let _address = params
             .get(1)
             .and_then(|v| v.as_ref())
-            .and_then(|s| Address::from_str(s).ok());
+            .and_then(|s| Address::from_str(s).ok())
+            .ok_or(Error::ParseError)?;
 
         let wallet = ethui_wallets::get_current_wallet().await;
         let wallet_path = wallet.get_current_path();

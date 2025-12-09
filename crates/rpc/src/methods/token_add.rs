@@ -1,12 +1,12 @@
 use ethui_connections::Ctx;
 use ethui_dialogs::{Dialog, DialogMsg};
-use ethui_sync::{get_alchemy, Erc20Metadata, ErcMetadataResponse, ErcOwnersResponse};
-use ethui_types::{prelude::*, TokenMetadata};
+use ethui_sync::{Erc20Metadata, ErcMetadataResponse, ErcOwnersResponse, get_alchemy};
+use ethui_types::{TokenMetadata, prelude::*};
 use ethui_wallets::{WalletControl, Wallets};
 use jsonrpc_core::Params as RpcParams;
 use serde::{Deserialize, Serialize};
 
-use crate::{params::extract_single_param, methods::Method, utils, Error, Result};
+use crate::{Error, Result, methods::Method, params::extract_single_param, utils};
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
@@ -194,7 +194,7 @@ impl TokenAdd {
                         let balance: U256 = token_balance
                             .balance
                             .parse()
-                            .expect("Invalid number format");
+                            .map_err(|_| Error::ParseError)?;
                         return Ok(balance);
                     }
                 }
@@ -253,7 +253,12 @@ impl TokenAdd {
             && (metadata.symbol.is_none() || metadata.symbol == Some("".to_string()))
         {
             return Err(Error::SymbolMissing);
-        } else if alchemy_metadata.symbol.as_ref().map(|s| s.len()).unwrap_or(0) > 11
+        } else if alchemy_metadata
+            .symbol
+            .as_ref()
+            .map(|s| s.len())
+            .unwrap_or(0)
+            > 11
             || metadata.symbol.as_ref().map(|s| s.len()).unwrap_or(0) > 11
         {
             return Err(Error::SymbolInvalid);
