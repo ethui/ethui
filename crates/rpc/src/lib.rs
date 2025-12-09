@@ -48,7 +48,7 @@ impl Handler {
                         info!(method = $name, params = serde_json::to_string(&params).unwrap());
                         let ret = $fn(params.try_into()?, ctx).await;
                         info!(result = ?ret);
-                        ret
+                        ret.map_err(Into::into)
                     });
             };
         }
@@ -159,19 +159,19 @@ impl Handler {
         method_handler!("ethui_forgeTestSubmitRun", methods::ethui::ForgeTestTraces);
     }
 
-    async fn accounts(_: Empty, _: Ctx) -> jsonrpc_core::Result<Json> {
+    async fn accounts(_: Empty, _: Ctx) -> Result<Json> {
         let wallets = Wallets::read().await;
         let address = wallets.get_current_wallet().get_current_address().await;
 
         Ok(json!([address]))
     }
 
-    async fn chain_id(_: Empty, ctx: Ctx) -> jsonrpc_core::Result<Json> {
+    async fn chain_id(_: Empty, ctx: Ctx) -> Result<Json> {
         let network = ctx.network().await;
         Ok(json!(network.chain_id_hex()))
     }
 
-    async fn metamask_provider_state(_: Empty, ctx: Ctx) -> jsonrpc_core::Result<Json> {
+    async fn metamask_provider_state(_: Empty, ctx: Ctx) -> Result<Json> {
         let wallets = Wallets::read().await;
 
         let network = ctx.network().await;
@@ -185,50 +185,50 @@ impl Handler {
         }))
     }
 
-    #[tracing::instrument(skip(params))]
+    #[tracing::instrument(skip(request))]
     async fn request_permissions(
-        params: PermissionRequestParams,
+        request: PermissionRequestParams,
         mut ctx: Ctx,
-    ) -> jsonrpc_core::Result<Json> {
-        let ret = ctx.request_permissions(params.into());
+    ) -> Result<Json> {
+        let ret = ctx.request_permissions(request.into());
 
         Ok(json!(ret))
     }
 
-    #[tracing::instrument(skip(params))]
+    #[tracing::instrument(skip(request))]
     async fn revoke_permissions(
-        params: PermissionRequestParams,
+        request: PermissionRequestParams,
         mut ctx: Ctx,
-    ) -> jsonrpc_core::Result<Json> {
-        let ret = ctx.revoke_permissions(params.into());
+    ) -> Result<Json> {
+        let ret = ctx.revoke_permissions(request.into());
 
         Ok(json!(ret))
     }
 
     #[tracing::instrument(skip(_params, ctx))]
-    async fn get_permissions(_params: Empty, ctx: Ctx) -> jsonrpc_core::Result<Json> {
+    async fn get_permissions(_params: Empty, ctx: Ctx) -> Result<Json> {
         Ok(json!(ctx.get_permissions()))
     }
 
     #[tracing::instrument()]
-    async fn switch_chain(params: SwitchChainParams, mut ctx: Ctx) -> jsonrpc_core::Result<Json> {
+    async fn switch_chain(params: SwitchChainParams, mut ctx: Ctx) -> Result<Json> {
         let new_chain_id = params.chain_id()?;
 
         // TODO future work
         // multiple networks with same chain id should display a dialog so user can select which
         // network to switch to
-        let res = ctx.switch_chain(new_chain_id).await.map(|_| Json::Null);
+        ctx.switch_chain(new_chain_id).await.map_err(Error::Ethui)?;
 
-        Ok(res.map_err(Error::from)?)
+        Ok(Json::Null)
     }
 
-    async fn unimplemented(_: Empty, _: Ctx) -> jsonrpc_core::Result<Json> {
+    async fn unimplemented(_: Empty, _: Ctx) -> Result<Json> {
         tracing::warn!("unimplemented method called");
 
-        Err(jsonrpc_core::Error::internal_error())
+        Err(Error::JsonRpc(jsonrpc_core::Error::internal_error()))
     }
 
-    async fn ethui_provider_state(_: Empty, ctx: Ctx) -> jsonrpc_core::Result<Json> {
+    async fn ethui_provider_state(_: Empty, ctx: Ctx) -> Result<Json> {
         let wallets = Wallets::read().await;
 
         let network = ctx.network().await;

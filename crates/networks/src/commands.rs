@@ -15,7 +15,7 @@ pub async fn networks_get_list() -> TauriResult<Vec<Network>> {
 #[tauri::command]
 pub async fn networks_set_current(name: String) -> TauriResult<Network> {
     let networks = networks();
-    networks.set_current_by_name(name).await?;
+    networks.set_current(name).await?;
     Ok(networks.get_current().await?)
 }
 
@@ -37,7 +37,7 @@ pub async fn networks_remove(name: String) -> TauriResult<()> {
 #[tauri::command]
 pub async fn networks_is_dev(id: NetworkId) -> TauriResult<bool> {
     let network = networks()
-        .get_by_id(id)
+        .get(id)
         .await?
         .with_context(|| "Network not found")?;
 

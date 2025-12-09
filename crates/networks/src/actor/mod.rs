@@ -1,12 +1,13 @@
 mod ext;
+mod types;
 
 use std::{fs::File, ops::ControlFlow, path::PathBuf};
 
-use ethui_types::{Affinity, Network, NetworkId, NewNetworkParams, UINotify, prelude::*};
+use ethui_types::{Affinity, Network, NewNetworkParams, UINotify, prelude::*};
 pub use ext::NetworksActorExt;
 use kameo::prelude::*;
 
-use crate::{SerializedNetworks, migrations::load_and_migrate};
+use crate::{SerializedNetworks, actor::types::NetworkGetKey, migrations::load_and_migrate};
 
 #[derive(Debug)]
 pub struct NetworksActor {
@@ -135,31 +136,23 @@ impl NetworksActor {
 
     #[message]
     #[tracing::instrument(skip(self))]
-    fn get(&self, chain_id: u64) -> Option<Network> {
+    fn get(&self, key: NetworkGetKey) -> Option<Network> {
         trace!("");
-        self.inner
-            .networks
-            .values()
-            .find(|n| n.chain_id() == chain_id)
-            .cloned()
-    }
-
-    #[message]
-    #[tracing::instrument(skip(self))]
-    fn get_by_name(&self, name: String) -> Option<Network> {
-        trace!("");
-        self.inner
-            .networks
-            .values()
-            .find(|n| n.name == name)
-            .cloned()
-    }
-
-    #[message]
-    #[tracing::instrument(skip(self))]
-    fn get_by_id(&self, id: NetworkId) -> Option<Network> {
-        trace!("");
-        self.inner.networks.values().find(|n| n.id == id).cloned()
+        match key {
+            NetworkGetKey::Id(id) => self.inner.networks.values().find(|n| n.id == id).cloned(),
+            NetworkGetKey::ChainId(chain_id) => self
+                .inner
+                .networks
+                .values()
+                .find(|n| n.chain_id() == chain_id)
+                .cloned(),
+            NetworkGetKey::Name(name) => self
+                .inner
+                .networks
+                .values()
+                .find(|n| n.name == name)
+                .cloned(),
+        }
     }
 
     #[message]
@@ -187,8 +180,28 @@ impl NetworksActor {
 
     #[message]
     #[tracing::instrument(skip(self))]
-    async fn set_current_by_name(&mut self, new_current_network: String) -> color_eyre::Result<()> {
+    async fn set_current(&mut self, key: NetworkGetKey) -> color_eyre::Result<()> {
         trace!("");
+        let new_current_network = match key {
+            NetworkGetKey::Name(name) => name,
+            NetworkGetKey::Id(id) => self
+                .inner
+                .networks
+                .values()
+                .find(|n| n.id() == id)
+                .with_context(|| format!("Network with id {id:?} not found"))?
+                .name
+                .clone(),
+            NetworkGetKey::ChainId(chain_id) => self
+                .inner
+                .networks
+                .values()
+                .find(|n| n.chain_id() == chain_id)
+                .with_context(|| format!("Network with chain_id {chain_id} not found"))?
+                .name
+                .clone(),
+        };
+
         let previous = self.get_current_inner().name.clone();
         self.inner.current = new_current_network;
         let new = self.get_current_inner().name.clone();
@@ -198,22 +211,6 @@ impl NetworksActor {
         }
 
         self.save()?;
-
-        Ok(())
-    }
-
-    #[message]
-    #[tracing::instrument(skip(self))]
-    async fn set_current_by_id(&mut self, id: NetworkId) -> color_eyre::Result<()> {
-        trace!("");
-        let new_network = self
-            .inner
-            .networks
-            .values()
-            .find(|n| n.id() == id)
-            .with_context(|| format!("Network with id {id:?} not found"))?;
-
-        self.set_current_by_name(new_network.name.clone()).await?;
 
         Ok(())
     }

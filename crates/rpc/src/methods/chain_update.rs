@@ -63,7 +63,7 @@ impl Method for ChainUpdate {
             match msg {
                 DialogMsg::Data(msg) => {
                     if let Some("accept") = msg.as_str() {
-                        networks().set_current_by_id(network.id()).await?;
+                        networks().set_current(network.id()).await?;
                         break;
                     }
                 }
@@ -71,7 +71,7 @@ impl Method for ChainUpdate {
             }
         }
 
-        Ok(true.into())
+        Ok(Json::Null)
     }
 }
 
@@ -106,9 +106,8 @@ impl ChainUpdate {
         };
 
         let dedup_id = networks()
-            .get_by_name(chain_name)
-            .await
-            .expect("networks actor not available")
+            .get(chain_name)
+            .await?
             .map(|network| network.id().dedup_id())
             .unwrap_or(0);
 
@@ -131,9 +130,6 @@ impl ChainUpdate {
     }
 
     async fn already_exists(&self, network: &Network) -> Result<bool> {
-        Ok(networks()
-            .get_by_name(network.name.clone())
-            .await?
-            .is_some())
+        Ok(networks().get(network.name.clone()).await?.is_some())
     }
 }

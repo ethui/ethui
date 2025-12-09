@@ -14,7 +14,7 @@ ethui-broadcast.workspace = true
 serde_json.workspace = true
 tauri.workspace = true
 tokio.workspace = true
-uuid = { version = "1.18", features = ["v8", "serde"] }
+uuid = { version = "1.19", features = ["v8", "serde"] }
 mac_address = "1.1"
 hostname = "0.4"
 tracing.workspace = true
