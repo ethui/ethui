@@ -24,3 +24,12 @@ export function formatBalance(balance: bigint, decimals = 4): string {
     .toFixed(decimals)
     .replace(/\.?0+$/, "");
 }
+
+export function formatExplorerUrl(
+  wsUrl: string | null | undefined,
+  httpUrl: string | null | undefined,
+) {
+  const rpcUrl = wsUrl ?? httpUrl;
+  if (!rpcUrl) return undefined;
+  return `https://explorer.ethui.dev/rpc/${btoa(rpcUrl)}`;
+}
