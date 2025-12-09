@@ -24,16 +24,6 @@ import { formatExplorerUrl } from "#/utils";
 
 const columnHelper = createColumnHelper<Network>();
 
-function formatUrl(url: string | null | undefined): string {
-  if (!url) return "-";
-  try {
-    const parsed = new URL(url);
-    return parsed.host;
-  } catch {
-    return url;
-  }
-}
-
 function NetworksTable({
   networks,
   editPath,
@@ -59,18 +49,39 @@ function NetworksTable({
         </div>
       ),
     }),
-    columnHelper.accessor("http_url", {
-      header: "RPC",
-      cell: ({ getValue }) => {
-        const url = getValue();
-        return url ? (
-          <ClickToCopy text={url}>
-            <span className="cursor-pointer font-mono text-muted-foreground text-xs hover:text-foreground">
-              {formatUrl(url)}
-            </span>
-          </ClickToCopy>
-        ) : (
-          <span className="text-muted-foreground">-</span>
+    columnHelper.display({
+      id: "rpc",
+      header: "RPC(s)",
+      cell: ({ row }) => {
+        const { http_url, ws_url } = row.original;
+        if (!http_url && !ws_url) {
+          return <span className="text-muted-foreground">-</span>;
+        }
+        return (
+          <div className="flex flex-col gap-1 py-1">
+            {http_url ? (
+              <ClickToCopy text={http_url}>
+                <span className="cursor-pointer font-mono text-muted-foreground text-xs hover:text-foreground">
+                  {http_url}
+                </span>
+              </ClickToCopy>
+            ) : (
+              <span className="font-mono text-muted-foreground/50 text-xs">
+                -
+              </span>
+            )}
+            {ws_url ? (
+              <ClickToCopy text={ws_url}>
+                <span className="cursor-pointer font-mono text-muted-foreground text-xs hover:text-foreground">
+                  {ws_url}
+                </span>
+              </ClickToCopy>
+            ) : (
+              <span className="font-mono text-muted-foreground/50 text-xs">
+                -
+              </span>
+            )}
+          </div>
         );
       },
     }),
