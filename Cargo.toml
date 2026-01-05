@@ -72,7 +72,7 @@ ethui-args = { path = "crates/args" }
 ethui-token-list = { path = "crates/token-list" }
 ethui-proxy-detect = { path = "crates/proxy-detect" }
 ethui-stacks = { path = "crates/stacks" }
-tokio = { version = "1.48", features = ["rt-multi-thread", "sync", "signal"] }
+tokio = { version = "1.49", features = ["rt-multi-thread", "sync", "signal"] }
 thiserror = "2.0"
 sqlx = { version = "0.8", default-features = false, features = [
   "macros",
