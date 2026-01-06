@@ -37,6 +37,8 @@ pub(crate) async fn server(port: u16) {
 
 async fn accept(socket: SocketAddr, stream: TcpStream) {
     let mut query_params: HashMap<String, String> = Default::default();
+    // TODO: resolve this lint
+    #[allow(clippy::result_large_err)]
     let callback = |req: &Request, res: Response| -> std::result::Result<Response, ErrorResponse> {
         let url = Url::parse(&format!("{}{}", "http://localhost", req.uri())).unwrap();
         query_params = url.query_pairs().into_owned().collect();
