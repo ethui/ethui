@@ -39,6 +39,8 @@ ignore = [
   "RUSTSEC-2025-0075",
   # unic-char-property
   "RUSTSEC-2025-0081",
+  # ruint
+  "RUSTSEC-2025-0137",
 ]
 
 
