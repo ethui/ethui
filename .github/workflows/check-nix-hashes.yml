@@ -8,6 +8,13 @@ on:
       - 'gui/package.json'
       - 'gui/pnpm-lock.yaml'
       - 'nix/package.nix'
+  pull_request_target:
+    paths:
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+      - 'gui/package.json'
+      - 'gui/pnpm-lock.yaml'
+      - 'nix/package.nix'
   push:
     branches: [main]
     paths:
@@ -20,13 +27,20 @@ on:
 jobs:
   check-hashes:
     runs-on: ubuntu-latest
+    # Skip pull_request_target for non-dependabot PRs to avoid duplicate runs
+    if: |
+      github.event_name != 'pull_request_target' ||
+      github.event.pull_request.user.login == 'dependabot[bot]'
     outputs:
       expected: ${{ steps.get-hash.outputs.expected }}
       specified: ${{ steps.get-hash.outputs.specified }}
       needs_update: ${{ steps.get-hash.outputs.needs_update }}
     steps:
       - uses: actions/checkout@v4
-        
+        with:
+          # For pull_request_target, checkout the PR branch instead of base
+          ref: ${{ github.event_name == 'pull_request_target' && github.event.pull_request.head.sha || '' }}
+
       - name: Install Nix
         uses: cachix/install-nix-action@v30
         with:
@@ -86,8 +100,9 @@ jobs:
     needs: check-hashes
     if: |
       needs.check-hashes.outputs.needs_update == 'true' &&
-      (github.event_name == 'push' || 
-       (github.event_name == 'pull_request' && github.event.pull_request.user.login != 'dependabot[bot]'))
+      (github.event_name == 'push' ||
+       (github.event_name == 'pull_request' && github.event.pull_request.user.login != 'dependabot[bot]')) &&
+      github.event_name != 'pull_request_target'
     steps:
       - name: Fail if hash needs update
         run: |
@@ -100,15 +115,14 @@ jobs:
     runs-on: ubuntu-latest
     needs: check-hashes
     if: |
-      github.event_name == 'pull_request' && 
+      github.event_name == 'pull_request_target' &&
       github.event.pull_request.user.login == 'dependabot[bot]' &&
       needs.check-hashes.outputs.needs_update == 'true'
     steps:
-
       - id: generate-token
         uses: actions/create-github-app-token@v1
         with:
-          app-id: ${{ secrets.ETHUI_DEPLOYER_APP_ID }}
+          app-id: ${{ vars.ETHUI_DEPLOYER_APP_ID }}
           private-key: ${{ secrets.ETHUI_DEPLOYER_PKEY }}
 
       - uses: actions/checkout@v4
