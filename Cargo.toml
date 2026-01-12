@@ -92,7 +92,7 @@ jsonrpc-core = { version = "18.0", default-features = false }
 reqwest = { version = "0.12", default-features = false, features = [
   "rustls-tls",
 ] }
-alloy = { version = "1.2", default-features = false, features = [
+alloy = { version = "1.4", default-features = false, features = [
   "sol-types",
   "contract",
   "signer-local",
