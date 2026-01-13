@@ -89,9 +89,7 @@ once_cell = { version = "1.21", default-features = false }
 secrets = { version = "1.2", features = ["use-libsodium-sys"] }
 tracing = "0.1"
 jsonrpc-core = { version = "18.0", default-features = false }
-reqwest = { version = "0.12", default-features = false, features = [
-  "rustls-tls",
-] }
+reqwest = { version = "0.13" }
 alloy = { version = "1.4", default-features = false, features = [
   "sol-types",
   "contract",
@@ -99,7 +97,6 @@ alloy = { version = "1.4", default-features = false, features = [
   "signer-ledger",
   "signer-keystore",
   "signer-mnemonic",
-  "eip712",
   "provider-http",
   "provider-ws",
   "provider-anvil-api",
