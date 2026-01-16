@@ -1,15 +1,154 @@
-import { ChainView } from "@ethui/ui/components/chain-view";
+import type { Network } from "@ethui/types/network";
+import { ClickToCopy } from "@ethui/ui/components/click-to-copy";
 import { Form } from "@ethui/ui/components/form";
+import { ChainIcon } from "@ethui/ui/components/icons/chain";
+import { Badge } from "@ethui/ui/components/shadcn/badge";
 import { Button } from "@ethui/ui/components/shadcn/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@ethui/ui/components/shadcn/tooltip";
+import { Table } from "@ethui/ui/components/table";
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { createColumnHelper } from "@tanstack/react-table";
 import { invoke } from "@tauri-apps/api/core";
-import { Database, LoaderCircle, Plus } from "lucide-react";
+import { Database, Globe, LoaderCircle, Pencil, Plus } from "lucide-react";
 import { useShallow } from "zustand/shallow";
 import { EmptyState } from "#/components/EmptyState";
 import { WithHelpTooltip } from "#/components/WithHelpTooltip";
 import { useInvoke } from "#/hooks/useInvoke";
 import { useNetworks } from "#/store/useNetworks";
 import { useSettings } from "#/store/useSettings";
+import { formatExplorerUrl } from "#/utils";
+
+const columnHelper = createColumnHelper<Network>();
+
+function NetworksTable({
+  networks,
+  editPath,
+}: {
+  networks: Network[];
+  editPath: (name: string) => string;
+}) {
+  const columns = [
+    columnHelper.display({
+      id: "chain",
+      header: "Chain",
+      cell: ({ row }) => (
+        <div className="flex items-center gap-2">
+          <ChainIcon
+            className="shrink-0"
+            chainId={row.original.id.chain_id}
+            status={row.original.status}
+          />
+          <span className="truncate font-medium">{row.original.name}</span>
+          <Badge variant="outline" className="shrink-0 font-mono text-xs">
+            {row.original.id.chain_id}
+          </Badge>
+        </div>
+      ),
+    }),
+    columnHelper.display({
+      id: "rpc",
+      header: "RPC(s)",
+      cell: ({ row }) => {
+        const { http_url, ws_url } = row.original;
+        if (!http_url && !ws_url) {
+          return <span className="text-muted-foreground">-</span>;
+        }
+        return (
+          <div className="flex flex-col gap-1 py-1">
+            {http_url ? (
+              <ClickToCopy text={http_url}>
+                <span className="cursor-pointer font-mono text-muted-foreground text-xs hover:text-foreground">
+                  {http_url}
+                </span>
+              </ClickToCopy>
+            ) : (
+              <span className="font-mono text-muted-foreground/50 text-xs">
+                -
+              </span>
+            )}
+            {ws_url ? (
+              <ClickToCopy text={ws_url}>
+                <span className="cursor-pointer font-mono text-muted-foreground text-xs hover:text-foreground">
+                  {ws_url}
+                </span>
+              </ClickToCopy>
+            ) : (
+              <span className="font-mono text-muted-foreground/50 text-xs">
+                -
+              </span>
+            )}
+          </div>
+        );
+      },
+    }),
+    columnHelper.display({
+      id: "currency",
+      header: "Currency",
+      size: 70,
+      cell: ({ row }) => (
+        <span className="text-sm">
+          {row.original.currency}
+          <span className="ml-1 text-muted-foreground text-xs">
+            ({row.original.decimals}d)
+          </span>
+        </span>
+      ),
+    }),
+    columnHelper.display({
+      id: "actions",
+      header: "Actions",
+      size: 80,
+      cell: ({ row }) => {
+        const explorerUrl =
+          row.original.explorer_url ??
+          formatExplorerUrl(row.original.ws_url, row.original.http_url);
+        return (
+          <div className="flex items-center gap-2">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Link
+                  to={editPath(row.original.name)}
+                  className="text-muted-foreground hover:text-foreground"
+                >
+                  <Pencil className="h-4 w-4" />
+                </Link>
+              </TooltipTrigger>
+              <TooltipContent>Edit</TooltipContent>
+            </Tooltip>
+            {explorerUrl && (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <a
+                    href={explorerUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-muted-foreground hover:text-foreground"
+                  >
+                    <Globe className="h-4 w-4" />
+                  </a>
+                </TooltipTrigger>
+                <TooltipContent>Open Explorer</TooltipContent>
+              </Tooltip>
+            )}
+          </div>
+        );
+      },
+    }),
+  ];
+
+  return (
+    <Table
+      columns={columns}
+      data={networks}
+      variant="secondary"
+      className="table-auto"
+    />
+  );
+}
 
 export const Route = createFileRoute("/home/_l/networks/_l/")({
   beforeLoad: () => ({ breadcrumb: "Networks" }),
@@ -57,25 +196,23 @@ function NetworksIndex() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="mb-4 font-semibold text-lg">Chains</h2>
-        <div className="flex flex-wrap gap-2">
-          {regularNetworks.map(({ id: { chain_id }, name, status }) => (
-            <Link
-              to={`/home/networks/${name}/edit`}
-              key={name}
-              className="border p-4 hover:bg-accent"
-            >
-              <ChainView chainId={chain_id} name={name} status={status} />
-            </Link>
-          ))}
-          <Link
-            to="/home/networks/new"
-            className="flex gap-2 border p-4 align-baseline hover:bg-accent"
-          >
-            <Plus />
-            Add new
+        <div className="mb-4 flex items-center justify-between">
+          <h2 className="font-semibold text-lg">Chains</h2>
+          <Link to="/home/networks/new">
+            <Button variant="outline" size="sm" className="gap-2">
+              <Plus className="h-4 w-4" />
+              Add Chain
+            </Button>
           </Link>
         </div>
+        {regularNetworks.length > 0 ? (
+          <NetworksTable
+            networks={regularNetworks.reverse()}
+            editPath={(name) => `/home/networks/${name}/edit`}
+          />
+        ) : (
+          <EmptyState message="No chains configured" />
+        )}
       </div>
 
       {isStacksEnabled && (
@@ -125,24 +262,24 @@ function NetworksIndex() {
               </div>
             </div>
           ) : (
-            <div className="flex flex-wrap gap-2">
-              {stackNetworks.map(({ id: { chain_id }, name, status }) => (
-                <Link
-                  to={`/home/networks/stacks/${name}`}
-                  key={name}
-                  className="border p-4 hover:bg-accent"
-                >
-                  <ChainView chainId={chain_id} name={name} status={status} />
+            <>
+              <div className="mb-4 flex justify-end">
+                <Link to="/home/networks/stacks/new">
+                  <Button variant="outline" size="sm" className="gap-2">
+                    <Plus className="h-4 w-4" />
+                    Add Stack
+                  </Button>
                 </Link>
-              ))}
-              <Link
-                to="/home/networks/stacks/new"
-                className="flex gap-2 border p-4 align-baseline hover:bg-accent"
-              >
-                <Plus />
-                Add new
-              </Link>
-            </div>
+              </div>
+              {stackNetworks.length > 0 ? (
+                <NetworksTable
+                  networks={stackNetworks}
+                  editPath={(name) => `/home/networks/stacks/${name}`}
+                />
+              ) : (
+                <EmptyState message="No local stacks configured" />
+              )}
+            </>
           )}
         </div>
       )}
