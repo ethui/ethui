@@ -9,6 +9,7 @@ use std::{
 
 use ethui_settings::{OnboardingStep, SettingsActorExt as _, settings};
 use ethui_types::prelude::*;
+pub use ext::ForgeActorExt;
 use futures::{StreamExt as _, stream};
 use glob::glob;
 use kameo::prelude::*;
@@ -20,8 +21,6 @@ use tokio::task;
 use walkdir::{DirEntry, WalkDir};
 
 use crate::{abi::ForgeAbi, utils};
-
-pub use ext::ForgeActorExt;
 
 pub fn forge() -> ActorRef<ForgeActor> {
     try_forge().expect("forge actor not initialized")
@@ -48,10 +47,7 @@ impl Actor for ForgeActor {
     type Args = ();
     type Error = color_eyre::Report;
 
-    async fn on_start(
-        _args: Self::Args,
-        actor_ref: ActorRef<Self>,
-    ) -> color_eyre::Result<Self> {
+    async fn on_start(_args: Self::Args, actor_ref: ActorRef<Self>) -> color_eyre::Result<Self> {
         let mut this = Self {
             self_ref: Some(actor_ref.clone()),
             ..Default::default()
@@ -109,7 +105,8 @@ impl ForgeActor {
             let _ = self.add_path(path).await;
         }
 
-        let _ = self.self_ref
+        let _ = self
+            .self_ref
             .as_ref()
             .unwrap()
             .tell(PollFoundryRoots)
@@ -216,12 +213,20 @@ impl ForgeActor {
 
     #[instrument(skip_all, fields(project = ?root), level = "trace")]
     async fn scan_project(&mut self, root: &Path) -> Result<()> {
+        //
         // TODO: read custom out dir from foundry.toml
         let out_dir = root.join("out");
+        let artifacts_dir = root.join("artifacts/contracts");
 
-        if !out_dir.exists() {
+        if !out_dir.exists() && !artifacts_dir.exists() {
             return Ok(());
         }
+
+        let out_dir = if !out_dir.exists() {
+            artifacts_dir
+        } else {
+            out_dir
+        };
 
         let skip_patterns = ["build-info", "cache", "temp", "tmp"];
 
@@ -299,7 +304,13 @@ impl ForgeActor {
     }
 
     async fn update_foundry_roots(&mut self) -> Result<()> {
-        let new_foundry_roots = self.find_foundry_roots().await?;
+        let new_foundry_roots = self.find_project_roots("config.toml".into()).await?;
+
+        let new_foundry_roots = if new_foundry_roots.is_empty() {
+            self.find_project_roots("hardhat.config.ts".into()).await?
+        } else {
+            new_foundry_roots
+        };
 
         let to_remove: Vec<_> = self
             .foundry_roots
@@ -367,11 +378,11 @@ impl ForgeActor {
             .unwrap_or(false)
     }
 
-    /// Finds all project roots for Foundry projects (by locating foundry.toml files)
-    /// Uses depth-first search to stop searching deeper once foundry.toml is found.
+    /// Finds all project roots for Foundry/Hardhat projects (by locating project config files)
+    /// Uses depth-first search to stop searching deeper once config file is found.
     /// Includes directory blacklist to avoid searching in node_modules, hidden directories, etc.
     #[instrument(skip_all, level = "trace")]
-    async fn find_foundry_roots(&self) -> Result<HashSet<PathBuf>> {
+    async fn find_project_roots(&self, config_file: String) -> Result<HashSet<PathBuf>> {
         let roots = self.roots.clone();
 
         // Directory blacklist patterns to avoid (hidden directories handled by filter_entry)
@@ -388,47 +399,50 @@ impl ForgeActor {
         // Process all roots in parallel using spawn_blocking
         let all_matches: Vec<_> = stream::iter(roots)
             .map(|root| {
-                task::spawn_blocking(move || {
-                    let mut foundry_dirs = Vec::new();
-                    let mut visited_foundry_roots = HashSet::new();
+                task::spawn_blocking({
+                    let value = config_file.clone();
+                    move || {
+                        let mut foundry_dirs = Vec::new();
+                        let mut visited_foundry_roots = HashSet::new();
 
-                    let walker = WalkDir::new(&root)
-                        .into_iter()
-                        .filter_entry(|e| {
-                            // Skip hidden directories and blacklisted directories
-                            if Self::is_hidden(e) {
-                                return false;
-                            }
-                            if let Some(name) = e.file_name().to_str() {
-                                !blacklist.contains(&name)
-                            } else {
-                                true
-                            }
-                        })
-                        .filter_map(|e| e.ok())
-                        .filter(|e| e.file_type().is_dir());
+                        let walker = WalkDir::new(&root)
+                            .into_iter()
+                            .filter_entry(|e| {
+                                // Skip hidden directories and blacklisted directories
+                                if Self::is_hidden(e) {
+                                    return false;
+                                }
+                                if let Some(name) = e.file_name().to_str() {
+                                    !blacklist.contains(&name)
+                                } else {
+                                    true
+                                }
+                            })
+                            .filter_map(|e| e.ok())
+                            .filter(|e| e.file_type().is_dir());
 
-                    for entry in walker {
-                        let dir_path = entry.path();
-                        let foundry_toml_path = dir_path.join("foundry.toml");
+                        for entry in walker {
+                            let dir_path = entry.path();
+                            let foundry_toml_path = dir_path.join(value.clone());
 
-                        // Check if this directory contains a foundry.toml file
-                        if foundry_toml_path.exists() {
-                            let dir_path_buf = dir_path.to_path_buf();
+                            // Check if this directory contains a foundry.toml file
+                            if foundry_toml_path.exists() {
+                                let dir_path_buf = dir_path.to_path_buf();
 
-                            // Only add if we haven't already found a foundry.toml in a parent directory
-                            let is_nested = visited_foundry_roots
-                                .iter()
-                                .any(|existing: &PathBuf| dir_path_buf.starts_with(existing));
+                                // Only add if we haven't already found a foundry.toml in a parent directory
+                                let is_nested = visited_foundry_roots
+                                    .iter()
+                                    .any(|existing: &PathBuf| dir_path_buf.starts_with(existing));
 
-                            if !is_nested {
-                                foundry_dirs.push(dir_path_buf.clone());
-                                visited_foundry_roots.insert(dir_path_buf);
+                                if !is_nested {
+                                    foundry_dirs.push(dir_path_buf.clone());
+                                    visited_foundry_roots.insert(dir_path_buf);
+                                }
                             }
                         }
-                    }
 
-                    foundry_dirs
+                        foundry_dirs
+                    }
                 })
             })
             .buffer_unordered(5) // Process up to 5 root directories concurrently
@@ -488,7 +502,7 @@ mod tests {
         let mut actor = ForgeActor::default();
         actor.add_path(dir.path().to_path_buf()).await?;
 
-        let paths = actor.find_foundry_roots().await?;
+        let paths = actor.find_project_roots("config.toml".into()).await?;
 
         assert_eq!(paths.len(), 3);
         paths

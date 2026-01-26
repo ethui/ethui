@@ -61,9 +61,13 @@ impl TryFrom<PathBuf> for ForgeAbi {
             serde_json::from_reader(BufReader::new(file)).map_err(|_| ())?;
 
         let abi = json["abi"].clone();
+
         let code = match json["deployedBytecode"]["object"].as_str() {
             Some(b) => Bytes::from_str(b).map_err(|_| ())?,
-            _ => return Err(()),
+            _ => match json["deployedBytecode"].as_str() {
+                Some(b) => Bytes::from_str(b).map_err(|_| ())?,
+                _ => return Err(()),
+            },
         };
 
         let method_identifiers = json["methodIdentifiers"].clone();
