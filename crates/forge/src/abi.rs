@@ -62,13 +62,11 @@ impl TryFrom<PathBuf> for ForgeAbi {
 
         let abi = json["abi"].clone();
 
-        let code = match json["deployedBytecode"]["object"].as_str() {
-            Some(b) => Bytes::from_str(b).map_err(|_| ())?,
-            _ => match json["deployedBytecode"].as_str() {
-                Some(b) => Bytes::from_str(b).map_err(|_| ())?,
-                _ => return Err(()),
-            },
-        };
+        let code = json["deployedBytecode"]["object"]
+            .as_str()
+            .or_else(|| json["deployedBytecode"].as_str())
+            .and_then(|byte_code| Bytes::from_str(byte_code).ok())
+            .ok_or(())?;
 
         let method_identifiers = json["methodIdentifiers"].clone();
 

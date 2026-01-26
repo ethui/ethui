@@ -302,13 +302,11 @@ impl ForgeActor {
     }
 
     async fn update_foundry_roots(&mut self) -> Result<()> {
-        let new_foundry_roots = self.find_project_roots("config.toml".into()).await?;
+        let mut new_foundry_roots = self.find_project_roots("config.toml".into()).await?;
 
-        let new_foundry_roots = if new_foundry_roots.is_empty() {
-            self.find_project_roots("hardhat.config.ts".into()).await?
-        } else {
-            new_foundry_roots
-        };
+        if new_foundry_roots.is_empty() {
+            new_foundry_roots = self.find_project_roots("hardhat.config.ts".into()).await?;
+        }
 
         let to_remove: Vec<_> = self
             .foundry_roots
