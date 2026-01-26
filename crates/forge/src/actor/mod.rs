@@ -218,14 +218,12 @@ impl ForgeActor {
         let out_dir = root.join("out");
         let artifacts_dir = root.join("artifacts/contracts");
 
-        if !out_dir.exists() && !artifacts_dir.exists() {
-            return Ok(());
-        }
-
-        let out_dir = if !out_dir.exists() {
+        let out_dir = if out_dir.exists() {
+            out_dir
+        } else if artifacts_dir.exists() {
             artifacts_dir
         } else {
-            out_dir
+            return Ok(());
         };
 
         let skip_patterns = ["build-info", "cache", "temp", "tmp"];
@@ -402,8 +400,8 @@ impl ForgeActor {
                 task::spawn_blocking({
                     let value = config_file.clone();
                     move || {
-                        let mut foundry_dirs = Vec::new();
-                        let mut visited_foundry_roots = HashSet::new();
+                        let mut project_dirs = Vec::new();
+                        let mut visited_project_roots = HashSet::new();
 
                         let walker = WalkDir::new(&root)
                             .into_iter()
@@ -423,25 +421,25 @@ impl ForgeActor {
 
                         for entry in walker {
                             let dir_path = entry.path();
-                            let foundry_toml_path = dir_path.join(value.clone());
+                            let project_toml_path = dir_path.join(value.clone());
 
-                            // Check if this directory contains a foundry.toml file
-                            if foundry_toml_path.exists() {
+                            // Check if this directory contains the project config file
+                            if project_toml_path.exists() {
                                 let dir_path_buf = dir_path.to_path_buf();
 
-                                // Only add if we haven't already found a foundry.toml in a parent directory
-                                let is_nested = visited_foundry_roots
+                                // Only add if we haven't already found a project config in a parent directory
+                                let is_nested = visited_project_roots
                                     .iter()
                                     .any(|existing: &PathBuf| dir_path_buf.starts_with(existing));
 
                                 if !is_nested {
-                                    foundry_dirs.push(dir_path_buf.clone());
-                                    visited_foundry_roots.insert(dir_path_buf);
+                                    project_dirs.push(dir_path_buf.clone());
+                                    visited_project_roots.insert(dir_path_buf);
                                 }
                             }
                         }
 
-                        foundry_dirs
+                        project_dirs
                     }
                 })
             })
