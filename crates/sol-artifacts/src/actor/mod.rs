@@ -325,7 +325,7 @@ impl SolArtifactsActor {
     }
 
     async fn update_project_roots(&mut self) -> Result<()> {
-        let roots = self.find_project_roots().await?;
+        let new_roots = self.find_project_roots().await?;
         trace!(roots = ?roots);
 
         let to_remove: Vec<_> = self
