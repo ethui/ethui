@@ -37,21 +37,18 @@ function Content() {
 
   const httpUrl = form.watch("http_url");
   const userChainId = form.watch("chain_id");
-  console.log(form.watch());
 
   useEffect(() => {
     if (!httpUrl) return;
 
     const fetchChainId = async () => {
       try {
-        console.log("fetching");
         const chainId = await invoke<number>(
           "networks_chain_id_from_provider",
           {
             url: httpUrl,
           },
         );
-        console.log("fetched", chainId);
 
         if (!userChainId) {
           form.setValue("chain_id", chainId);
@@ -68,9 +65,7 @@ function Content() {
 
   const onSubmit = async (data: Schema) => {
     try {
-      console.log("here", data);
       await invoke("networks_add", { network: { ...data, is_stack: false } });
-      console.log("here", data);
       router.history.back();
     } catch (err: any) {
       toast({

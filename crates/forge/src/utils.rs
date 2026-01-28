@@ -51,7 +51,7 @@ pub static FUZZ_DIFF_THRESHOLD: f64 = 0.2;
 //    Ok(())
 //}
 
-pub async fn get_code(chain_id: u32, address: Address) -> color_eyre::Result<Bytes> {
+pub async fn get_code(chain_id: u64, address: Address) -> color_eyre::Result<Bytes> {
     debug!(
         "no code in db. fetching from provider for address 0x{:x}",
         address

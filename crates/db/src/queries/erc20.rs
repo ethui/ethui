@@ -1,7 +1,6 @@
 use std::{collections::HashSet, str::FromStr};
 
-use ethui_types::prelude::*;
-use ethui_types::{TokenBalance, TokenMetadata};
+use ethui_types::{TokenBalance, TokenMetadata, prelude::*};
 use tracing::instrument;
 
 use crate::DbInner;
@@ -9,10 +8,11 @@ use crate::DbInner;
 impl DbInner {
     pub async fn read_erc20_balance(
         &self,
-        chain_id: u32,
+        chain_id: u64,
         contract: Address,
         address: Address,
     ) -> Result<U256> {
+        let chain_id = chain_id as i64;
         let contract = contract.to_string();
         let address = address.to_string();
 
@@ -30,11 +30,12 @@ impl DbInner {
 
     pub async fn save_erc20_balance(
         &self,
-        chain_id: u32,
+        chain_id: u64,
         contract: Address,
         address: Address,
         balance: U256,
     ) -> Result<()> {
+        let chain_id = chain_id as i64;
         let contract = contract.to_string();
         let address = address.to_string();
         let balance = balance.to_string();
@@ -55,7 +56,7 @@ impl DbInner {
 
     pub async fn save_erc20_balances(
         &self,
-        chain_id: u32,
+        chain_id: u64,
         address: Address,
         balances: Vec<(Address, U256)>,
     ) -> Result<()> {
@@ -70,7 +71,7 @@ impl DbInner {
     #[instrument(level = "trace", skip(self))]
     pub async fn process_erc20_transfer(
         &self,
-        chain_id: u32,
+        chain_id: u64,
         contract: Address,
         from: Address,
         to: Address,
@@ -98,11 +99,12 @@ impl DbInner {
 
     pub async fn get_erc20_balances(
         &self,
-        chain_id: u32,
+        chain_id: u64,
         address: Address,
         include_blacklisted: bool,
     ) -> Result<Vec<TokenBalance>> {
         let address_str = address.to_string();
+        let chain_id = chain_id as i64;
 
         let rows = sqlx::query!(
             r#"SELECT balances.contract, balances.balance, meta.decimals, meta.name, meta.symbol
@@ -149,10 +151,11 @@ impl DbInner {
 
     pub async fn get_erc20_blacklist(
         &self,
-        chain_id: u32,
+        chain_id: u64,
         address: Address,
     ) -> Result<Vec<TokenBalance>> {
         let address_str = address.to_string();
+        let chain_id = chain_id as i64;
 
         let rows = sqlx::query!(
             r#"SELECT balances.contract, balances.balance, meta.decimals, meta.name, meta.symbol
@@ -195,10 +198,8 @@ impl DbInner {
             .collect())
     }
 
-    pub async fn get_erc20_missing_metadata(
-        &self,
-        chain_id: u32,
-    ) -> Result<Vec<Address>> {
+    pub async fn get_erc20_missing_metadata(&self, chain_id: u64) -> Result<Vec<Address>> {
+        let chain_id = chain_id as i64;
         let res: Vec<_> = sqlx::query!(
             r#"SELECT DISTINCT balances.contract
                 FROM balances
@@ -219,9 +220,10 @@ impl DbInner {
     pub async fn get_erc20_metadata(
         &self,
         address: Address,
-        chain_id: u32,
+        chain_id: u64,
     ) -> Result<TokenMetadata> {
         let contract = address.to_string();
+        let chain_id = chain_id as i64;
 
         let row = sqlx::query!(
             r#"SELECT decimals as 'decimals?', name as 'name?', symbol as 'symbol?'
@@ -243,7 +245,7 @@ impl DbInner {
 
     pub async fn save_erc20_metadatas(
         &self,
-        chain_id: u32,
+        chain_id: u64,
         metadatas: Vec<TokenMetadata>,
     ) -> Result<()> {
         for metadata in metadatas {
@@ -252,12 +254,9 @@ impl DbInner {
         Ok(())
     }
 
-    pub async fn save_erc20_metadata(
-        &self,
-        chain_id: u32,
-        metadata: TokenMetadata,
-    ) -> Result<()> {
+    pub async fn save_erc20_metadata(&self, chain_id: u64, metadata: TokenMetadata) -> Result<()> {
         let address = metadata.address.to_string();
+        let chain_id = chain_id as i64;
 
         sqlx::query!(
             r#" INSERT OR REPLACE INTO tokens_metadata (contract, chain_id, decimals, name, symbol)
@@ -276,11 +275,12 @@ impl DbInner {
 
     pub async fn set_erc20_blacklist(
         &self,
-        chain_id: u32,
+        chain_id: u64,
         address: Address,
         blacklisted: bool,
     ) -> Result<()> {
         let address = address.to_string();
+        let chain_id = chain_id as i64;
 
         sqlx::query!(
             r#"INSERT INTO erc20_blacklist (chain_id,address,blacklisted) VALUES (?,?,?) ON CONFLICT DO UPDATE set blacklisted = ?"#,
@@ -295,12 +295,9 @@ impl DbInner {
         Ok(())
     }
 
-    pub async fn clear_erc20_blacklist(
-        &self,
-        chain_id: u32,
-        address: Address,
-    ) -> Result<()> {
+    pub async fn clear_erc20_blacklist(&self, chain_id: u64, address: Address) -> Result<()> {
         let address = address.to_string();
+        let chain_id = chain_id as i64;
 
         sqlx::query!(
             r#"DELETE FROM erc20_blacklist WHERE chain_id = ? AND address = ?"#,

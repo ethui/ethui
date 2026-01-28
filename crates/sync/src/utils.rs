@@ -6,7 +6,7 @@ use alloy::{
 use ethui_abis::IERC20;
 use ethui_types::{TokenMetadata, events::Tx, prelude::*};
 
-pub(crate) async fn fetch_full_tx(chain_id: u32, hash: B256) -> color_eyre::Result<()> {
+pub(crate) async fn fetch_full_tx(chain_id: u64, hash: B256) -> color_eyre::Result<()> {
     let provider = ethui_networks::get_provider(chain_id).await?;
 
     let tx = provider.get_transaction_by_hash(hash).await?;
@@ -46,7 +46,7 @@ pub(crate) async fn fetch_full_tx(chain_id: u32, hash: B256) -> color_eyre::Resu
 }
 
 pub(crate) async fn fetch_erc20_metadata(
-    chain_id: u32,
+    chain_id: u64,
     address: Address,
 ) -> color_eyre::Result<()> {
     let provider = ethui_networks::get_provider(chain_id).await?;

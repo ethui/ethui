@@ -1,7 +1,6 @@
 use alloy::primitives::{Log, LogData};
 use ethui_simulator::*;
 use ethui_types::prelude::*;
-use pretty_assertions::assert_eq;
 
 #[tokio::test(flavor = "multi_thread")]
 async fn simulate_detris() {

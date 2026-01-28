@@ -44,7 +44,7 @@ pub async fn add_contract(
     address: Address,
     db: tauri::State<'_, Db>,
 ) -> TauriResult<()> {
-    let network = ethui_networks::get_network(chain_id as u32).await?;
+    let network = ethui_networks::get_network(chain_id).await?;
     let provider = network.get_alloy_provider().await?;
 
     let code = provider
@@ -105,7 +105,7 @@ pub async fn add_contract(
 
 #[tauri::command]
 pub async fn remove_contract(
-    chain_id: u32,
+    chain_id: u64,
     dedup_id: i32,
     address: Address,
     db: tauri::State<'_, Db>,

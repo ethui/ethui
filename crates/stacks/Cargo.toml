@@ -32,6 +32,6 @@ color-eyre.workspace = true
 glob.workspace = true
 notify.workspace = true
 notify-debouncer-full.workspace = true
-reqwest.workspace = true
+reqwest = { workspace = true, features = ["json"] }
 [dev-dependencies]
 tempfile.workspace = true

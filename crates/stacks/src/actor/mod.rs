@@ -184,10 +184,8 @@ impl StacksActor {
             state: self.manager.as_str().to_string(),
         })
     }
-}
 
-impl StacksActor {
-    pub fn new(port: u16, config_dir: PathBuf) -> color_eyre::Result<Self> {
+    fn new(port: u16, config_dir: PathBuf) -> color_eyre::Result<Self> {
         Ok(Self {
             enabled: false,
             port,

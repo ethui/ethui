@@ -6,7 +6,7 @@ use crate::network::{Network, NetworkStatus};
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct NewNetworkParams {
     pub name: String,
-    pub chain_id: u32,
+    pub chain_id: u64,
     pub explorer_url: Option<String>,
     pub http_url: Url,
     pub ws_url: Option<Url>,
@@ -16,7 +16,7 @@ pub struct NewNetworkParams {
 }
 
 impl NewNetworkParams {
-    pub fn into_network(self, deduplication_id: u32) -> Network {
+    pub fn into_network(self, deduplication_id: u64) -> Network {
         Network {
             id: (self.chain_id, deduplication_id).into(),
             name: self.name,

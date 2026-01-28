@@ -30,7 +30,9 @@ const store: StateCreator<Store> = (set, get) => ({
   },
 
   async setCurrent(network) {
-    const current = await invoke<Network>("networks_set_current", { network });
+    const current = await invoke<Network>("networks_set_current", {
+      name: network,
+    });
 
     set({ current });
   },

@@ -1,8 +1,8 @@
 use std::{sync::Arc, time::Duration};
 
 use alloy::signers::{
-    local::{coins_bip39::English, MnemonicBuilder},
     Signer as _,
+    local::{MnemonicBuilder, coins_bip39::English},
 };
 use async_trait::async_trait;
 use ethui_crypto::{self, EncryptedData};
@@ -14,14 +14,14 @@ use tokio::{
     task::JoinHandle,
 };
 
-use crate::{utils, wallet::WalletCreate, Signer, Wallet, WalletControl};
+use crate::{Signer, Wallet, WalletControl, utils, wallet::WalletCreate};
 
 #[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct HDWallet {
     name: String,
     derivation_path: String,
-    count: u32,
+    count: usize,
     current: (String, Address),
     addresses: Vec<(String, Address)>,
     ciphertext: EncryptedData<String>,
@@ -66,7 +66,7 @@ impl WalletControl for HDWallet {
             self.update_derivation_path(path.into()).await?;
         }
         if let Some(count) = params["count"].as_u64() {
-            self.update_count(count as u32).await?;
+            self.update_count(count as usize).await?;
         }
 
         Ok(Wallet::HDWallet(self))
@@ -103,7 +103,7 @@ impl WalletControl for HDWallet {
         self.addresses.clone()
     }
 
-    async fn build_signer(&self, chain_id: u32, path: &str) -> color_eyre::Result<Signer> {
+    async fn build_signer(&self, chain_id: u64, path: &str) -> color_eyre::Result<Signer> {
         if !self.addresses.iter().any(|(p, _)| p == path) {
             return Err(eyre!("unknown wallet key: {}", path));
         }
@@ -119,7 +119,7 @@ impl WalletControl for HDWallet {
             .derivation_path(path)?
             .build()?;
 
-        signer.set_chain_id(Some(chain_id.into()));
+        signer.set_chain_id(Some(chain_id));
 
         Ok(Signer::Local(signer))
     }
@@ -152,7 +152,7 @@ impl HDWallet {
         Ok(())
     }
 
-    async fn update_count(&mut self, count: u32) -> color_eyre::Result<()> {
+    async fn update_count(&mut self, count: usize) -> color_eyre::Result<()> {
         self.count = count;
 
         self.update_derived_addresses().await?;
@@ -241,7 +241,7 @@ pub struct HDWalletParams {
     derivation_path: String,
     password: String,
     name: String,
-    count: u32,
+    count: usize,
 }
 
 /// Converts a signer into a SecretVec

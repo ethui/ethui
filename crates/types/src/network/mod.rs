@@ -12,7 +12,7 @@ use url::Url;
 
 use crate::prelude::*;
 
-#[derive(Debug, Deserialize, Serialize, Clone)]
+#[derive(Debug, Deserialize, Serialize, Clone, kameo::Reply)]
 pub struct Network {
     // previously named "dedup_chain_id"
     // aliasing allows for backwards compatibility without needing a migration
@@ -89,12 +89,16 @@ impl Network {
         vec![Self::anvil(0), Self::mainnet(0), Self::sepolia(0)]
     }
 
-    pub fn dedup_chain_id(&self) -> NetworkId {
+    pub fn id(&self) -> NetworkId {
         self.id
     }
 
-    pub fn chain_id(&self) -> u32 {
+    pub fn chain_id(&self) -> u64 {
         self.id.chain_id()
+    }
+
+    pub fn dedup_id(&self) -> u64 {
+        self.id.dedup_id()
     }
 
     pub fn chain_id_hex(&self) -> String {
