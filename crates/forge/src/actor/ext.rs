@@ -12,7 +12,7 @@ pub trait ForgeActorExt {
     async fn fetch_abis(&self) -> Result<Vec<ForgeAbi>>;
     async fn get_abi_for(&self, bytes: Bytes) -> Result<Option<ForgeAbi>>;
     async fn update_roots(&self, roots: Vec<PathBuf>) -> Result<()>;
-    async fn poll_foundry_roots(&self) -> Result<()>;
+    async fn poll_project_roots(&self) -> Result<()>;
     async fn new_contract(&self) -> Result<()>;
     async fn update_contracts(&self) -> Result<()>;
 }
@@ -31,8 +31,8 @@ impl ForgeActorExt for ActorRef<ForgeActor> {
         Ok(())
     }
 
-    async fn poll_foundry_roots(&self) -> Result<()> {
-        self.tell(super::PollFoundryRoots).await?;
+    async fn poll_project_roots(&self) -> Result<()> {
+        self.tell(super::PollProjectRoots).await?;
         Ok(())
     }
 

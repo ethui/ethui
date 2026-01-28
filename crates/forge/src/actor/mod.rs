@@ -20,6 +20,24 @@ use notify_debouncer_full::{
 use tokio::task;
 use walkdir::{DirEntry, WalkDir};
 
+/// Config files that indicate a project root (Foundry or Hardhat)
+const PROJECT_CONFIG_FILES: &[&str] = &["foundry.toml", "hardhat.config.ts", "hardhat.config.js"];
+
+/// Directories to skip when searching for project roots
+const BLACKLISTED_DIRS: &[&str] = &[
+    "node_modules",
+    "target",
+    "build",
+    "dist",
+    "coverage",
+    "__pycache__",
+    "venv",
+    "cache",
+    "tmp",
+    "out",
+    "dependencies",
+];
+
 use crate::{abi::ForgeAbi, utils};
 
 pub fn forge() -> ActorRef<ForgeActor> {
@@ -34,7 +52,7 @@ pub fn try_forge() -> color_eyre::Result<ActorRef<ForgeActor>> {
 #[derive(Default)]
 pub struct ForgeActor {
     roots: HashSet<PathBuf>,
-    foundry_roots: HashSet<PathBuf>,
+    project_roots: HashSet<PathBuf>,
     watcher: Option<Debouncer<RecommendedWatcher, RecommendedCache>>,
 
     abis_by_path: BTreeMap<PathBuf, ForgeAbi>,
@@ -109,13 +127,13 @@ impl ForgeActor {
             .self_ref
             .as_ref()
             .unwrap()
-            .tell(PollFoundryRoots)
+            .tell(PollProjectRoots)
             .try_send();
     }
 
     #[message]
-    async fn poll_foundry_roots(&mut self) {
-        let _ = self.update_foundry_roots().await;
+    async fn poll_project_roots(&mut self) {
+        let _ = self.update_project_roots().await;
     }
 
     #[message]
@@ -301,15 +319,9 @@ impl ForgeActor {
         }
     }
 
-    async fn update_foundry_roots(&mut self) -> Result<()> {
-        let roots = {
-            let foundry_roots = self.find_project_roots("foundry.toml".into()).await?;
-            let hardhat_roots = self.find_project_roots("hardhat.config.ts".into()).await?;
-
-            let mut merged = foundry_roots;
-            merged.extend(hardhat_roots);
-            merged
-        };
+    async fn update_project_roots(&mut self) -> Result<()> {
+        let roots = self.find_project_roots().await?;
+        trace!(roots = ?roots);
 
         let to_remove: Vec<_> = self
             .roots
@@ -320,7 +332,7 @@ impl ForgeActor {
 
         let to_add: Vec<_> = roots
             .iter()
-            .filter(|p| !self.foundry_roots.contains(*p))
+            .filter(|p| !self.project_roots.contains(*p))
             .cloned()
             .collect();
 
@@ -354,7 +366,7 @@ impl ForgeActor {
         }
 
         self.roots.insert(path.clone());
-        self.update_foundry_roots().await?;
+        self.update_project_roots().await?;
         Ok(())
     }
 
@@ -362,7 +374,7 @@ impl ForgeActor {
     async fn remove_path(&mut self, path: PathBuf) -> Result<()> {
         trace!(path = ?path);
         if self.roots.remove(&path) {
-            self.update_foundry_roots().await?;
+            self.update_project_roots().await?;
         }
         Ok(())
     }
@@ -381,98 +393,59 @@ impl ForgeActor {
     /// Uses depth-first search to stop searching deeper once config file is found.
     /// Includes directory blacklist to avoid searching in node_modules, hidden directories, etc.
     #[instrument(skip_all, level = "trace")]
-    async fn find_project_roots(&self, config_file: String) -> Result<HashSet<PathBuf>> {
+    async fn find_project_roots(&self) -> Result<HashSet<PathBuf>> {
         let roots = self.roots.clone();
 
-        // Directory blacklist patterns to avoid (hidden directories handled by filter_entry)
-        let blacklist = [
-            "node_modules",
-            "target",
-            "build",
-            "dist",
-            "coverage",
-            "__pycache__",
-            "venv",
-        ];
-
         // Process all roots in parallel using spawn_blocking
-        let all_matches: Vec<_> = stream::iter(roots)
+        let all_matches: Vec<HashSet<PathBuf>> = stream::iter(roots)
             .map(|root| {
-                task::spawn_blocking({
-                    let config_file = config_file.clone();
-                    move || {
-                        let mut project_dirs = Vec::new();
-                        let mut visited_project_roots = HashSet::new();
+                task::spawn_blocking(move || {
+                    let mut found = HashSet::new();
 
-                        let walker = WalkDir::new(&root)
-                            .into_iter()
-                            .filter_entry(|e| {
-                                // Skip hidden directories and blacklisted directories
-                                if Self::is_hidden(e) {
-                                    return false;
-                                }
-                                if let Some(name) = e.file_name().to_str() {
-                                    !blacklist.contains(&name)
-                                } else {
-                                    true
-                                }
-                            })
-                            .filter_map(|e| e.ok())
-                            .filter(|e| e.file_type().is_dir());
+                    let walker = WalkDir::new(&root)
+                        .into_iter()
+                        .filter_entry(|e| {
+                            !Self::is_hidden(e)
+                                && e.file_name()
+                                    .to_str()
+                                    .map(|name| !BLACKLISTED_DIRS.contains(&name))
+                                    .unwrap_or(true)
+                        })
+                        .filter_map(|e| e.ok())
+                        .filter(|e| e.file_type().is_dir());
 
-                        for entry in walker {
-                            let dir_path = entry.path();
-                            let config_file_path = dir_path.join(&config_file);
+                    for entry in walker {
+                        let dir = entry.path();
 
-                            // Check if this directory contains the project config file
-                            if config_file_path.exists() {
-                                let dir_path_buf = dir_path.to_path_buf();
+                        let has_config = PROJECT_CONFIG_FILES.iter().any(|f| dir.join(f).exists());
 
-                                // Only add if we haven't already found a project config in a parent directory
-                                let is_nested = visited_project_roots
-                                    .iter()
-                                    .any(|existing: &PathBuf| dir_path_buf.starts_with(existing));
-
-                                if !is_nested {
-                                    project_dirs.push(dir_path_buf.clone());
-                                    visited_project_roots.insert(dir_path_buf);
-                                }
+                        if has_config {
+                            let dir = dir.to_path_buf();
+                            let is_nested = found.iter().any(|p| dir.starts_with(p));
+                            if !is_nested {
+                                found.insert(dir);
                             }
                         }
-
-                        project_dirs
                     }
+
+                    found
                 })
             })
-            .buffer_unordered(5) // Process up to 5 root directories concurrently
-            .filter_map(|result| async move {
-                match result {
-                    Ok(matches) => Some(matches),
-                    Err(e) => {
-                        tracing::warn!("Task failed: {}", e);
-                        None
-                    }
-                }
-            })
+            .buffer_unordered(5)
+            .filter_map(|r| async { r.ok() })
             .collect()
             .await;
 
-        // Flatten all matches and remove any remaining nested directories
-        let all_dirs: Vec<PathBuf> = all_matches.into_iter().flatten().collect();
-        let mut sorted_dirs = all_dirs;
-        sorted_dirs.sort();
+        // Merge results from all roots, filtering nested dirs across roots
+        let mut all_dirs: Vec<_> = all_matches.into_iter().flatten().collect();
+        all_dirs.sort();
 
-        let mut result: HashSet<PathBuf> = HashSet::new();
-        for dir in sorted_dirs {
-            // Skip if this directory is a subdirectory of an already included directory
-            if !result.iter().any(|other| dir.starts_with(other)) {
-                // Remove any directories that are subdirectories of this one
-                result.retain(|other| !other.starts_with(&dir));
-                result.insert(dir);
+        Ok(all_dirs.into_iter().fold(HashSet::new(), |mut acc, dir| {
+            if !acc.iter().any(|p| dir.starts_with(p)) {
+                acc.insert(dir);
             }
-        }
-
-        Ok(result)
+            acc
+        }))
     }
 
     #[instrument(level = "trace", skip_all, fields(project = abi.project, name = abi.name))]
@@ -495,18 +468,25 @@ mod tests {
     use super::*;
 
     #[tokio::test]
-    async fn find_forge_tomls() -> Result<()> {
+    async fn find_project_roots() -> Result<()> {
         let dir = create_fixture_directories()?;
 
         let mut actor = ForgeActor::default();
         actor.add_path(dir.path().to_path_buf()).await?;
 
-        let paths = actor.find_project_roots("foundry.toml".into()).await?;
+        let paths = actor.find_project_roots().await?;
 
-        assert_eq!(paths.len(), 3);
-        paths
-            .into_iter()
-            .for_each(|path| assert!(!path.display().to_string().contains("forge-std")));
+        assert_eq!(paths.len(), 5);
+
+        // Verify nested dependencies are excluded
+        for path in &paths {
+            let path_str = path.display().to_string();
+            assert!(!path_str.contains("forge-std"), "should exclude forge-std");
+            assert!(
+                !path_str.contains("node_modules"),
+                "should exclude node_modules"
+            );
+        }
 
         Ok(())
     }
@@ -515,23 +495,40 @@ mod tests {
         let tempdir = TempDir::new().unwrap();
         let base_path = tempdir.path();
 
-        let p1 = base_path.join("subdir1/project1");
-        let p2 = base_path.join("subdir1/project2");
-        let p3 = base_path.join("subdir2/project3");
+        // Foundry projects
+        let foundry1 = base_path.join("subdir1/foundry-project1");
+        let foundry2 = base_path.join("subdir1/foundry-project2");
+        let foundry3 = base_path.join("subdir2/foundry-project3");
+
+        // Hardhat projects
+        let hardhat_ts = base_path.join("subdir2/hardhat-ts-project");
+        let hardhat_js = base_path.join("subdir3/hardhat-js-project");
+
+        // Not a project
         let not_project = base_path.join("subdir2/not-project");
 
-        fs::create_dir_all(&p1)?;
-        fs::create_dir_all(&p2)?;
-        fs::create_dir_all(&p3)?;
-        fs::create_dir_all(not_project)?;
+        fs::create_dir_all(&foundry1)?;
+        fs::create_dir_all(&foundry2)?;
+        fs::create_dir_all(&foundry3)?;
+        fs::create_dir_all(&hardhat_ts)?;
+        fs::create_dir_all(&hardhat_js)?;
+        fs::create_dir_all(&not_project)?;
 
-        fs::write(p1.join("foundry.toml"), "")?;
-        fs::write(p2.join("foundry.toml"), "")?;
-        fs::write(p3.join("foundry.toml"), "")?;
+        // Create config files
+        fs::write(foundry1.join("foundry.toml"), "")?;
+        fs::write(foundry2.join("foundry.toml"), "")?;
+        fs::write(foundry3.join("foundry.toml"), "")?;
+        fs::write(hardhat_ts.join("hardhat.config.ts"), "")?;
+        fs::write(hardhat_js.join("hardhat.config.js"), "")?;
 
-        fs::create_dir_all(base_path.join("subdir1/project1/dependencies/forge-std"))?;
+        // Nested foundry dependency (should be excluded via dependencies blacklist)
+        fs::create_dir_all(foundry1.join("dependencies/forge-std"))?;
+        fs::write(foundry1.join("dependencies/forge-std/foundry.toml"), "")?;
+
+        // Nested hardhat in node_modules (should be excluded via node_modules blacklist)
+        fs::create_dir_all(hardhat_ts.join("node_modules/some-package"))?;
         fs::write(
-            base_path.join("subdir1/project1/dependencies/forge-std/foundry.toml"),
+            hardhat_ts.join("node_modules/some-package/hardhat.config.ts"),
             "",
         )?;
 
