@@ -36,7 +36,7 @@
     "abitype": "^1.0.8",
     "core-js": "^3.45.1",
     "framer-motion": "^12",
-    "lodash-es": "^4.17.21",
+    "lodash-es": "^4.17.23",
     "lucide-react": "^0.506.0",
     "motion": "^12.15.0",
     "react": "^19.1.0",
