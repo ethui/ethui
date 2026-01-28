@@ -302,20 +302,23 @@ impl ForgeActor {
     }
 
     async fn update_foundry_roots(&mut self) -> Result<()> {
-        let mut new_foundry_roots = self.find_project_roots("config.toml".into()).await?;
+        let roots = {
+            let foundry_roots = self.find_project_roots("foundry.toml".into()).await?;
+            let hardhat_roots = self.find_project_roots("hardhat.config.ts".into()).await?;
 
-        if new_foundry_roots.is_empty() {
-            new_foundry_roots = self.find_project_roots("hardhat.config.ts".into()).await?;
-        }
+            let mut merged = foundry_roots;
+            merged.extend(hardhat_roots);
+            merged
+        };
 
         let to_remove: Vec<_> = self
-            .foundry_roots
+            .roots
             .iter()
             .filter(|p| !self.roots.contains(*p))
             .cloned()
             .collect();
 
-        let to_add: Vec<_> = new_foundry_roots
+        let to_add: Vec<_> = roots
             .iter()
             .filter(|p| !self.foundry_roots.contains(*p))
             .cloned()
@@ -396,7 +399,7 @@ impl ForgeActor {
         let all_matches: Vec<_> = stream::iter(roots)
             .map(|root| {
                 task::spawn_blocking({
-                    let value = config_file.clone();
+                    let config_file = config_file.clone();
                     move || {
                         let mut project_dirs = Vec::new();
                         let mut visited_project_roots = HashSet::new();
@@ -419,10 +422,10 @@ impl ForgeActor {
 
                         for entry in walker {
                             let dir_path = entry.path();
-                            let project_toml_path = dir_path.join(value.clone());
+                            let config_file_path = dir_path.join(&config_file);
 
                             // Check if this directory contains the project config file
-                            if project_toml_path.exists() {
+                            if config_file_path.exists() {
                                 let dir_path_buf = dir_path.to_path_buf();
 
                                 // Only add if we haven't already found a project config in a parent directory
@@ -498,7 +501,7 @@ mod tests {
         let mut actor = ForgeActor::default();
         actor.add_path(dir.path().to_path_buf()).await?;
 
-        let paths = actor.find_project_roots("config.toml".into()).await?;
+        let paths = actor.find_project_roots("foundry.toml".into()).await?;
 
         assert_eq!(paths.len(), 3);
         paths
