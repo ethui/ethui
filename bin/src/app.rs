@@ -101,7 +101,7 @@ impl EthUIApp {
                 ethui_db::commands::db_clear_erc20_blacklist,
                 ethui_db::commands::db_get_native_balance,
                 ethui_db::commands::db_get_erc721_tokens,
-                ethui_forge::commands::fetch_forge_abis,
+                ethui_sol_artifacts::commands::fetch_forge_abis,
                 ethui_ws::commands::ws_peers_by_domain,
                 ethui_ws::commands::ws_peer_count,
                 ethui_wallets::commands::wallets_get_all,
@@ -226,7 +226,7 @@ async fn init(app: &tauri::App, args: &Args) -> color_eyre::Result<()> {
     ethui_connections::init(resource(app, "connections.json", args)).await;
     ethui_wallets::init(resource(app, "wallets.json", args)).await;
     ethui_networks::init(resource(app, "networks.json", args)).await;
-    ethui_forge::init().await?;
+    ethui_sol_artifacts::init().await?;
     ethui_analytics::init(app.handle()).await;
 
     ethui_analytics::track_event(app.handle(), "app_started", None)?;

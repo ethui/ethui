@@ -6,7 +6,7 @@ pub enum AppError {
     DB(#[from] ethui_db::Error),
 
     #[error(transparent)]
-    Forge(#[from] ethui_forge::Error),
+    SolArtifacts(#[from] ethui_sol_artifacts::Error),
 
     #[cfg(feature = "stacks")]
     #[error(transparent)]

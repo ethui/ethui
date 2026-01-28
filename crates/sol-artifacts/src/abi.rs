@@ -4,7 +4,7 @@ use ethui_types::prelude::*;
 use kameo::Reply;
 
 #[derive(Debug, Clone, Reply, Serialize, Deserialize)]
-pub struct ForgeAbi {
+pub struct SolArtifact {
     pub path: PathBuf,
     pub project: String,
     pub solidity_file: String,
@@ -14,7 +14,7 @@ pub struct ForgeAbi {
     pub method_identifiers: serde_json::Value,
 }
 
-impl TryFrom<PathBuf> for ForgeAbi {
+impl TryFrom<PathBuf> for SolArtifact {
     type Error = ();
 
     fn try_from(path: PathBuf) -> std::result::Result<Self, Self::Error> {
@@ -61,10 +61,12 @@ impl TryFrom<PathBuf> for ForgeAbi {
             serde_json::from_reader(BufReader::new(file)).map_err(|_| ())?;
 
         let abi = json["abi"].clone();
-        let code = match json["deployedBytecode"]["object"].as_str() {
-            Some(b) => Bytes::from_str(b).map_err(|_| ())?,
-            _ => return Err(()),
-        };
+
+        let code = json["deployedBytecode"]["object"]
+            .as_str()
+            .or_else(|| json["deployedBytecode"].as_str())
+            .and_then(|byte_code| Bytes::from_str(byte_code).ok())
+            .ok_or(())?;
 
         let method_identifiers = json["methodIdentifiers"].clone();
 
@@ -84,7 +86,7 @@ impl TryFrom<PathBuf> for ForgeAbi {
     }
 }
 
-impl TryFrom<notify::Event> for ForgeAbi {
+impl TryFrom<notify::Event> for SolArtifact {
     type Error = ();
 
     fn try_from(event: notify::Event) -> Result<Self, Self::Error> {
