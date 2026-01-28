@@ -4,5 +4,5 @@ pub mod commands;
 mod init;
 mod utils;
 
-pub use actor::{ForgeActorExt, forge};
+pub use actor::{SolArtifactsActorExt, sol_artifacts};
 pub use init::init;

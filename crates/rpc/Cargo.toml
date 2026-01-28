@@ -18,7 +18,7 @@ ethui-wallets.workspace = true
 ethui-connections.workspace = true
 ethui-simulator.workspace = true
 ethui-sync.workspace = true
-ethui-forge.workspace = true
+ethui-sol-artifacts.workspace = true
 ethui-broadcast.workspace = true
 
 alloy = { workspace = true, features = ["eip712"] }

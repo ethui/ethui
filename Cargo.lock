@@ -3092,13 +3092,13 @@ dependencies = [
  "ethui-connections",
  "ethui-db",
  "ethui-dialogs",
- "ethui-forge",
  "ethui-forge-traces",
  "ethui-networks",
  "ethui-proxy-detect",
  "ethui-rpc",
  "ethui-settings",
  "ethui-simulator",
+ "ethui-sol-artifacts",
  "ethui-stacks",
  "ethui-sync",
  "ethui-token-list",
@@ -3246,32 +3246,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "ethui-forge"
-version = "1.26.4"
-dependencies = [
- "alloy",
- "color-eyre",
- "ethui-broadcast",
- "ethui-db",
- "ethui-networks",
- "ethui-settings",
- "ethui-types",
- "futures",
- "glob",
- "kameo",
- "notify",
- "notify-debouncer-full",
- "regex",
- "serde",
- "serde_json",
- "tauri",
- "tempfile",
- "tokio",
- "tracing",
- "walkdir",
-]
-
-[[package]]
 name = "ethui-forge-traces"
 version = "1.26.4"
 dependencies = [
@@ -3327,10 +3301,10 @@ dependencies = [
  "ethui-connections",
  "ethui-db",
  "ethui-dialogs",
- "ethui-forge",
  "ethui-networks",
  "ethui-settings",
  "ethui-simulator",
+ "ethui-sol-artifacts",
  "ethui-sync",
  "ethui-types",
  "ethui-wallets",
@@ -3381,6 +3355,32 @@ dependencies = [
  "serde",
  "tauri",
  "tokio",
+]
+
+[[package]]
+name = "ethui-sol-artifacts"
+version = "1.26.4"
+dependencies = [
+ "alloy",
+ "color-eyre",
+ "ethui-broadcast",
+ "ethui-db",
+ "ethui-networks",
+ "ethui-settings",
+ "ethui-types",
+ "futures",
+ "glob",
+ "kameo",
+ "notify",
+ "notify-debouncer-full",
+ "regex",
+ "serde",
+ "serde_json",
+ "tauri",
+ "tempfile",
+ "tokio",
+ "tracing",
+ "walkdir",
 ]
 
 [[package]]

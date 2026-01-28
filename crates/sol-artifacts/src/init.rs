@@ -2,11 +2,11 @@ use ethui_broadcast::InternalMsg;
 use ethui_settings::{SettingsActorExt as _, settings};
 use kameo::actor::{ActorRef, Spawn as _};
 
-use crate::actor::{ForgeActor, ForgeActorExt as _};
+use crate::actor::{SolArtifactsActor, SolArtifactsActorExt as _};
 
 pub async fn init() -> color_eyre::Result<()> {
-    let handle = ForgeActor::spawn(());
-    handle.register("forge").unwrap();
+    let handle = SolArtifactsActor::spawn(());
+    handle.register("sol_artifacts").unwrap();
     let settings = settings()
         .get_all()
         .await
@@ -23,7 +23,7 @@ pub async fn init() -> color_eyre::Result<()> {
 
 /// Will listen for new ABI updates, and poll the database for new contracts
 /// the work itself is debounced with a 500ms delay, to batch together multiple updates
-async fn receiver(handle: ActorRef<ForgeActor>) -> ! {
+async fn receiver(handle: ActorRef<SolArtifactsActor>) -> ! {
     let mut rx = ethui_broadcast::subscribe_internal().await;
 
     loop {

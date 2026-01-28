@@ -9,7 +9,7 @@ use std::{
 
 use ethui_settings::{OnboardingStep, SettingsActorExt as _, settings};
 use ethui_types::prelude::*;
-pub use ext::ForgeActorExt;
+pub use ext::SolArtifactsActorExt;
 use futures::{StreamExt as _, stream};
 use glob::glob;
 use kameo::prelude::*;
@@ -38,30 +38,30 @@ const BLACKLISTED_DIRS: &[&str] = &[
     "dependencies",
 ];
 
-use crate::{abi::ForgeAbi, utils};
+use crate::{abi::SolArtifact, utils};
 
-pub fn forge() -> ActorRef<ForgeActor> {
-    try_forge().expect("forge actor not initialized")
+pub fn sol_artifacts() -> ActorRef<SolArtifactsActor> {
+    try_sol_artifacts().expect("sol_artifacts actor not initialized")
 }
 
-pub fn try_forge() -> color_eyre::Result<ActorRef<ForgeActor>> {
-    ActorRef::<ForgeActor>::lookup("forge")?
-        .ok_or_else(|| color_eyre::eyre::eyre!("forge actor not found"))
+pub fn try_sol_artifacts() -> color_eyre::Result<ActorRef<SolArtifactsActor>> {
+    ActorRef::<SolArtifactsActor>::lookup("sol_artifacts")?
+        .ok_or_else(|| color_eyre::eyre::eyre!("sol_artifacts actor not found"))
 }
 
 #[derive(Default)]
-pub struct ForgeActor {
+pub struct SolArtifactsActor {
     roots: HashSet<PathBuf>,
     project_roots: HashSet<PathBuf>,
     watcher: Option<Debouncer<RecommendedWatcher, RecommendedCache>>,
 
-    abis_by_path: BTreeMap<PathBuf, ForgeAbi>,
-    self_ref: Option<ActorRef<ForgeActor>>,
+    abis_by_path: BTreeMap<PathBuf, SolArtifact>,
+    self_ref: Option<ActorRef<SolArtifactsActor>>,
 
     update_contracts_triggers: usize,
 }
 
-impl Actor for ForgeActor {
+impl Actor for SolArtifactsActor {
     type Args = ();
     type Error = color_eyre::Report;
 
@@ -92,13 +92,13 @@ impl Actor for ForgeActor {
         _actor_ref: WeakActorRef<Self>,
         err: PanicError,
     ) -> color_eyre::Result<ControlFlow<ActorStopReason>> {
-        error!("forge actor panic: {}", err);
+        error!("sol_artifacts actor panic: {}", err);
         Ok(ControlFlow::Continue(()))
     }
 }
 
 #[messages]
-impl ForgeActor {
+impl SolArtifactsActor {
     #[message]
     #[instrument(skip_all, level = "trace")]
     async fn update_roots(&mut self, roots: Vec<PathBuf>) {
@@ -217,12 +217,12 @@ impl ForgeActor {
     }
 
     #[message]
-    fn fetch_abis(&self) -> Vec<ForgeAbi> {
+    fn fetch_abis(&self) -> Vec<SolArtifact> {
         self.abis_by_path.clone().into_values().collect()
     }
 
     #[message]
-    fn get_abi_for(&self, bytes: Bytes) -> Option<ForgeAbi> {
+    fn get_abi_for(&self, bytes: Bytes) -> Option<SolArtifact> {
         self.abis_by_path
             .values()
             .find(|abi| utils::diff_score(&abi.code, &bytes) < utils::FUZZ_DIFF_THRESHOLD)
@@ -449,7 +449,7 @@ impl ForgeActor {
     }
 
     #[instrument(level = "trace", skip_all, fields(project = abi.project, name = abi.name))]
-    fn insert_abi(&mut self, abi: ForgeAbi) {
+    fn insert_abi(&mut self, abi: SolArtifact) {
         self.abis_by_path.insert(abi.path.clone(), abi);
     }
 
@@ -471,7 +471,7 @@ mod tests {
     async fn find_project_roots() -> Result<()> {
         let dir = create_fixture_directories()?;
 
-        let mut actor = ForgeActor::default();
+        let mut actor = SolArtifactsActor::default();
         actor.add_path(dir.path().to_path_buf()).await?;
 
         let paths = actor.find_project_roots().await?;

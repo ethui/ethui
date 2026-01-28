@@ -13,7 +13,7 @@ resolver = "2"
 members = [
   "bin",
   "crates/analytics",
-  "crates/forge",
+  "crates/sol-artifacts",
   "crates/forge-traces",
   "crates/crypto",
   "crates/settings",
@@ -49,7 +49,7 @@ clap = { version = "4.5", default-features = false, features = [
   "env",
 ] }
 ethui-analytics = { path = "crates/analytics" }
-ethui-forge = { path = "crates/forge" }
+ethui-sol-artifacts = { path = "crates/sol-artifacts" }
 ethui-forge-traces = { path = "crates/forge-traces" }
 ethui-crypto = { path = "crates/crypto" }
 ethui-settings = { path = "crates/settings" }

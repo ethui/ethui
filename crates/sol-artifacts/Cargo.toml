@@ -1,6 +1,6 @@
 [package]
-name = "ethui-forge"
-description = "ethui forge integration"
+name = "ethui-sol-artifacts"
+description = "ethui solidity artifacts loading"
 version.workspace = true
 edition.workspace = true
 license.workspace = true

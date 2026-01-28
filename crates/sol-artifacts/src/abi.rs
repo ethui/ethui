@@ -4,7 +4,7 @@ use ethui_types::prelude::*;
 use kameo::Reply;
 
 #[derive(Debug, Clone, Reply, Serialize, Deserialize)]
-pub struct ForgeAbi {
+pub struct SolArtifact {
     pub path: PathBuf,
     pub project: String,
     pub solidity_file: String,
@@ -14,7 +14,7 @@ pub struct ForgeAbi {
     pub method_identifiers: serde_json::Value,
 }
 
-impl TryFrom<PathBuf> for ForgeAbi {
+impl TryFrom<PathBuf> for SolArtifact {
     type Error = ();
 
     fn try_from(path: PathBuf) -> std::result::Result<Self, Self::Error> {
@@ -86,7 +86,7 @@ impl TryFrom<PathBuf> for ForgeAbi {
     }
 }
 
-impl TryFrom<notify::Event> for ForgeAbi {
+impl TryFrom<notify::Event> for SolArtifact {
     type Error = ();
 
     fn try_from(event: notify::Event) -> Result<Self, Self::Error> {
