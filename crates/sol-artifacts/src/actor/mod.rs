@@ -21,7 +21,12 @@ use tokio::task;
 use walkdir::{DirEntry, WalkDir};
 
 /// Config files that indicate a project root (Foundry or Hardhat)
-const PROJECT_CONFIG_FILES: &[&str] = &["foundry.toml", "hardhat.config.ts", "hardhat.config.js"];
+const PROJECT_CONFIG_FILES: &[&str] = &[
+    "foundry.toml",
+    "hardhat.config.ts",
+    "hardhat.config.js",
+    "hardhat.config.cjs",
+];
 
 /// Directories to skip when searching for project roots
 const BLACKLISTED_DIRS: &[&str] = &[
@@ -35,6 +40,7 @@ const BLACKLISTED_DIRS: &[&str] = &[
     "cache",
     "tmp",
     "out",
+    "artifacts",
     "dependencies",
 ];
 
@@ -231,7 +237,6 @@ impl SolArtifactsActor {
 
     #[instrument(skip_all, fields(project = ?root), level = "trace")]
     async fn scan_project(&mut self, root: &Path) -> Result<()> {
-        //
         // TODO: read custom out dir from foundry.toml
         let out_dir = root.join("out");
         let artifacts_dir = root.join("artifacts/contracts");
@@ -324,9 +329,9 @@ impl SolArtifactsActor {
         trace!(roots = ?roots);
 
         let to_remove: Vec<_> = self
-            .roots
+            .project_roots
             .iter()
-            .filter(|p| !self.roots.contains(*p))
+            .filter(|p| !roots.contains(*p))
             .cloned()
             .collect();
 
