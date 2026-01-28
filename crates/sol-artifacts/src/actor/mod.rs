@@ -326,16 +326,16 @@ impl SolArtifactsActor {
 
     async fn update_project_roots(&mut self) -> Result<()> {
         let new_roots = self.find_project_roots().await?;
-        trace!(roots = ?roots);
+        trace!(roots = ?new_roots);
 
         let to_remove: Vec<_> = self
             .project_roots
             .iter()
-            .filter(|p| !roots.contains(*p))
+            .filter(|p| !new_roots.contains(*p))
             .cloned()
             .collect();
 
-        let to_add: Vec<_> = roots
+        let to_add: Vec<_> = new_roots
             .iter()
             .filter(|p| !self.project_roots.contains(*p))
             .cloned()
