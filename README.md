@@ -13,9 +13,15 @@
 </p>
 
 <p align="center">
+   <a href="https://github.com/ethui/ethui/blob/main/LICENSE">
     <img alt="licence badge" src="https://img.shields.io/github/license/ethui/ethui">
+</a>
+<a href="https://github.com/ethui/ethui/releases">
     <img alt="release badge" src="https://img.shields.io/github/v/release/ethui/ethui">
+</a>
+<a href="https://github.com/ethui/ethui/actions">
     <img alt="build badge" src="https://img.shields.io/github/actions/workflow/status/ethui/ethui/rust.yml">
+</a>
 </p>
 
 ## What is ethui?
