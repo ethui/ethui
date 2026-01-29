@@ -1,8 +1,8 @@
 use clap::Parser;
 use color_eyre::eyre::Result;
-use ethui_sync_anvil::tracker::{
+use ethui_sync_dev_net::tracker::{
     consumer::Consumer,
-    worker::{create_worker, Msg},
+    worker::{Msg, create_worker},
 };
 use ethui_types::{Network, NetworkStatus};
 use tokio::signal;

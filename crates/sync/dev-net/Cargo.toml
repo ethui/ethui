@@ -1,5 +1,5 @@
 [package]
-name = "ethui-sync-anvil"
+name = "ethui-sync-dev-net"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -9,8 +9,8 @@ exclude.workspace = true
 authors.workspace = true
 
 [[bin]]
-name = "anvil-sync-test"
-path = "src/bin/anvil-sync-test.rs"
+name = "dev-net-sync-test"
+path = "src/bin/dev-net-sync-test.rs"
 
 [dependencies]
 ethui-db.workspace = true

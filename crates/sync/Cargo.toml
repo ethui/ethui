@@ -9,7 +9,7 @@ exclude.workspace = true
 authors.workspace = true
 
 [dependencies]
-ethui-sync-anvil.workspace = true
+ethui-sync-dev-net.workspace = true
 ethui-sync-alchemy.workspace = true
 tauri.workspace = true
 ethui-db.workspace = true
