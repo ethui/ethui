@@ -208,7 +208,7 @@ impl SendTransaction {
 
             provider
                 .client()
-                .request::<Address, serde_json::Value>("hardhat_impersonateAccount", address)
+                .request::<(Address,), serde_json::Value>("hardhat_impersonateAccount", (address,))
                 .await?;
 
             Ok(provider)
