@@ -11,7 +11,7 @@ use tokio::sync::{Mutex, mpsc, oneshot};
 pub use worker::Worker;
 
 pub async fn init() {
-    ethui_sync_dev_net::init();
+    ethui_sync_devnet::init();
 
     let (snd, rcv) = mpsc::unbounded_channel();
     tokio::spawn(async { receiver(snd).await });

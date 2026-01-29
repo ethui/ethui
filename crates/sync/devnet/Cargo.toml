@@ -1,5 +1,5 @@
 [package]
-name = "ethui-sync-dev-net"
+name = "ethui-sync-devnet"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -9,8 +9,8 @@ exclude.workspace = true
 authors.workspace = true
 
 [[bin]]
-name = "dev-net-sync-test"
-path = "src/bin/dev-net-sync-test.rs"
+name = "devnet-sync-test"
+path = "src/bin/devnet-sync-test.rs"
 
 [dependencies]
 ethui-db.workspace = true
