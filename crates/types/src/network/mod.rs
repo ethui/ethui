@@ -120,7 +120,6 @@ impl Network {
         let provider = self.get_alloy_provider().await.unwrap();
         // TODO cache node_info for entire chain
         self.chain_id() == 31337
-            || provider.anvil_node_info().await.is_ok()
             || provider
                 .client()
                 .request::<(), serde_json::Value>("hardhat_metadata", ())
