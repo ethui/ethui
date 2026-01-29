@@ -2,7 +2,7 @@ mod id;
 
 use alloy::{
     network::Ethereum,
-    providers::{Provider, ProviderBuilder, RootProvider, ext::AnvilApi},
+    providers::{Provider, ProviderBuilder, RootProvider},
     rpc::{
         client::ClientBuilder,
         types::anvil::{ForkedNetwork, Metadata},
