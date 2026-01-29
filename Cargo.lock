@@ -3423,7 +3423,7 @@ dependencies = [
  "ethui-db",
  "ethui-networks",
  "ethui-sync-alchemy",
- "ethui-sync-anvil",
+ "ethui-sync-dev-net",
  "ethui-types",
  "serde",
  "tauri",
@@ -3450,7 +3450,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "ethui-sync-anvil"
+name = "ethui-sync-dev-net"
 version = "1.26.4"
 dependencies = [
  "alloy",

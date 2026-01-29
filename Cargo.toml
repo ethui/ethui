@@ -64,7 +64,7 @@ ethui-types = { path = "crates/types" }
 ethui-abis = { path = "crates/abis" }
 ethui-db = { path = "crates/db" }
 ethui-sync = { path = "crates/sync" }
-ethui-sync-anvil = { path = "crates/sync/anvil" }
+ethui-sync-dev-net = { path = "crates/sync/dev-net" }
 ethui-sync-alchemy = { path = "crates/sync/alchemy" }
 ethui-broadcast = { path = "crates/broadcast" }
 ethui-tracing = { path = "crates/tracing" }
