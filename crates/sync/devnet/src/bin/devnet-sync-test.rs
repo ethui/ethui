@@ -1,6 +1,6 @@
 use clap::Parser;
 use color_eyre::eyre::Result;
-use ethui_sync_dev_net::tracker::{
+use ethui_sync_devnet::tracker::{
     consumer::Consumer,
     worker::{Msg, create_worker},
 };
