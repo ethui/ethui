@@ -4,7 +4,10 @@ use std::{
     time::{SystemTime, UNIX_EPOCH},
 };
 
-use alloy::providers::{Provider as _, ProviderBuilder};
+use alloy::{
+    providers::{Provider as _, ProviderBuilder},
+    rpc::types::anvil::Metadata,
+};
 use ethui_types::prelude::*;
 
 use crate::tracker::worker::SyncInfo;
@@ -19,14 +22,12 @@ pub(crate) async fn try_get_sync_info(url: &str) -> Result<SyncInfo> {
         .await?
         .with_context(|| format!("Failed to get latest block from {url}"))?;
 
-    // Try to get fork block number from anvil_nodeInfo
     let fork_block_number = provider
         .client()
-        .request::<(), serde_json::Value>("anvil_nodeInfo", ())
+        .request::<(), Metadata>("hardhat_metadata", ())
         .await?
-        .get("forkConfig")
-        .and_then(|v| v.get("forkBlockNumber"))
-        .and_then(|v| v.as_u64());
+        .forked_network
+        .map(|f| f.fork_block_number);
 
     Ok(SyncInfo {
         number: block.header.number,
