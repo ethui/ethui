@@ -2,7 +2,7 @@ use std::str::FromStr;
 
 use alloy::{
     network::{Ethereum, EthereumWallet, NetworkWallet, TransactionBuilder as _},
-    providers::{DynProvider, PendingTransactionBuilder, Provider, ProviderBuilder, ext::AnvilApi},
+    providers::{DynProvider, PendingTransactionBuilder, Provider, ProviderBuilder},
     rpc::types::TransactionRequest,
 };
 use ethui_connections::Ctx;
@@ -198,14 +198,6 @@ impl SendTransaction {
             // this is just a minor optimization, though
             let provider = ProviderBuilder::new().connect(&url).await?.erased();
 
-            let is_anvil: bool = provider
-                .client()
-                .request::<(), serde_json::Value>("web3_clientVersion", ())
-                .await?
-                .as_str()
-                .map(|a| a.contains("anvil"))
-                .expect("TODO");
-
             let signer = wallet
                 .build_signer(self.network.chain_id(), &resolved.path)
                 .await?;
@@ -214,14 +206,10 @@ impl SendTransaction {
                 &signer.to_wallet(),
             );
 
-            if is_anvil {
-                provider.anvil_impersonate_account(address).await?;
-            } else {
-                provider
-                    .client()
-                    .request::<Address, serde_json::Value>("hardhat_impersonateAccount", address)
-                    .await?;
-            }
+            provider
+                .client()
+                .request::<Address, serde_json::Value>("hardhat_impersonateAccount", address)
+                .await?;
 
             Ok(provider)
         } else {
