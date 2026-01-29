@@ -1,7 +1,7 @@
 use std::str::FromStr;
 
 use alloy::{
-    network::{Ethereum, TransactionBuilder as _},
+    network::{Ethereum, EthereumWallet, NetworkWallet, TransactionBuilder as _},
     providers::{DynProvider, PendingTransactionBuilder, Provider, ProviderBuilder, ext::AnvilApi},
     rpc::types::TransactionRequest,
 };
@@ -206,13 +206,20 @@ impl SendTransaction {
                 .map(|a| a.contains("anvil"))
                 .expect("TODO");
 
+            let signer = wallet
+                .build_signer(self.network.chain_id(), &resolved.path)
+                .await?;
+
+            let address = <EthereumWallet as NetworkWallet<Ethereum>>::default_signer_address(
+                &signer.to_wallet(),
+            );
+
             if is_anvil {
-                provider.anvil_auto_impersonate_account(true).await?;
+                provider.anvil_impersonate_account(address).await?;
             } else {
-                //TODO hardhat precisa de address , nao tem auto
                 provider
                     .client()
-                    .request::<(), serde_json::Value>("hardhat_impersonateAccount", ())
+                    .request::<Address, serde_json::Value>("hardhat_impersonateAccount", address)
                     .await?;
             }
 
