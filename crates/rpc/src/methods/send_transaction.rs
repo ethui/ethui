@@ -197,7 +197,25 @@ impl SendTransaction {
             // instead of making this request for every single transaction.
             // this is just a minor optimization, though
             let provider = ProviderBuilder::new().connect(&url).await?.erased();
-            provider.anvil_auto_impersonate_account(true).await?;
+
+            let is_anvil: bool = provider
+                .client()
+                .request::<(), serde_json::Value>("web3_clientVersion", ())
+                .await?
+                .as_str()
+                .map(|a| a.contains("anvil"))
+                .expect("TODO");
+
+            if is_anvil {
+                provider.anvil_auto_impersonate_account(true).await?;
+            } else {
+                //TODO hardhat precisa de address , nao tem auto
+                provider
+                    .client()
+                    .request::<(), serde_json::Value>("hardhat_impersonateAccount", ())
+                    .await?;
+            }
+
             Ok(provider)
         } else {
             let signer = wallet

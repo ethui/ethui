@@ -3,7 +3,10 @@ mod id;
 use alloy::{
     network::Ethereum,
     providers::{Provider, ProviderBuilder, RootProvider, ext::AnvilApi},
-    rpc::{client::ClientBuilder, types::anvil::ForkedNetwork},
+    rpc::{
+        client::ClientBuilder,
+        types::anvil::{ForkedNetwork, Metadata},
+    },
     transports::layers::RetryBackoffLayer,
 };
 pub use id::NetworkId;
@@ -116,12 +119,24 @@ impl Network {
 
         let provider = self.get_alloy_provider().await.unwrap();
         // TODO cache node_info for entire chain
-        self.chain_id() == 31337 || provider.anvil_node_info().await.is_ok()
+        self.chain_id() == 31337
+            || provider.anvil_node_info().await.is_ok()
+            || provider
+                .client()
+                .request::<(), serde_json::Value>("hardhat_metadata", ())
+                .await
+                .is_ok()
     }
 
     pub async fn get_forked_network(&self) -> color_eyre::Result<Option<ForkedNetwork>> {
         let provider = self.get_alloy_provider().await?;
-        Ok(provider.anvil_metadata().await?.forked_network)
+
+        // hardhat_metadata is aliased to anvil_metadata on anvil
+        Ok(provider
+            .client()
+            .request::<(), Metadata>("hardhat_metadata", ())
+            .await?
+            .forked_network)
     }
 
     pub async fn get_alloy_provider(&self) -> color_eyre::Result<RootProvider<Ethereum>> {
