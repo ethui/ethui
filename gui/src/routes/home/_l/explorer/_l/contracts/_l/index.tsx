@@ -9,8 +9,8 @@ import {
 } from "@ethui/ui/components/shadcn/tooltip";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import debounce from "lodash-es/debounce";
-import { MoveRight, Trash2, TriangleAlert } from "lucide-react";
-import { useState } from "react";
+import { MoveRight, Trash2, TriangleAlert, X } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 import type { Abi, Address } from "viem";
 import { useShallow } from "zustand/shallow";
 import { AddressView } from "#/components/AddressView";
@@ -56,13 +56,61 @@ function Contracts() {
 }
 
 function Filter({ onChange }: { onChange: (f: string) => void }) {
+  const [inputValue, setInputValue] = useState("");
+
+  const debouncedOnChange = useMemo(
+    () => debounce((value: string) => onChange(value), 300),
+    [onChange]
+  );
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setInputValue(value);
+    debouncedOnChange(value);
+  };
+
+  const handleClear = () => {
+    setInputValue("");
+    debouncedOnChange.cancel();
+    onChange("");
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Escape") {
+      e.preventDefault();
+      handleClear();
+    }
+  };
+
+  useEffect(() => {
+    return () => {
+      debouncedOnChange.cancel();
+    };
+  }, [debouncedOnChange]);
+
   return (
     <form className="mx-2 flex items-center gap-1">
-      <Input
-        onChange={debounce((e) => onChange(e.target.value), 100)}
-        placeholder="Filter..."
-        className="h-10"
-      />
+      <div className="relative w-full">
+        <Input
+          value={inputValue}
+          onChange={handleChange}
+          onKeyDown={handleKeyDown}
+          placeholder="Filter..."
+          className="h-10 pr-8"
+        />
+        {inputValue && (
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7"
+            onClick={handleClear}
+            aria-label="Clear filter"
+          >
+            <X className="h-4 w-4" />
+          </Button>
+        )}
+      </div>
     </form>
   );
 }
