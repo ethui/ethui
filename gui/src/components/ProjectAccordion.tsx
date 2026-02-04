@@ -10,16 +10,25 @@ import type { OrganizedContract, ProjectGroup } from "#/store/useContracts";
 interface ProjectAccordionProps {
   groups: ProjectGroup[];
   renderContract: (contract: OrganizedContract) => React.ReactNode;
+  // Optional controlled state props
+  expandedItems?: string[];
+  onExpandedChange?: (items: string[]) => void;
 }
 
 export function ProjectAccordion({
   groups,
   renderContract,
+  expandedItems: controlledExpandedItems,
+  onExpandedChange,
 }: ProjectAccordionProps) {
-  // Initialize with all projects expanded (default state)
-  const [expandedItems, setExpandedItems] = useState<string[]>(
+  // Internal state used only when not controlled externally
+  const [internalExpandedItems, setInternalExpandedItems] = useState<string[]>(
     groups.map((g) => g.projectName),
   );
+
+  // Use controlled state if provided, otherwise use internal
+  const expandedItems = controlledExpandedItems ?? internalExpandedItems;
+  const setExpandedItems = onExpandedChange ?? setInternalExpandedItems;
 
   return (
     <Accordion
