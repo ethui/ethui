@@ -18,15 +18,37 @@ export type OrganizedContract = Contract & {
   proxyChain: Contract[];
 };
 
+export interface ProjectGroup {
+  projectName: string;        // Display name ("Other Contracts" for null/undefined)
+  projectPath: string | null; // Shortened path or null for "Other Contracts"
+  contracts: OrganizedContract[];
+}
+
 interface Setters {
   reload: () => Promise<void>;
   add: (chainId: number, dedupId: number, address: Address) => Promise<void>;
   removeContract: (chainId: number, address: Address) => Promise<void>;
   setChainId: (id?: NetworkId) => void;
   filteredContracts: (filter: string) => OrganizedContract[];
+  groupedContracts: (filter: string) => ProjectGroup[];
 }
 
 type Store = State & Setters;
+
+function shortenPath(path: string | undefined | null): string | null {
+  if (!path) return null;
+  // Replace home directory with ~
+  const homeDir = path.match(/^(\/home\/[^/]+|\/Users\/[^/]+)/)?.[0];
+  if (homeDir) {
+    path = path.replace(homeDir, '~');
+  }
+  // If still long, show last 2 segments
+  const segments = path.split('/').filter(Boolean);
+  if (segments.length > 3) {
+    return segments.slice(-2).join('/');
+  }
+  return path;
+}
 
 const store: StateCreator<Store> = (set, get) => ({
   contracts: [],
@@ -114,6 +136,51 @@ const store: StateCreator<Store> = (set, get) => ({
         .toLowerCase()
         .includes(lowerCaseFilter),
     );
+  },
+
+  groupedContracts(filter: string) {
+    const filtered = get().filteredContracts(filter);
+
+    // Group contracts by projectName
+    const groups = new Map<string, OrganizedContract[]>();
+
+    for (const contract of filtered) {
+      const key = contract.projectName || "__other__";
+      if (!groups.has(key)) {
+        groups.set(key, []);
+      }
+      groups.get(key)!.push(contract);
+    }
+
+    // Convert to ProjectGroup array
+    const projectGroups: ProjectGroup[] = [];
+
+    for (const [key, contracts] of groups.entries()) {
+      if (key === "__other__") {
+        // Handle "Other Contracts" - will be added last
+        continue;
+      }
+
+      projectGroups.push({
+        projectName: key,
+        projectPath: shortenPath(contracts[0]?.projectPath),
+        contracts,
+      });
+    }
+
+    // Sort named projects alphabetically
+    projectGroups.sort((a, b) => a.projectName.localeCompare(b.projectName));
+
+    // Add "Other Contracts" at the end if it exists
+    if (groups.has("__other__")) {
+      projectGroups.push({
+        projectName: "Other Contracts",
+        projectPath: null,
+        contracts: groups.get("__other__")!,
+      });
+    }
+
+    return projectGroups;
   },
 
   setChainId(id) {
