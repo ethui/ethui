@@ -25,12 +25,19 @@ export const Route = createFileRoute("/home/_l/explorer/_l/contracts/_l/")({
 
 function Contracts() {
   const [filter, setFilter] = useState("");
+  const [expandedItems, setExpandedItems] = useState<string[]>([]);
   const groups = useContracts(useShallow((s) => s.groupedContracts(filter)));
 
   // Check if all groups have 0 contracts total
   const totalContracts = groups.reduce((sum, g) => sum + g.contracts.length, 0);
 
-  if (totalContracts === 0) {
+  // Auto-expand all groups when filter is active or cleared
+  useEffect(() => {
+    setExpandedItems(groups.map((g) => g.projectName));
+  }, [filter, groups]);
+
+  // Empty state for "no contracts at all"
+  if (totalContracts === 0 && !filter) {
     return (
       <EmptyState
         message="No contracts found"
@@ -39,19 +46,47 @@ function Contracts() {
     );
   }
 
+  // Empty state for "filter has no matches"
+  if (totalContracts === 0 && filter) {
+    return (
+      <>
+        <Filter onChange={(f) => setFilter(f)} />
+        <EmptyState
+          message="No matching contracts"
+          description={`No contracts match "${filter}". Try a different search term.`}
+        />
+      </>
+    );
+  }
+
   return (
     <>
       <Filter onChange={(f) => setFilter(f)} />
+      <ResultCount count={totalContracts} isFiltering={!!filter} />
 
       <div className="flex flex-col gap-2 pt-2">
         <ProjectAccordion
           groups={groups}
+          expandedItems={expandedItems}
+          onExpandedChange={setExpandedItems}
           renderContract={(contract) => (
             <ContractHeader key={contract.address} contract={contract} />
           )}
         />
       </div>
     </>
+  );
+}
+
+function ResultCount({ count, isFiltering }: { count: number; isFiltering: boolean }) {
+  if (!isFiltering) return null;
+
+  return (
+    <div className="px-2 py-1 text-sm text-muted-foreground">
+      <span aria-live="polite" aria-atomic="true">
+        {count} contract{count !== 1 ? "s" : ""} found
+      </span>
+    </div>
   );
 }
 
