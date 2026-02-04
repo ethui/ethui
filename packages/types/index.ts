@@ -95,6 +95,8 @@ export interface Contract {
   proxyName?: string;
   proxyFor?: Address;
   proxiedBy?: Address;
+  projectName?: string;
+  projectPath?: string;
 }
 
 export interface Peer {

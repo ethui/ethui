@@ -39,10 +39,13 @@ const store: StateCreator<Store> = (set, get) => ({
       id,
     });
 
-    const contracts = await invoke<Contract[]>("db_get_contracts", {
-      chainId: id.chain_id,
-      dedupId: is_anvil_network ? id.dedup_id : -1,
-    });
+    const contracts = await invoke<Contract[]>(
+      "db_get_contracts_with_project_metadata",
+      {
+        chainId: id.chain_id,
+        dedupId: is_anvil_network ? id.dedup_id : -1,
+      },
+    );
 
     set({ contracts: await organizeContracts(contracts) });
   },
