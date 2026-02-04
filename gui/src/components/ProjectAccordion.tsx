@@ -5,7 +5,7 @@ import {
   AccordionTrigger,
 } from "@ethui/ui/components/shadcn/accordion";
 import { useState } from "react";
-import type { ProjectGroup, OrganizedContract } from "#/store/useContracts";
+import type { OrganizedContract, ProjectGroup } from "#/store/useContracts";
 
 interface ProjectAccordionProps {
   groups: ProjectGroup[];
@@ -29,7 +29,7 @@ export function ProjectAccordion({
     >
       {groups.map((group) => (
         <AccordionItem key={group.projectName} value={group.projectName}>
-          <AccordionTrigger className="h-auto w-full cursor-pointer justify-start px-2 py-2 hover:no-underline">
+          <AccordionTrigger className="h-auto w-full cursor-pointer justify-start px-2 py-2 hover:no-underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
             <div className="flex w-full items-center justify-between">
               <div className="flex flex-col items-start gap-0.5">
                 <span className="font-medium text-base">
