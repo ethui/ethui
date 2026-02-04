@@ -132,7 +132,7 @@ const store: StateCreator<Store> = (set, get) => ({
 
     if (lowerCaseFilter === "") return contracts;
     return contracts.filter((contract) =>
-      `${contract.address} ${contract.name} ${contract.alias}`
+      `${contract.address} ${contract.name} ${contract.alias} ${contract.projectName || ''}`
         .toLowerCase()
         .includes(lowerCaseFilter),
     );
