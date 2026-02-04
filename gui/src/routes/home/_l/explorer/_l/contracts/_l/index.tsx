@@ -10,7 +10,7 @@ import {
 import { createFileRoute, Link } from "@tanstack/react-router";
 import debounce from "lodash-es/debounce";
 import { MoveRight, Trash2, TriangleAlert, X } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { Abi, Address } from "viem";
 import { useShallow } from "zustand/shallow";
 import { AddressView } from "#/components/AddressView";
@@ -25,16 +25,65 @@ export const Route = createFileRoute("/home/_l/explorer/_l/contracts/_l/")({
 
 function Contracts() {
   const [filter, setFilter] = useState("");
-  const [expandedItems, setExpandedItems] = useState<string[]>([]);
+  const [expandedItems, setExpandedItems] = useState<string[]>(() => {
+    try {
+      const stored = localStorage.getItem('contracts-expanded-items');
+      return stored ? JSON.parse(stored) : [];
+    } catch (error) {
+      console.warn('Failed to parse expanded items from localStorage:', error);
+      return [];
+    }
+  });
+  const isFirstMount = useRef(true);
   const groups = useContracts(useShallow((s) => s.groupedContracts(filter)));
 
   // Check if all groups have 0 contracts total
   const totalContracts = groups.reduce((sum, g) => sum + g.contracts.length, 0);
 
-  // Auto-expand all groups when filter is active or cleared
+  // First-time users: expand all groups if no saved state exists
   useEffect(() => {
-    setExpandedItems(groups.map((g) => g.projectName));
+    if (isFirstMount.current) {
+      isFirstMount.current = false;
+      try {
+        const hasStoredState = localStorage.getItem('contracts-expanded-items') !== null;
+        if (!hasStoredState && groups.length > 0) {
+          setExpandedItems(groups.map((g) => g.projectName));
+        }
+      } catch (error) {
+        // localStorage unavailable - fallback to expanding all
+        if (groups.length > 0) {
+          setExpandedItems(groups.map((g) => g.projectName));
+        }
+      }
+    }
+  }, [groups]);
+
+  // Auto-expand all groups when filter is active
+  useEffect(() => {
+    if (filter) {
+      setExpandedItems(groups.map((g) => g.projectName));
+    }
   }, [filter, groups]);
+
+  // Persist expandedItems to localStorage
+  useEffect(() => {
+    try {
+      localStorage.setItem('contracts-expanded-items', JSON.stringify(expandedItems));
+    } catch (error) {
+      console.error('Failed to save expanded items to localStorage:', error);
+    }
+  }, [expandedItems]);
+
+  // Clean up stale project names from expandedItems
+  useEffect(() => {
+    const currentProjectNames = new Set(groups.map((g) => g.projectName));
+    const validExpandedItems = expandedItems.filter((name) =>
+      currentProjectNames.has(name)
+    );
+    if (validExpandedItems.length !== expandedItems.length) {
+      setExpandedItems(validExpandedItems);
+    }
+  }, [groups]);
 
   // Empty state for "no contracts at all"
   if (totalContracts === 0 && !filter) {
