@@ -15,6 +15,7 @@ import type { Abi, Address } from "viem";
 import { useShallow } from "zustand/shallow";
 import { AddressView } from "#/components/AddressView";
 import { EmptyState } from "#/components/EmptyState";
+import { ProjectAccordion } from "#/components/ProjectAccordion";
 import { useInvoke } from "#/hooks/useInvoke";
 import { type OrganizedContract, useContracts } from "#/store/useContracts";
 
@@ -24,11 +25,12 @@ export const Route = createFileRoute("/home/_l/explorer/_l/contracts/_l/")({
 
 function Contracts() {
   const [filter, setFilter] = useState("");
-  const contracts = useContracts(
-    useShallow((s) => s.filteredContracts(filter)),
-  );
+  const groups = useContracts(useShallow((s) => s.groupedContracts(filter)));
 
-  if (contracts.length === 0) {
+  // Check if all groups have 0 contracts total
+  const totalContracts = groups.reduce((sum, g) => sum + g.contracts.length, 0);
+
+  if (totalContracts === 0) {
     return (
       <EmptyState
         message="No contracts found"
@@ -42,14 +44,12 @@ function Contracts() {
       <Filter onChange={(f) => setFilter(f)} />
 
       <div className="flex flex-col gap-2 pt-2">
-        {Array.from(contracts || []).map(
-          ({ address, name, chainId, proxyChain }) => (
-            <ContractHeader
-              key={address}
-              contract={{ address, name, chainId, proxyChain }}
-            />
-          ),
-        )}
+        <ProjectAccordion
+          groups={groups}
+          renderContract={(contract) => (
+            <ContractHeader key={contract.address} contract={contract} />
+          )}
+        />
       </div>
     </>
   );
