@@ -16,7 +16,7 @@ export function EmptyState({
   return (
     <div
       className={cn(
-        "mt-40 flex flex-col items-center justify-center px-10 text-center",
+        "mt-8 flex flex-col items-start px-2 text-left",
         className,
       )}
     >

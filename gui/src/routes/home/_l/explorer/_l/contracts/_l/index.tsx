@@ -9,13 +9,12 @@ import {
 } from "@ethui/ui/components/shadcn/tooltip";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import debounce from "lodash-es/debounce";
-import { MoveRight, Trash2, TriangleAlert, X } from "lucide-react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { MoveRight, Trash2, TriangleAlert } from "lucide-react";
+import { useState } from "react";
 import type { Abi, Address } from "viem";
 import { useShallow } from "zustand/shallow";
 import { AddressView } from "#/components/AddressView";
 import { EmptyState } from "#/components/EmptyState";
-import { ProjectAccordion } from "#/components/ProjectAccordion";
 import { useInvoke } from "#/hooks/useInvoke";
 import { type OrganizedContract, useContracts } from "#/store/useContracts";
 
@@ -25,68 +24,11 @@ export const Route = createFileRoute("/home/_l/explorer/_l/contracts/_l/")({
 
 function Contracts() {
   const [filter, setFilter] = useState("");
-  const [expandedItems, setExpandedItems] = useState<string[]>(() => {
-    try {
-      const stored = localStorage.getItem('contracts-expanded-items');
-      return stored ? JSON.parse(stored) : [];
-    } catch (error) {
-      console.warn('Failed to parse expanded items from localStorage:', error);
-      return [];
-    }
-  });
-  const isFirstMount = useRef(true);
-  const groups = useContracts(useShallow((s) => s.groupedContracts(filter)));
+  const contracts = useContracts(
+    useShallow((s) => s.filteredContracts(filter)),
+  );
 
-  // Check if all groups have 0 contracts total
-  const totalContracts = groups.reduce((sum, g) => sum + g.contracts.length, 0);
-
-  // First-time users: expand all groups if no saved state exists
-  useEffect(() => {
-    if (isFirstMount.current) {
-      isFirstMount.current = false;
-      try {
-        const hasStoredState = localStorage.getItem('contracts-expanded-items') !== null;
-        if (!hasStoredState && groups.length > 0) {
-          setExpandedItems(groups.map((g) => g.projectName));
-        }
-      } catch (error) {
-        // localStorage unavailable - fallback to expanding all
-        if (groups.length > 0) {
-          setExpandedItems(groups.map((g) => g.projectName));
-        }
-      }
-    }
-  }, [groups]);
-
-  // Auto-expand all groups when filter is active
-  useEffect(() => {
-    if (filter) {
-      setExpandedItems(groups.map((g) => g.projectName));
-    }
-  }, [filter, groups]);
-
-  // Persist expandedItems to localStorage
-  useEffect(() => {
-    try {
-      localStorage.setItem('contracts-expanded-items', JSON.stringify(expandedItems));
-    } catch (error) {
-      console.error('Failed to save expanded items to localStorage:', error);
-    }
-  }, [expandedItems]);
-
-  // Clean up stale project names from expandedItems
-  useEffect(() => {
-    const currentProjectNames = new Set(groups.map((g) => g.projectName));
-    const validExpandedItems = expandedItems.filter((name) =>
-      currentProjectNames.has(name)
-    );
-    if (validExpandedItems.length !== expandedItems.length) {
-      setExpandedItems(validExpandedItems);
-    }
-  }, [groups]);
-
-  // Empty state for "no contracts at all"
-  if (totalContracts === 0 && !filter) {
+  if (contracts.length === 0) {
     return (
       <EmptyState
         message="No contracts found"
@@ -95,106 +37,32 @@ function Contracts() {
     );
   }
 
-  // Empty state for "filter has no matches"
-  if (totalContracts === 0 && filter) {
-    return (
-      <>
-        <Filter onChange={(f) => setFilter(f)} />
-        <EmptyState
-          message="No matching contracts"
-          description={`No contracts match "${filter}". Try a different search term.`}
-        />
-      </>
-    );
-  }
-
   return (
     <>
       <Filter onChange={(f) => setFilter(f)} />
-      <ResultCount count={totalContracts} isFiltering={!!filter} />
 
       <div className="flex flex-col gap-2 pt-2">
-        <ProjectAccordion
-          groups={groups}
-          expandedItems={expandedItems}
-          onExpandedChange={setExpandedItems}
-          renderContract={(contract) => (
-            <ContractHeader key={contract.address} contract={contract} />
-          )}
-        />
+        {Array.from(contracts || []).map(
+          ({ address, name, chainId, proxyChain }) => (
+            <ContractHeader
+              key={address}
+              contract={{ address, name, chainId, proxyChain }}
+            />
+          ),
+        )}
       </div>
     </>
   );
 }
 
-function ResultCount({ count, isFiltering }: { count: number; isFiltering: boolean }) {
-  if (!isFiltering) return null;
-
-  return (
-    <div className="px-2 py-1 text-sm text-muted-foreground">
-      <span aria-live="polite" aria-atomic="true">
-        {count} contract{count !== 1 ? "s" : ""} found
-      </span>
-    </div>
-  );
-}
-
 function Filter({ onChange }: { onChange: (f: string) => void }) {
-  const [inputValue, setInputValue] = useState("");
-
-  const debouncedOnChange = useMemo(
-    () => debounce((value: string) => onChange(value), 300),
-    [onChange]
-  );
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setInputValue(value);
-    debouncedOnChange(value);
-  };
-
-  const handleClear = () => {
-    setInputValue("");
-    debouncedOnChange.cancel();
-    onChange("");
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Escape") {
-      e.preventDefault();
-      handleClear();
-    }
-  };
-
-  useEffect(() => {
-    return () => {
-      debouncedOnChange.cancel();
-    };
-  }, [debouncedOnChange]);
-
   return (
     <form className="mx-2 flex items-center gap-1">
-      <div className="relative w-full">
-        <Input
-          value={inputValue}
-          onChange={handleChange}
-          onKeyDown={handleKeyDown}
-          placeholder="Filter..."
-          className="h-10 pr-8"
-        />
-        {inputValue && (
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7"
-            onClick={handleClear}
-            aria-label="Clear filter"
-          >
-            <X className="h-4 w-4" />
-          </Button>
-        )}
-      </div>
+      <Input
+        onChange={debounce((e) => onChange(e.target.value), 100)}
+        placeholder="Filter..."
+        className="h-10"
+      />
     </form>
   );
 }

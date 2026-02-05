@@ -3,16 +3,16 @@ use std::path::PathBuf;
 use ethui_types::prelude::*;
 use kameo::actor::ActorRef;
 
-use crate::abi::SolArtifact;
-
 use super::SolArtifactsActor;
+use crate::{abi::SolArtifact, project::Project};
 
 #[allow(async_fn_in_trait)]
 pub trait SolArtifactsActorExt {
     async fn fetch_abis(&self) -> Result<Vec<SolArtifact>>;
     async fn get_abi_for(&self, bytes: Bytes) -> Result<Option<SolArtifact>>;
     async fn update_roots(&self, roots: Vec<PathBuf>) -> Result<()>;
-    async fn poll_project_roots(&self) -> Result<()>;
+    async fn poll_projects(&self) -> Result<()>;
+    async fn get_projects(&self) -> Result<Vec<Project>>;
     async fn new_contract(&self) -> Result<()>;
     async fn update_contracts(&self) -> Result<()>;
 }
@@ -27,13 +27,16 @@ impl SolArtifactsActorExt for ActorRef<SolArtifactsActor> {
     }
 
     async fn update_roots(&self, roots: Vec<PathBuf>) -> Result<()> {
-        self.tell(super::UpdateRoots { roots }).await?;
+        Ok(self.ask(super::UpdateRoots { roots }).await?)
+    }
+
+    async fn poll_projects(&self) -> Result<()> {
+        self.tell(super::PollProjects).await?;
         Ok(())
     }
 
-    async fn poll_project_roots(&self) -> Result<()> {
-        self.tell(super::PollProjectRoots).await?;
-        Ok(())
+    async fn get_projects(&self) -> Result<Vec<Project>> {
+        Ok(self.ask(super::GetProjects).await?)
     }
 
     async fn new_contract(&self) -> Result<()> {

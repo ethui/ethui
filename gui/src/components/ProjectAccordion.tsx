@@ -6,6 +6,7 @@ import {
 } from "@ethui/ui/components/shadcn/accordion";
 import { useState } from "react";
 import type { OrganizedContract, ProjectGroup } from "#/store/useContracts";
+import { formatProjectPath } from "#/utils";
 
 interface ProjectAccordionProps {
   groups: ProjectGroup[];
@@ -23,7 +24,7 @@ export function ProjectAccordion({
 }: ProjectAccordionProps) {
   // Internal state used only when not controlled externally
   const [internalExpandedItems, setInternalExpandedItems] = useState<string[]>(
-    groups.map((g) => g.projectName),
+    groups.map((g) => g.projectPath || g.projectName),
   );
 
   // Use controlled state if provided, otherwise use internal
@@ -36,27 +37,49 @@ export function ProjectAccordion({
       value={expandedItems}
       onValueChange={setExpandedItems}
     >
-      {groups.map((group) => (
-        <AccordionItem key={group.projectName} value={group.projectName}>
-          <AccordionTrigger className="h-auto w-full cursor-pointer justify-start px-2 py-2 hover:no-underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
-            <div className="flex w-full items-center justify-between">
-              <div className="flex flex-col items-start gap-0.5">
+      {groups.map((group) => {
+        const isEmpty = group.contracts.length === 0;
+        const groupKey = group.projectPath || group.projectName;
+
+        return (
+          <AccordionItem key={groupKey} value={groupKey} disabled={isEmpty}>
+            <AccordionTrigger
+              className={`h-auto w-full justify-start px-4 py-3 hover:no-underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${
+                isEmpty
+                  ? 'cursor-default opacity-50 pointer-events-none'
+                  : 'cursor-pointer'
+              }`}
+            >
+              <div className="flex w-full items-center justify-between">
                 <span className="font-medium text-base">
-                  {group.projectName} ({group.contracts.length})
-                </span>
-                {group.projectPath && (
-                  <span className="text-muted-foreground text-sm">
-                    {group.projectPath}
+                  {formatProjectPath(group.projectName, group.gitRoot).map(
+                    (part, i) => (
+                      <span
+                        key={i}
+                        className={
+                          part.type === "gitRepo"
+                            ? "font-bold text-primary"
+                            : part.type === "suffix"
+                              ? "text-muted-foreground"
+                              : ""
+                        }
+                      >
+                        {part.text}
+                      </span>
+                    )
+                  )}{" "}
+                  <span className="font-normal text-muted-foreground">
+                    [{group.contracts.length}]
                   </span>
-                )}
+                </span>
               </div>
-            </div>
-          </AccordionTrigger>
-          <AccordionContent className="px-0 py-0">
-            {group.contracts.map((contract) => renderContract(contract))}
-          </AccordionContent>
-        </AccordionItem>
-      ))}
+            </AccordionTrigger>
+            <AccordionContent className="px-0 py-0">
+              {group.contracts.map((contract) => renderContract(contract))}
+            </AccordionContent>
+          </AccordionItem>
+        );
+      })}
     </Accordion>
   );
 }

@@ -6,21 +6,33 @@ import { invoke } from "@tauri-apps/api/core";
 import type { Address } from "viem";
 import { create, type StateCreator } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
+import { shortenProjectPath } from "#/utils";
 import { useNetworks } from "./useNetworks";
+
+interface Project {
+  name: string;
+  path: string;
+  gitRoot?: string;
+  addresses: Address[];
+}
 
 interface State {
   id?: NetworkId;
   contracts: OrganizedContract[];
+  projects: Project[];
 }
 
 export type OrganizedContract = Contract & {
   alias?: string;
   proxyChain: Contract[];
+  projectName?: string;
+  projectPath?: string;
 };
 
 export interface ProjectGroup {
-  projectName: string;        // Display name ("Other Contracts" for null/undefined)
+  projectName: string; // Display name ("Other Contracts" for null/undefined)
   projectPath: string | null; // Shortened path or null for "Other Contracts"
+  gitRoot?: string; // Git root path if available
   contracts: OrganizedContract[];
 }
 
@@ -35,23 +47,9 @@ interface Setters {
 
 type Store = State & Setters;
 
-function shortenPath(path: string | undefined | null): string | null {
-  if (!path) return null;
-  // Replace home directory with ~
-  const homeDir = path.match(/^(\/home\/[^/]+|\/Users\/[^/]+)/)?.[0];
-  if (homeDir) {
-    path = path.replace(homeDir, '~');
-  }
-  // If still long, show last 2 segments
-  const segments = path.split('/').filter(Boolean);
-  if (segments.length > 3) {
-    return segments.slice(-2).join('/');
-  }
-  return path;
-}
-
 const store: StateCreator<Store> = (set, get) => ({
   contracts: [],
+  projects: [],
 
   async reload() {
     const { id } = get();
@@ -61,15 +59,36 @@ const store: StateCreator<Store> = (set, get) => ({
       id,
     });
 
-    const contracts = await invoke<Contract[]>(
-      "db_get_contracts_with_project_metadata",
-      {
+    // Fetch contracts and projects separately
+    const [contracts, projects] = await Promise.all([
+      invoke<Contract[]>("db_get_contracts", {
         chainId: id.chain_id,
         dedupId: is_anvil_network ? id.dedup_id : -1,
-      },
-    );
+      }),
+      invoke<Project[]>("sol_artifacts_get_projects", {
+        chainId: id.chain_id,
+        dedupId: is_anvil_network ? id.dedup_id : -1,
+      }).catch(() => [] as Project[]),
+    ]);
+    // Map contracts to projects
+    const contractsWithProjects = contracts.map((contract) => {
+      const project = projects.find((p) =>
+        p.addresses.some(
+          (addr) => addr.toLowerCase() === contract.address.toLowerCase(),
+        ),
+      );
 
-    set({ contracts: await organizeContracts(contracts) });
+      return {
+        ...contract,
+        projectName: project?.name,
+        projectPath: project?.path,
+      };
+    });
+
+    set({
+      contracts: await organizeContracts(contractsWithProjects),
+      projects,
+    });
   },
 
   add: async (chainId: number, dedupId: number, address: Address) => {
@@ -132,7 +151,7 @@ const store: StateCreator<Store> = (set, get) => ({
 
     if (lowerCaseFilter === "") return contracts;
     return contracts.filter((contract) =>
-      `${contract.address} ${contract.name} ${contract.alias} ${contract.projectName || ''}`
+      `${contract.address} ${contract.name} ${contract.alias} ${contract.projectName || ""}`
         .toLowerCase()
         .includes(lowerCaseFilter),
     );
@@ -140,16 +159,26 @@ const store: StateCreator<Store> = (set, get) => ({
 
   groupedContracts(filter: string) {
     const filtered = get().filteredContracts(filter);
+    const { projects } = get();
 
-    // Group contracts by projectName
+    // Group contracts by projectPath (unique) instead of projectName
     const groups = new Map<string, OrganizedContract[]>();
 
     for (const contract of filtered) {
-      const key = contract.projectName || "__other__";
+      const key = contract.projectPath || "__other__";
       if (!groups.has(key)) {
         groups.set(key, []);
       }
       groups.get(key)!.push(contract);
+    }
+
+    // When no filter, include all projects (even empty ones)
+    if (!filter) {
+      for (const project of projects) {
+        if (!groups.has(project.path)) {
+          groups.set(project.path, []);
+        }
+      }
     }
 
     // Convert to ProjectGroup array
@@ -161,15 +190,29 @@ const store: StateCreator<Store> = (set, get) => ({
         continue;
       }
 
+      // Get project info from contracts or find in projects list
+      const project = projects.find((p) => p.path === key);
+      const projectName = contracts[0]?.projectName ||
+        project?.name ||
+        key.split('/').pop() || "Unknown";
+
       projectGroups.push({
-        projectName: key,
-        projectPath: shortenPath(contracts[0]?.projectPath),
+        projectName,
+        projectPath: shortenProjectPath(key),
+        gitRoot: project?.gitRoot,
         contracts,
       });
     }
 
-    // Sort named projects alphabetically
-    projectGroups.sort((a, b) => a.projectName.localeCompare(b.projectName));
+    // Sort: projects with contracts first (alphabetically), then empty projects (alphabetically)
+    projectGroups.sort((a, b) => {
+      const aHasContracts = a.contracts.length > 0;
+      const bHasContracts = b.contracts.length > 0;
+
+      if (aHasContracts && !bHasContracts) return -1;
+      if (!aHasContracts && bHasContracts) return 1;
+      return a.projectName.localeCompare(b.projectName);
+    });
 
     // Add "Other Contracts" at the end if it exists
     if (groups.has("__other__")) {
