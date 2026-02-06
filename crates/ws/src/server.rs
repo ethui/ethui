@@ -143,16 +143,37 @@ async fn handle_message(
         Ok(request) => handler
             .handle(request)
             .await
-            .map(|r| serde_json::to_string(&r).unwrap())
-            .unwrap_or_else(|| serde_json::Value::Null.to_string()),
-        Err(e) => serde_json::json!({
-            "jsonrpc": "2.0",
-            "error": { "code": -32700, "message": format!("Parse error: {e}") },
-            "id": null
-        })
-        .to_string(),
+            .map(|r| {
+                serde_json::to_value(&r).unwrap_or_else(|e| {
+                    json_rpc_error(
+                        -32603,
+                        "Internal error".to_string(),
+                        serde_json::Value::Null,
+                    )
+                })
+            })
+            .unwrap_or_default(),
+        Err(e) => json_rpc_parse_error(e, serde_json::Value::Null),
     };
 
-    sender.send(reply.into()).await?;
+    sender.send(Message::Text(reply.to_string())).await?;
     Ok(())
+}
+
+fn json_rpc_error(code: i64, message: String, id: serde_json::Value) -> serde_json::Value {
+    serde_json::json!({
+        "jsonrpc": "2.0",
+        "error": { "code": code, "message": message },
+        "id": id,
+    })
+}
+
+fn json_rpc_parse_error(error: serde_json::Error, id: serde_json::Value) -> serde_json::Value {
+    let (code, message) = match error.classify() {
+        serde_json::error::Category::Data => (-32600, "Invalid Request"),
+        serde_json::error::Category::Syntax
+        | serde_json::error::Category::Eof
+        | serde_json::error::Category::Io => (-32700, "Parse error"),
+    };
+    json_rpc_error(code, message.to_string(), id)
 }
