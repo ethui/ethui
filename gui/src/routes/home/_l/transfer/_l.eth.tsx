@@ -112,7 +112,6 @@ function RouteComponent() {
   if (!network || !address || !currentToken) return null;
 
   const onSubmit = async (data: FieldValues) => {
-    console.log(data);
     const hash = await transferETH(address, data.to, data.value);
     setResult(hash);
   };

@@ -39,14 +39,6 @@ export const addressSchema = z
     message: "Not a valid ETH address",
   });
 
-// react-hook-form doesn't support value-arrays, only object-arrays, so we need this type as a workaround for the impersonator form
-export const addressOrObjectSchema = z.union([
-  addressSchema,
-  z.object({
-    addressSchema,
-  }),
-]);
-
 export const hdWalletSchema = z.object({
   type: z.literal("HDWallet"),
   count: z.number().int().min(1).max(100),
@@ -103,12 +95,6 @@ export const walletSchema = z.discriminatedUnion("type", [
   ledgerSchema,
   privateKeySchema,
 ]);
-
-export const walletTypes: Wallet["type"][] = Array.from(
-  walletSchema.options.map((k) => k.shape.type.def.values[0]),
-)
-  .filter((k) => !!k)
-  .map((k) => k as unknown as Wallet["type"]);
 
 export type Wallet = z.infer<typeof walletSchema>;
 export type HdWallet = z.infer<typeof hdWalletSchema>;

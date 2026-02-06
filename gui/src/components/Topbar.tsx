@@ -102,7 +102,7 @@ function WalletButton() {
       <AddressView
         showLinkExplorer={false}
         address={currentAddress}
-        className="tet-muted-foreground text-sm"
+        className="text-muted-foreground text-sm"
         clickToCopy={false}
         icon={false}
         contextMenu={false}

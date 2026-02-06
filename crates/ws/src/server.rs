@@ -114,7 +114,7 @@ async fn handle(
                 }
             }
 
-            // send a ping every 1 seconds
+            // send a ping every 15 seconds
             _ = interval.tick() => {
                 ws_sender.send(Message::Text("ping".into())).await?;
             }
