@@ -125,9 +125,7 @@ export const useContracts = create<Store>()(subscribeWithSelector(store));
 const trackListener = createHmrListenerTracker();
 
 trackListener(
-  event.listen("contracts-updated", async () => {
-    await useContracts.getState().reload();
-  }),
+  event.listen("contracts-updated", () => useContracts.getState().reload()),
 );
 
 useNetworks.subscribe(

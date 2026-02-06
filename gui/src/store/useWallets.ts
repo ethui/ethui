@@ -68,14 +68,10 @@ export const useWallets = create<Store>()(subscribeWithSelector(store));
 const trackListener = createHmrListenerTracker();
 
 trackListener(
-  event.listen("settings-changed", async () => {
-    await useWallets.getState().reload();
-  }),
+  event.listen("settings-changed", () => useWallets.getState().reload()),
 );
 trackListener(
-  event.listen("wallets-changed", async () => {
-    await useWallets.getState().reload();
-  }),
+  event.listen("wallets-changed", () => useWallets.getState().reload()),
 );
 
 (async () => {

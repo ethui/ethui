@@ -45,9 +45,7 @@ export const useTheme = create<Store>()(store);
 const trackListener = createHmrListenerTracker();
 
 trackListener(
-  event.listen("settings-changed", async () => {
-    await useTheme.getState().reload();
-  }),
+  event.listen("settings-changed", () => useTheme.getState().reload()),
 );
 
 (async () => {

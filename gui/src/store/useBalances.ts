@@ -69,9 +69,7 @@ export const useBalances = create<Store>()(subscribeWithSelector(store));
 const trackListener = createHmrListenerTracker();
 
 trackListener(
-  event.listen("balances-updated", async () => {
-    await useBalances.getState().reload();
-  }),
+  event.listen("balances-updated", () => useBalances.getState().reload()),
 );
 
 (async () => {

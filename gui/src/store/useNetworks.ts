@@ -65,15 +65,13 @@ export const useNetworks = create<Store>()(subscribeWithSelector(store));
 const trackListener = createHmrListenerTracker();
 
 trackListener(
-  event.listen("networks-changed", async () => {
-    await useNetworks.getState().reload();
-  }),
+  event.listen("networks-changed", () => useNetworks.getState().reload()),
 );
 
 trackListener(
-  event.listen("current-network-changed", async () => {
-    await useNetworks.getState().reload();
-  }),
+  event.listen("current-network-changed", () =>
+    useNetworks.getState().reload(),
+  ),
 );
 
 (async () => {

@@ -57,9 +57,7 @@ export const useBlacklist = create<Store>()(subscribeWithSelector(store));
 const trackListener = createHmrListenerTracker();
 
 trackListener(
-  event.listen("balances-updated", async () => {
-    await useBlacklist.getState().reload();
-  }),
+  event.listen("balances-updated", () => useBlacklist.getState().reload()),
 );
 
 (async () => {
