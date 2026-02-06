@@ -3531,6 +3531,7 @@ dependencies = [
  "serde_json",
  "tauri",
  "tokio",
+ "zeroize",
 ]
 
 [[package]]

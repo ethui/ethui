@@ -24,7 +24,7 @@ secrets.workspace = true
 color-eyre.workspace = true
 once_cell.workspace = true
 async-trait.workspace = true
-zeroize = "1.7"
+zeroize.workspace = true
 
 enum_dispatch = "0.3.11"
 coins-bip32 = "0.13"
