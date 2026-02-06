@@ -41,7 +41,7 @@ pub async fn networks_is_dev(id: NetworkId) -> TauriResult<bool> {
         .await?
         .with_context(|| "Network not found")?;
 
-    Ok(network.is_dev().await)
+    Ok(network.is_dev().await?)
 }
 
 #[tauri::command]

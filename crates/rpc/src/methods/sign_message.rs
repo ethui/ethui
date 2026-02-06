@@ -113,7 +113,7 @@ struct SignMessage {
 
 impl SignMessage {
     pub async fn finish(&mut self) -> Result<Signature> {
-        let skip = self.network.is_dev().await
+        let skip = self.network.is_dev().await?
             && self.wallet.is_dev()
             && settings()
                 .get_all()
