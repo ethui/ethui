@@ -80,7 +80,7 @@ impl DbInner {
         // update from's balance
         if !from.is_zero() {
             let current = self.read_erc20_balance(chain_id, contract, from).await?;
-            self.save_erc20_balance(chain_id, contract, from, current - value)
+            self.save_erc20_balance(chain_id, contract, from, current.saturating_sub(value))
                 .await?;
         }
 

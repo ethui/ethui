@@ -121,8 +121,14 @@ impl DbInner {
             .execute(self.pool())
             .await?;
         } else {
-            self.save_erc1155_balance(chain_id, contract, from, token_id, from_balance - value)
-                .await?;
+            self.save_erc1155_balance(
+                chain_id,
+                contract,
+                from,
+                token_id,
+                from_balance.saturating_sub(value),
+            )
+            .await?;
         }
 
         Ok(())
