@@ -42,10 +42,16 @@ export function Topbar() {
           size="sm"
           onClick={handleBack}
           disabled={!canGoBack}
+          aria-label="Go back"
         >
           <ArrowLeft className="h-4 w-4" />
         </Button>
-        <Button variant="ghost" size="sm" onClick={handleForward}>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={handleForward}
+          aria-label="Go forward"
+        >
           <ArrowRight className="h-4 w-4" />
         </Button>
         <Input
