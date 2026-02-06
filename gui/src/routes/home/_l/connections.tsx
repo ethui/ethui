@@ -109,7 +109,7 @@ function AffinityForm({ domain }: { domain: string }) {
     invoke("connections_set_affinity", {
       domain,
       affinity,
-    });
+    }).catch((err) => console.warn("Failed to update connection affinity", err));
     setCurrent(affinity);
   };
 
