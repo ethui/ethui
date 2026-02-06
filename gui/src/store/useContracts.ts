@@ -6,6 +6,7 @@ import { invoke } from "@tauri-apps/api/core";
 import type { Address } from "viem";
 import { create, type StateCreator } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
+import { createHmrListenerTracker } from "./hmrListeners";
 import { useNetworks } from "./useNetworks";
 
 interface State {
@@ -121,9 +122,13 @@ const store: StateCreator<Store> = (set, get) => ({
 
 export const useContracts = create<Store>()(subscribeWithSelector(store));
 
-event.listen("contracts-updated", async () => {
-  await useContracts.getState().reload();
-});
+const trackListener = createHmrListenerTracker();
+
+trackListener(
+  event.listen("contracts-updated", async () => {
+    await useContracts.getState().reload();
+  }),
+);
 
 useNetworks.subscribe(
   (s) => s.current?.id,

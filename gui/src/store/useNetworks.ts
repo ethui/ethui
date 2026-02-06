@@ -3,6 +3,7 @@ import { event } from "@tauri-apps/api";
 import { invoke } from "@tauri-apps/api/core";
 import { create, type StateCreator } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
+import { createHmrListenerTracker } from "./hmrListeners";
 
 interface State {
   networks: Network[];
@@ -61,13 +62,19 @@ const store: StateCreator<Store> = (set, get) => ({
 
 export const useNetworks = create<Store>()(subscribeWithSelector(store));
 
-event.listen("networks-changed", async () => {
-  await useNetworks.getState().reload();
-});
+const trackListener = createHmrListenerTracker();
 
-event.listen("current-network-changed", async () => {
-  await useNetworks.getState().reload();
-});
+trackListener(
+  event.listen("networks-changed", async () => {
+    await useNetworks.getState().reload();
+  }),
+);
+
+trackListener(
+  event.listen("current-network-changed", async () => {
+    await useNetworks.getState().reload();
+  }),
+);
 
 (async () => {
   await useNetworks.getState().reload();
