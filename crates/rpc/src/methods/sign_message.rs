@@ -151,7 +151,7 @@ impl SignMessage {
     }
 
     pub async fn sign(&mut self) -> Result<Signature> {
-        let signer = self.build_signer().await;
+        let signer = self.build_signer().await?;
 
         match self.data {
             SignData::Raw(ref msg) => {
@@ -162,10 +162,10 @@ impl SignMessage {
         }
     }
 
-    async fn build_signer(&self) -> Signer {
+    async fn build_signer(&self) -> Result<Signer> {
         self.wallet
             .build_signer(self.network.chain_id(), &self.wallet_path)
             .await
-            .unwrap()
+            .map_err(|e| Error::SignerBuild(e.to_string()))
     }
 }
