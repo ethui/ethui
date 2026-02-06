@@ -36,7 +36,7 @@ export const AnimatedOutlet = forwardRef<HTMLDivElement>((_, ref) => {
   const nextMatch = matches[nextMatchIndex];
 
   if (isPresent) {
-    renderedContext.current = { ...routerContext };
+    renderedContext.current = routerContext;
   }
 
   return (
