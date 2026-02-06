@@ -47,10 +47,40 @@ pub async fn networks_is_dev(id: NetworkId) -> TauriResult<bool> {
 #[tauri::command]
 pub async fn networks_chain_id_from_provider(url: String) -> TauriResult<u64> {
     use alloy::providers::{Provider, ProviderBuilder};
+    use url::{Host, Url};
+
+    fn validate_provider_url(url: &str) -> Result<Url> {
+        let parsed = Url::parse(url).wrap_err_with(|| format!("Invalid provider URL: {url}"))?;
+
+        match parsed.scheme() {
+            "http" | "https" => {}
+            _ => return Err(eyre!("Provider URL must use http or https scheme")),
+        }
+
+        let host = parsed
+            .host()
+            .ok_or_else(|| eyre!("Provider URL must include a host"))?;
+
+        let ip = match host {
+            Host::Ipv4(ip) => Some(std::net::IpAddr::V4(ip)),
+            Host::Ipv6(ip) => Some(std::net::IpAddr::V6(ip)),
+            Host::Domain(_) => None,
+        };
+
+        if let Some(ip) = ip {
+            if ip.is_private() || ip.is_loopback() || ip.is_link_local() || ip.is_unspecified() {
+                return Err(eyre!("Provider URL host must be a public IP address"));
+            }
+        }
+
+        Ok(parsed)
+    }
+
+    let provider_url = validate_provider_url(&url)?;
 
     let provider = ProviderBuilder::new()
         .disable_recommended_fillers()
-        .connect(&url)
+        .connect(provider_url.as_str())
         .await
         .with_context(|| format!("Failed to connect to provider at {url}"))?;
 
