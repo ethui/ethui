@@ -88,7 +88,7 @@ impl SendTransaction {
 
     async fn resolve_wallet(&self) -> Result<ResolvedWallet> {
         let (wallet, path) = ethui_wallets::find_wallet(self.from)
-            .await
+            .await?
             .ok_or(Error::WalletNotFound(self.from))?;
 
         Ok(ResolvedWallet {

@@ -44,12 +44,19 @@ impl WalletControl for LedgerWallet {
         Ok(Wallet::Ledger(self))
     }
 
-    async fn get_current_address(&self) -> Address {
-        self.addresses.get(self.current).unwrap().1
+    async fn get_current_address(&self) -> color_eyre::Result<Address> {
+        let (_, address) = self
+            .addresses
+            .get(self.current)
+            .with_context(|| "missing ledger address")?;
+        Ok(*address)
     }
 
     fn get_current_path(&self) -> String {
-        self.addresses.get(self.current).unwrap().0.clone()
+        self.addresses
+            .get(self.current)
+            .map(|(path, _)| path.clone())
+            .unwrap_or_default()
     }
 
     async fn set_current_path(&mut self, path: String) -> color_eyre::Result<()> {
@@ -62,8 +69,8 @@ impl WalletControl for LedgerWallet {
         Ok(())
     }
 
-    async fn get_all_addresses(&self) -> Vec<(String, Address)> {
-        self.addresses.clone()
+    async fn get_all_addresses(&self) -> color_eyre::Result<Vec<(String, Address)>> {
+        Ok(self.addresses.clone())
     }
 
     async fn get_address(&self, path: &str) -> color_eyre::Result<Address> {

@@ -10,25 +10,25 @@ use crate::wallets::PrivateKeyWallet;
 pub trait WalletControl: Sync + Send + Deserialize<'static> + Serialize + std::fmt::Debug {
     fn name(&self) -> String;
     async fn update(mut self, params: Json) -> Result<Wallet>;
-    async fn get_current_address(&self) -> Address;
+    async fn get_current_address(&self) -> Result<Address>;
     fn get_current_path(&self) -> String;
     async fn set_current_path(&mut self, path: String) -> Result<()>;
-    async fn get_all_addresses(&self) -> Vec<(String, Address)>;
+    async fn get_all_addresses(&self) -> Result<Vec<(String, Address)>>;
 
     async fn get_address(&self, path: &str) -> Result<Address>;
 
     async fn build_signer(&self, chain_id: u64, path: &str) -> Result<crate::signer::Signer>;
 
-    async fn find(&self, address: Address) -> Option<String> {
-        let addresses = self.get_all_addresses().await;
+    async fn find(&self, address: Address) -> Result<Option<String>> {
+        let addresses = self.get_all_addresses().await?;
 
-        addresses.iter().find_map(|(path, addr)| {
+        Ok(addresses.iter().find_map(|(path, addr)| {
             if *addr == address {
                 Some(path.clone())
             } else {
                 None
             }
-        })
+        }))
     }
 
     fn is_dev(&self) -> bool {

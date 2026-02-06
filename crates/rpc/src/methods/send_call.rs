@@ -27,7 +27,7 @@ impl CallParams {
             addr
         } else {
             let wallet = ethui_wallets::get_current_wallet().await;
-            let addr = wallet.get_current_address().await;
+            let addr = wallet.get_current_address().await?;
             request.set_from(addr);
             addr
         };

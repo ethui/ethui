@@ -56,8 +56,8 @@ impl WalletControl for HDWallet {
         Ok(Wallet::HDWallet(self))
     }
 
-    async fn get_current_address(&self) -> Address {
-        self.current.1
+    async fn get_current_address(&self) -> color_eyre::Result<Address> {
+        Ok(self.current.1)
     }
 
     fn get_current_path(&self) -> String {
@@ -83,8 +83,8 @@ impl WalletControl for HDWallet {
             .with_context(|| format!("unknown wallet key: {path}"))
     }
 
-    async fn get_all_addresses(&self) -> Vec<(String, Address)> {
-        self.addresses.clone()
+    async fn get_all_addresses(&self) -> color_eyre::Result<Vec<(String, Address)>> {
+        Ok(self.addresses.clone())
     }
 
     async fn build_signer(&self, chain_id: u64, path: &str) -> color_eyre::Result<Signer> {

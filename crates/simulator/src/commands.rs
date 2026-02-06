@@ -23,7 +23,7 @@ pub async fn simulator_get_call_count(
     let addrs = ethui_wallets::Wallets::read()
         .await
         .get_all_addresses()
-        .await;
+        .await?;
 
     let mut res = 0;
     for (_, from) in addrs {

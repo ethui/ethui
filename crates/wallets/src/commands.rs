@@ -21,7 +21,7 @@ pub async fn wallets_get_current_address() -> TauriResult<Address> {
         .await
         .get_current_wallet()
         .get_current_address()
-        .await)
+        .await?)
 }
 
 #[tauri::command]
@@ -74,7 +74,7 @@ pub async fn wallets_set_current_path(key: String) -> TauriResult<()> {
 /// Get all known addresses of a wallet
 #[tauri::command]
 pub async fn wallets_get_wallet_addresses(name: String) -> TauriResult<Vec<(String, Address)>> {
-    Ok(Wallets::read().await.get_wallet_addresses(name).await)
+    Ok(Wallets::read().await.get_wallet_addresses(name).await?)
 }
 
 /// Derives the list of addresses for a given mnemonic Used when importing a new wallet in the UI,

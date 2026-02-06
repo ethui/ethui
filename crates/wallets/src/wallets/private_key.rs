@@ -46,8 +46,8 @@ impl WalletControl for PrivateKeyWallet {
         Ok(Wallet::PrivateKey(self))
     }
 
-    async fn get_current_address(&self) -> Address {
-        self.address
+    async fn get_current_address(&self) -> Result<Address> {
+        Ok(self.address)
     }
 
     fn get_current_path(&self) -> String {
@@ -59,11 +59,14 @@ impl WalletControl for PrivateKeyWallet {
     }
 
     async fn get_address(&self, _path: &str) -> Result<Address> {
-        Ok(self.get_current_address().await)
+        self.get_current_address().await
     }
 
-    async fn get_all_addresses(&self) -> Vec<(String, Address)> {
-        vec![(self.get_current_path(), self.get_current_address().await)]
+    async fn get_all_addresses(&self) -> Result<Vec<(String, Address)>> {
+        Ok(vec![(
+            self.get_current_path(),
+            self.get_current_address().await?,
+        )])
     }
 
     async fn build_signer(&self, chain_id: u64, _path: &str) -> Result<Signer> {

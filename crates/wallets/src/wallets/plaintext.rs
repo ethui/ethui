@@ -35,11 +35,8 @@ impl WalletControl for PlaintextWallet {
         Ok(Wallet::Plaintext(serde_json::from_value(params)?))
     }
 
-    async fn get_current_address(&self) -> Address {
-        self.build_signer(1, &self.current_path)
-            .await
-            .unwrap()
-            .address()
+    async fn get_current_address(&self) -> color_eyre::Result<Address> {
+        Ok(self.build_signer(1, &self.current_path).await?.address())
     }
 
     fn get_current_path(&self) -> String {
@@ -62,8 +59,12 @@ impl WalletControl for PlaintextWallet {
         Ok(self.build_signer(1, path).await?.address())
     }
 
-    async fn get_all_addresses(&self) -> Vec<(String, Address)> {
-        utils::derive_addresses(&self.mnemonic, &self.derivation_path, self.count)
+    async fn get_all_addresses(&self) -> color_eyre::Result<Vec<(String, Address)>> {
+        Ok(utils::derive_addresses(
+            &self.mnemonic,
+            &self.derivation_path,
+            self.count,
+        ))
     }
 
     fn is_dev(&self) -> bool {

@@ -6,6 +6,7 @@ use alloy::{
 };
 use async_trait::async_trait;
 use coins_bip32::ecdsa;
+use color_eyre::eyre::eyre;
 use ethui_types::prelude::*;
 use secrets::SecretVec;
 
@@ -41,13 +42,16 @@ impl WalletControl for JsonKeystoreWallet {
         Ok(Wallet::JsonKeystore(serde_json::from_value(params)?))
     }
 
-    async fn get_current_address(&self) -> Address {
-        let file = File::open(self.file.clone()).unwrap();
+    async fn get_current_address(&self) -> color_eyre::Result<Address> {
+        let file = File::open(self.file.clone())?;
         let reader = BufReader::new(file);
-        let mut res: serde_json::Value = serde_json::from_reader(reader).unwrap();
+        let mut res: serde_json::Value = serde_json::from_reader(reader)?;
+        let address = res["address"]
+            .take()
+            .as_str()
+            .ok_or_else(|| eyre!("json keystore missing address"))?;
 
-        // TODO: this should fail correctly
-        Address::from_str(res["address"].take().as_str().unwrap()).unwrap()
+        Ok(Address::from_str(address)?)
     }
 
     fn get_current_path(&self) -> String {
@@ -59,11 +63,11 @@ impl WalletControl for JsonKeystoreWallet {
     }
 
     async fn get_address(&self, _path: &str) -> color_eyre::Result<Address> {
-        Ok(self.get_current_address().await)
+        self.get_current_address().await
     }
 
-    async fn get_all_addresses(&self) -> Vec<(String, Address)> {
-        vec![("default".into(), self.get_current_address().await)]
+    async fn get_all_addresses(&self) -> color_eyre::Result<Vec<(String, Address)>> {
+        Ok(vec![("default".into(), self.get_current_address().await?)])
     }
 
     async fn build_signer(&self, chain_id: u64, _path: &str) -> color_eyre::Result<Signer> {

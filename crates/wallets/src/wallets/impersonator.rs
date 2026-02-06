@@ -1,4 +1,5 @@
 use async_trait::async_trait;
+use color_eyre::eyre::eyre;
 use ethui_types::prelude::*;
 
 use crate::{Signer, Wallet, WalletControl, wallet::WalletCreate};
@@ -44,8 +45,11 @@ impl WalletControl for Impersonator {
         Ok(Wallet::Impersonator(self))
     }
 
-    async fn get_current_address(&self) -> Address {
-        self.addresses[self.current]
+    async fn get_current_address(&self) -> color_eyre::Result<Address> {
+        self.addresses
+            .get(self.current)
+            .copied()
+            .ok_or_else(|| eyre!("unknown impersonator address"))
     }
 
     fn get_current_path(&self) -> String {
@@ -57,12 +61,13 @@ impl WalletControl for Impersonator {
         Ok(())
     }
 
-    async fn get_all_addresses(&self) -> Vec<(String, Address)> {
-        self.addresses
+    async fn get_all_addresses(&self) -> color_eyre::Result<Vec<(String, Address)>> {
+        Ok(self
+            .addresses
             .iter()
             .enumerate()
             .map(|(i, v)| (i.to_string(), *v))
-            .collect()
+            .collect())
     }
 
     async fn get_address(&self, path: &str) -> color_eyre::Result<Address> {

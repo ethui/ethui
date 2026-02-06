@@ -20,12 +20,12 @@ pub use signer::Signer;
 
 pub use self::wallet::{Wallet, WalletControl, WalletType};
 
-pub async fn find_wallet(address: Address) -> Option<(Wallet, String)> {
+pub async fn find_wallet(address: Address) -> color_eyre::Result<Option<(Wallet, String)>> {
     let wallets = Wallets::read().await;
-    wallets
+    Ok(wallets
         .find(address)
-        .await
-        .map(|(wallet, path)| (wallet.clone(), path))
+        .await?
+        .map(|(wallet, path)| (wallet.clone(), path)))
 }
 
 pub async fn get_current_wallet() -> Wallet {
@@ -46,14 +46,14 @@ pub struct Wallets {
 }
 
 impl Wallets {
-    pub async fn find(&self, address: Address) -> Option<(&Wallet, String)> {
+    pub async fn find(&self, address: Address) -> color_eyre::Result<Option<(&Wallet, String)>> {
         for w in self.wallets.iter() {
-            if let Some(path) = w.find(address).await {
-                return Some((w, path));
+            if let Some(path) = w.find(address).await? {
+                return Ok(Some((w, path)));
             }
         }
 
-        None
+        Ok(None)
     }
 
     /// Gets a reference the current default wallet
@@ -76,7 +76,7 @@ impl Wallets {
         Ok(())
     }
 
-    async fn get_current_address(&self) -> Address {
+    async fn get_current_address(&self) -> color_eyre::Result<Address> {
         self.get_current_wallet().get_current_address().await
     }
 
@@ -101,18 +101,18 @@ impl Wallets {
         &self.wallets
     }
 
-    pub async fn get_all_addresses(&self) -> Vec<(String, Address)> {
+    pub async fn get_all_addresses(&self) -> color_eyre::Result<Vec<(String, Address)>> {
         let mut res = vec![];
         for wallet in self.wallets.iter() {
-            res.extend(wallet.get_all_addresses().await.into_iter());
+            res.extend(wallet.get_all_addresses().await?.into_iter());
         }
 
-        res
+        Ok(res)
     }
 
     async fn create(&mut self, params: Json) -> color_eyre::Result<()> {
         let wallet = Wallet::create(params).await?;
-        let addresses = wallet.get_all_addresses().await;
+        let addresses = wallet.get_all_addresses().await?;
 
         self.ensure_no_duplicates_of(&wallet.name())?;
 
@@ -138,9 +138,9 @@ impl Wallets {
             .position(|w| w.name() == name)
             .with_context(|| format!("invalid wallet name `{name}`"))?;
 
-        let before = self.wallets[i].get_all_addresses().await;
+        let before = self.wallets[i].get_all_addresses().await?;
         self.wallets[i] = self.wallets[i].clone().update(params).await?;
-        let after = self.wallets[i].get_all_addresses().await;
+        let after = self.wallets[i].get_all_addresses().await?;
 
         tokio::spawn(async move {
             let before: HashSet<_> = before.into_iter().collect();
@@ -154,7 +154,7 @@ impl Wallets {
         });
 
         self.ensure_current();
-        self.notify_peers().await;
+        self.notify_peers().await?;
         self.on_wallet_changed().await?;
         self.save()?;
         Ok(())
@@ -170,7 +170,7 @@ impl Wallets {
         if let Some((i, _)) = found {
             let removed = self.wallets.remove(i);
 
-            for (_, a) in removed.get_all_addresses().await {
+            for (_, a) in removed.get_all_addresses().await? {
                 ethui_broadcast::address_removed(a).await;
             }
 
@@ -183,8 +183,13 @@ impl Wallets {
     }
 
     /// Get all addresses currently enabled in a given wallet
-    async fn get_wallet_addresses(&self, name: String) -> Vec<(String, Address)> {
-        let wallet = self.find_wallet(&name).unwrap();
+    async fn get_wallet_addresses(
+        &self,
+        name: String,
+    ) -> color_eyre::Result<Vec<(String, Address)>> {
+        let wallet = self
+            .find_wallet(&name)
+            .ok_or_else(|| eyre!("wallet not found: {name}"))?;
 
         wallet.get_all_addresses().await
     }
@@ -217,21 +222,22 @@ impl Wallets {
         }
     }
 
-    async fn init_broadcast(&self) {
+    async fn init_broadcast(&self) -> color_eyre::Result<()> {
         for wallet in self.wallets.iter() {
-            for (_, addr) in wallet.get_all_addresses().await {
+            for (_, addr) in wallet.get_all_addresses().await? {
                 ethui_broadcast::address_added(addr).await;
             }
         }
 
-        let addr = self.get_current_address().await;
+        let addr = self.get_current_address().await?;
         ethui_broadcast::current_address_changed(addr).await;
+        Ok(())
     }
 
     async fn on_wallet_changed(&self) -> color_eyre::Result<()> {
-        let addr = self.get_current_address().await;
+        let addr = self.get_current_address().await?;
 
-        self.notify_peers().await;
+        self.notify_peers().await?;
         ethui_broadcast::ui_notify(UINotify::WalletsChanged).await;
         ethui_broadcast::current_address_changed(addr).await;
 
@@ -239,9 +245,10 @@ impl Wallets {
     }
 
     // broadcasts `accountsChanged` to all peers
-    async fn notify_peers(&self) {
-        let addresses = vec![self.get_current_wallet().get_current_address().await];
+    async fn notify_peers(&self) -> color_eyre::Result<()> {
+        let addresses = vec![self.get_current_wallet().get_current_address().await?];
         ethui_broadcast::accounts_changed(addresses).await;
+        Ok(())
     }
 
     fn ensure_no_duplicates_of(&self, name: &str) -> color_eyre::Result<()> {

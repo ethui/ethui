@@ -130,9 +130,9 @@ impl TokenAdd {
         utils::get_current_network().await.chain_id()
     }
 
-    async fn get_current_wallet_address(&self) -> Address {
+    async fn get_current_wallet_address(&self) -> Result<Address> {
         let wallets = Wallets::read().await;
-        wallets.get_current_wallet().get_current_address().await
+        Ok(wallets.get_current_wallet().get_current_address().await?)
     }
 
     async fn get_erc20_metadata(&self, chain_id: u64, address: Address) -> Result<Erc20Metadata> {
@@ -174,7 +174,7 @@ impl TokenAdd {
         address: Address,
         token_id: U256,
     ) -> Result<U256> {
-        let wallet_address = self.get_current_wallet_address().await;
+        let wallet_address = self.get_current_wallet_address().await?;
         let balances_response = self.get_erc_owners(chain_id, address).await?;
 
         let owners: HashSet<String> = balances_response
@@ -281,7 +281,7 @@ impl TokenAdd {
     }
 
     async fn check_erc_owner(&self, chain_id: u64, address: Address) -> Result<()> {
-        let wallet_address = self.get_current_wallet_address().await;
+        let wallet_address = self.get_current_wallet_address().await?;
         let owners_response = self.get_erc_owners(chain_id, address).await?;
 
         let owners: HashSet<String> = owners_response
@@ -410,7 +410,7 @@ impl TokenAdd {
 
     async fn on_accept_erc20(&self, chain_id: u64, erc20_full_data: &Erc20FullData) -> Result<()> {
         let db = ethui_db::get();
-        let wallet_address = self.get_current_wallet_address().await;
+        let wallet_address = self.get_current_wallet_address().await?;
         let _save_metadata = db
             .save_erc20_metadata(chain_id, erc20_full_data.metadata.clone())
             .await;
@@ -427,7 +427,7 @@ impl TokenAdd {
 
     async fn on_accept_erc721(&self, chain_id: u64, full_data: &ErcMetadataResponse) -> Result<()> {
         let db = ethui_db::get();
-        let wallet_address = self.get_current_wallet_address().await;
+        let wallet_address = self.get_current_wallet_address().await?;
         let raw_metadata = &full_data.raw;
         let token_uri = raw_metadata.token_uri.clone();
         let metadata = raw_metadata.metadata.to_string();
@@ -469,7 +469,7 @@ impl TokenAdd {
         full_data: &ErcMetadataResponse,
     ) -> Result<()> {
         let db = ethui_db::get();
-        let wallet_address = self.get_current_wallet_address().await;
+        let wallet_address = self.get_current_wallet_address().await?;
         let raw_metadata = &full_data.raw;
         let token_uri = raw_metadata.token_uri.clone();
         let metadata = raw_metadata.metadata.to_string();

@@ -161,7 +161,7 @@ impl Handler {
 
     async fn accounts(_: Empty, _: Ctx) -> Result<Json> {
         let wallets = Wallets::read().await;
-        let address = wallets.get_current_wallet().get_current_address().await;
+        let address = wallets.get_current_wallet().get_current_address().await?;
 
         Ok(json!([address]))
     }
@@ -175,7 +175,7 @@ impl Handler {
         let wallets = Wallets::read().await;
 
         let network = ctx.network().await;
-        let address = wallets.get_current_wallet().get_current_address().await;
+        let address = wallets.get_current_wallet().get_current_address().await?;
 
         Ok(json!({
             "isUnlocked": true,
@@ -226,7 +226,7 @@ impl Handler {
         let wallets = Wallets::read().await;
 
         let network = ctx.network().await;
-        let address = wallets.get_current_wallet().get_current_address().await;
+        let address = wallets.get_current_wallet().get_current_address().await?;
 
         Ok(json!({
             "ethui": {

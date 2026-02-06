@@ -9,6 +9,7 @@ use ethui_types::GlobalState;
 use once_cell::sync::OnceCell;
 use serde::Deserialize;
 use tokio::sync::{RwLock, RwLockReadGuard, RwLockWriteGuard};
+use tracing::error;
 
 use super::{Wallet, Wallets};
 
@@ -44,7 +45,9 @@ pub async fn init(pathbuf: PathBuf) {
     };
 
     res.ensure_current();
-    res.init_broadcast().await;
+    if let Err(err) = res.init_broadcast().await {
+        error!("wallet broadcast init failed: {err}");
+    }
 
     WALLETS.set(RwLock::new(res)).unwrap();
 }
