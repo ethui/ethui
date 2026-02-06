@@ -1,20 +1,17 @@
-use std::{sync::Arc, time::Duration};
-
 use alloy::signers::{
     Signer as _,
     local::{MnemonicBuilder, coins_bip39::English},
 };
 use async_trait::async_trait;
 use ethui_crypto::{self, EncryptedData};
-use ethui_dialogs::{Dialog, DialogMsg};
 use ethui_types::prelude::*;
-use secrets::SecretVec;
-use tokio::{
-    sync::{Mutex, RwLock},
-    task::JoinHandle,
-};
 
-use crate::{Signer, Wallet, WalletControl, utils, wallet::WalletCreate};
+use crate::{
+    Signer, Wallet, WalletControl,
+    secret_cache::{SecretCache, string_from_secret, string_into_secret, unlock_with_dialog},
+    utils,
+    wallet::WalletCreate,
+};
 
 #[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
@@ -26,21 +23,8 @@ pub struct HDWallet {
     addresses: Vec<(String, Address)>,
     ciphertext: EncryptedData<String>,
 
-    /// The signer is cached inside a `RwLock` so we can have interior mutability
-    /// Since JSON keystore signers are time-consuming to decrypt, we can't do it on-the-fly for
-    /// every incoming signing request
-    ///
-    /// The cache is stored as a
-    /// [SecretVec](https://docs.rs/secrets/latest/secrets/struct.SecretVec.html#method.new) for
-    /// some in-memory safety guarantees
-    ///
-    /// The additional Mutex within is there because `SecretVec` is not Send
     #[serde(skip)]
-    secret: Arc<RwLock<Option<Mutex<SecretVec<u8>>>>>,
-
-    /// A join handle that will expire the signer after some time
-    #[serde(skip)]
-    expirer: Arc<RwLock<Option<JoinHandle<()>>>>,
+    cache: SecretCache,
 }
 
 #[async_trait]
@@ -110,10 +94,10 @@ impl WalletControl for HDWallet {
 
         self.unlock().await?;
 
-        let secret = self.secret.read().await;
-        let secret = secret.as_ref().unwrap().lock().await;
+        let guard = self.cache.read().await?;
+        let secret = guard.lock().await;
 
-        let mnemonic = mnemonic_from_secret(&secret);
+        let mnemonic = string_from_secret(&secret);
         let mut signer = MnemonicBuilder::<English>::default()
             .phrase(mnemonic.as_str())
             .derivation_path(path)?
@@ -139,8 +123,7 @@ impl HDWallet {
             count: params.count,
             ciphertext,
             addresses,
-            secret: Default::default(),
-            expirer: Default::default(),
+            cache: Default::default(),
         })
     }
 
@@ -163,9 +146,9 @@ impl HDWallet {
     async fn update_derived_addresses(&mut self) -> color_eyre::Result<()> {
         self.unlock().await?;
 
-        let secret = self.secret.read().await;
-        let secret = secret.as_ref().unwrap().lock().await;
-        let mnemonic = mnemonic_from_secret(&secret);
+        let guard = self.cache.read().await?;
+        let secret = guard.lock().await;
+        let mnemonic = string_from_secret(&secret);
 
         let addresses = utils::derive_addresses(&mnemonic, &self.derivation_path, self.count);
         // TODO check if current address is still part of the list, instead of hardcoding a new current
@@ -177,60 +160,13 @@ impl HDWallet {
         Ok(())
     }
 
-    async fn is_unlocked(&self) -> bool {
-        let secret = self.secret.read().await;
-        secret.is_some()
-    }
-
     async fn unlock(&self) -> color_eyre::Result<()> {
-        // if we already have a signer, then we're good
-        if self.is_unlocked().await {
-            return Ok(());
-        }
-
-        // open the dialog
-        let dialog = Dialog::new("wallet-unlock", serde_json::to_value(self).unwrap());
-        dialog.open().await?;
-
-        // attempt to receive a password at most 3 times
-        for _ in 0..3 {
-            let password = if let Some(DialogMsg::Data(payload)) = dialog.recv().await {
-                let password = payload["password"].clone();
-                password
-                    .as_str()
-                    .with_context(|| "wallet unlock rejected by user".to_string())?
-                    .to_string()
-            } else {
-                return Err(eyre!("wallet unlock rejected by user"));
-            };
-
-            // if password was given, and correctly decrypts the keystore
-            if let Ok(mnemonic) = ethui_crypto::decrypt(&self.ciphertext, &password) {
-                self.store_secret(mnemonic).await;
-                return Ok(());
-            }
-
-            dialog.send("failed", None).await?;
-        }
-
-        Err(eyre!("user failed to unlock the wallet"))
-    }
-
-    async fn store_secret(&self, mnemonic: String) {
-        // acquire both write locks
-        let mut expirer_handle = self.expirer.write().await;
-        let mut secret_handle = self.secret.write().await;
-
-        let secret = mnemonic_into_secret(mnemonic);
-
-        *secret_handle = Some(Mutex::new(secret));
-
-        // set up cache expiration for 1 minute
-        let clone = Arc::clone(&self.secret);
-        *expirer_handle = Some(tokio::spawn(async move {
-            tokio::time::sleep(Duration::from_secs(60)).await;
-            clone.write().await.take();
-        }));
+        let ciphertext = self.ciphertext.clone();
+        unlock_with_dialog(&self.cache, &self.name, |password| {
+            let mnemonic = ethui_crypto::decrypt(&ciphertext, password)?;
+            Ok(string_into_secret(mnemonic))
+        })
+        .await
     }
 }
 
@@ -244,34 +180,16 @@ pub struct HDWalletParams {
     count: usize,
 }
 
-/// Converts a signer into a SecretVec
-pub fn mnemonic_into_secret(mnemonic: String) -> SecretVec<u8> {
-    let signer_bytes = mnemonic.into_bytes();
-    let bytes = signer_bytes.as_slice();
-
-    SecretVec::new(bytes.len(), |s| {
-        (0..bytes.len()).for_each(|i| {
-            s[i] = bytes[i];
-        });
-    })
-}
-
-/// Converts a SecretVec into a signer
-pub fn mnemonic_from_secret(secret: &SecretVec<u8>) -> String {
-    let signer_bytes = secret.borrow();
-    String::from_utf8(signer_bytes.to_vec()).unwrap()
-}
-
 #[cfg(test)]
 mod tests {
-    use super::*;
+    use crate::secret_cache::{string_from_secret, string_into_secret};
 
     #[test]
     fn secret() {
         let signer = "test test test test test test test test test test test junk".to_string();
 
-        let secret = mnemonic_into_secret(signer.clone());
-        let recovered_signer = mnemonic_from_secret(&secret);
+        let secret = string_into_secret(signer.clone());
+        let recovered_signer = string_from_secret(&secret);
 
         assert_eq!(signer, recovered_signer);
     }
