@@ -70,7 +70,7 @@ impl SendTransaction {
             wallet.is_dev()
         };
 
-        let skip = self.network.is_dev().await
+        let skip = self.network.is_dev().await?
             && wallet_is_dev
             && settings()
                 .get_all()
@@ -191,7 +191,7 @@ impl SendTransaction {
         // .parse()
         // .map_err(|_| Error::CannotParseUrl(self.network.http_url.to_string().clone()))?;
 
-        if self.network.is_dev().await {
+        if self.network.is_dev().await? {
             // TODO: maybe we can find a way to only do this once for every account,
             // or only call anvil_autoImpersonate once for the whole network,
             // instead of making this request for every single transaction.

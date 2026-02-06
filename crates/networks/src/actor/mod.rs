@@ -226,7 +226,7 @@ impl NetworksActor {
         let deduplication_id = self.get_chain_id_count(network.chain_id) as u64;
         let network = network.into_network(deduplication_id);
 
-        if !network.is_dev().await && self.inner.networks.values().any(|n| n.id == network.id()) {
+        if !network.is_dev().await? && self.inner.networks.values().any(|n| n.id == network.id()) {
             return Err(eyre!("Already exists"));
         }
 

@@ -108,23 +108,23 @@ impl Network {
         format!("0x{:x}", self.chain_id())
     }
 
-    pub async fn is_dev(&self) -> bool {
+    pub async fn is_dev(&self) -> color_eyre::Result<bool> {
         if self.is_stack {
-            return true;
+            return Ok(true);
         }
 
         if self.chain_id() == 31337 {
-            return true;
+            return Ok(true);
         }
 
-        let provider = self.get_alloy_provider().await.unwrap();
+        let provider = self.get_alloy_provider().await?;
         // TODO cache node_info for entire chain
-        self.chain_id() == 31337
+        Ok(self.chain_id() == 31337
             || provider
                 .client()
                 .request::<(), serde_json::Value>("hardhat_metadata", ())
                 .await
-                .is_ok()
+                .is_ok())
     }
 
     pub async fn get_forked_network(&self) -> color_eyre::Result<Option<ForkedNetwork>> {

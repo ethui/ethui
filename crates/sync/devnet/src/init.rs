@@ -14,11 +14,11 @@ async fn receiver() -> ! {
             Ok(InternalMsg::NetworkRemoved(network)) => {
                 tracker::unwatch(&network).await;
             }
-            Ok(InternalMsg::NetworkAdded(network)) | Ok(InternalMsg::NetworkUpdated(network))
-                if network.is_dev().await =>
-            {
-                tracker::unwatch(&network).await;
-                tracker::watch(&network).await;
+            Ok(InternalMsg::NetworkAdded(network)) | Ok(InternalMsg::NetworkUpdated(network)) => {
+                if let Ok(true) = network.is_dev().await {
+                    tracker::unwatch(&network).await;
+                    tracker::watch(&network).await;
+                }
             }
             _ => (),
         }

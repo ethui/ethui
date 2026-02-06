@@ -4,8 +4,8 @@ use ethui_db::{
     Db,
     utils::{fetch_etherscan_abi, fetch_etherscan_contract_name},
 };
-use ethui_sol_artifacts::{SolArtifactsActorExt as _, sol_artifacts};
 use ethui_proxy_detect::ProxyType;
+use ethui_sol_artifacts::{SolArtifactsActorExt as _, sol_artifacts};
 use ethui_types::{Address, TauriResult, UINotify};
 use serde::Serialize;
 
@@ -72,7 +72,7 @@ pub async fn add_contract(
                 .await?
                 .map(|abi| serde_json::to_string(&abi).unwrap()),
         )
-    } else if !network.is_dev().await {
+    } else if !network.is_dev().await? {
         (
             fetch_etherscan_contract_name(chain_id.into(), address).await?,
             fetch_etherscan_abi(chain_id.into(), address)
