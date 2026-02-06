@@ -7,14 +7,13 @@ use std::{
 };
 
 use ethui_types::prelude::*;
+pub use ext::SettingsActorExt;
 use kameo::prelude::*;
 
 use crate::{
     DarkMode, Settings, migrations::load_and_migrate, onboarding::OnboardingStep,
     test_alchemy_api_key, utils::test_etherscan_api_key,
 };
-
-pub use ext::SettingsActorExt;
 
 #[derive(Debug)]
 pub struct SettingsActor {
@@ -126,7 +125,9 @@ impl SettingsActor {
                     {
                         let _ = ctx
                             .actor_ref()
-                            .tell(Set { value: SetValue::FinishOnboardingStep(OnboardingStep::Alchemy) })
+                            .tell(Set {
+                                value: SetValue::FinishOnboardingStep(OnboardingStep::Alchemy),
+                            })
                             .await;
                     }
                     let v: String = serde_json::from_value(v.clone()).unwrap();
@@ -145,7 +146,9 @@ impl SettingsActor {
                     {
                         let _ = ctx
                             .actor_ref()
-                            .tell(Set { value: SetValue::FinishOnboardingStep(OnboardingStep::Etherscan) })
+                            .tell(Set {
+                                value: SetValue::FinishOnboardingStep(OnboardingStep::Etherscan),
+                            })
                             .await;
                     }
                     let v: String = serde_json::from_value(v.clone()).unwrap();

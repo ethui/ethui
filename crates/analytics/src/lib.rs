@@ -65,7 +65,6 @@ pub fn track_event(
     let mut full = analytics.get_common_properties();
     full.extend(properties.unwrap_or_default());
 
-
     debug!(properties = ?full);
 
     #[cfg(feature = "aptabase")]

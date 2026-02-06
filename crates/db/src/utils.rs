@@ -22,10 +22,7 @@ pub async fn fetch_etherscan_contract_name(
     }
 }
 
-pub async fn fetch_etherscan_abi(
-    chain: Chain,
-    address: Address,
-) -> Result<Option<JsonAbi>> {
+pub async fn fetch_etherscan_abi(chain: Chain, address: Address) -> Result<Option<JsonAbi>> {
     let settings = settings().get_all().await?;
     let api_key = settings
         .etherscan_api_key

@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 use serde_json::json;
 use tracing::info;
 
-use crate::{params::extract_single_param, methods::Method, Result};
+use crate::{Result, methods::Method, params::extract_single_param};
 
 #[derive(Debug)]
 pub(crate) struct ForgeTestTraces {

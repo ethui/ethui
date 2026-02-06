@@ -1,6 +1,10 @@
 use ethui_types::{Address, TauriResult};
 
-use crate::{DarkMode, Settings, actor::{SettingsActorExt as _, settings}, onboarding::OnboardingStep};
+use crate::{
+    DarkMode, Settings,
+    actor::{SettingsActorExt as _, settings},
+    onboarding::OnboardingStep,
+};
 
 #[tauri::command]
 pub async fn settings_get() -> TauriResult<Settings> {

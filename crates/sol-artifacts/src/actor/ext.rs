@@ -3,9 +3,8 @@ use std::path::PathBuf;
 use ethui_types::prelude::*;
 use kameo::actor::ActorRef;
 
-use crate::abi::SolArtifact;
-
 use super::SolArtifactsActor;
+use crate::abi::SolArtifact;
 
 #[allow(async_fn_in_trait)]
 pub trait SolArtifactsActorExt {

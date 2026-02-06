@@ -16,7 +16,10 @@ pub async fn test_alchemy_api_key(key: &str) -> Result<()> {
                 .ok()
                 .and_then(|e| e["error"]["message"].as_str().map(|m| m.to_string()));
 
-            Err(eyre!("{}", msg.unwrap_or("Invalid API key or connection failed".into())))
+            Err(eyre!(
+                "{}",
+                msg.unwrap_or("Invalid API key or connection failed".into())
+            ))
         }
 
         Err(_e) => Err(eyre!("Failed to connect")),

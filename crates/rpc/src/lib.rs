@@ -186,20 +186,14 @@ impl Handler {
     }
 
     #[tracing::instrument(skip(request))]
-    async fn request_permissions(
-        request: PermissionRequestParams,
-        mut ctx: Ctx,
-    ) -> Result<Json> {
+    async fn request_permissions(request: PermissionRequestParams, mut ctx: Ctx) -> Result<Json> {
         let ret = ctx.request_permissions(request.into());
 
         Ok(json!(ret))
     }
 
     #[tracing::instrument(skip(request))]
-    async fn revoke_permissions(
-        request: PermissionRequestParams,
-        mut ctx: Ctx,
-    ) -> Result<Json> {
+    async fn revoke_permissions(request: PermissionRequestParams, mut ctx: Ctx) -> Result<Json> {
         let ret = ctx.revoke_permissions(request.into());
 
         Ok(json!(ret))

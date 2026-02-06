@@ -4,7 +4,10 @@ use color_eyre::eyre::Context as _;
 use ethui_broadcast::InternalMsg;
 use kameo::actor::{ActorRef, Spawn as _};
 
-use crate::{actor::{SettingsActor, SettingsActorExt as _}, onboarding::OnboardingStep};
+use crate::{
+    actor::{SettingsActor, SettingsActorExt as _},
+    onboarding::OnboardingStep,
+};
 
 pub fn init(pathbuf: PathBuf) -> color_eyre::Result<()> {
     let actor = SettingsActor::spawn(pathbuf);
@@ -32,7 +35,9 @@ async fn receiver(actor: ActorRef<SettingsActor>) -> ! {
             }
 
             Ok(InternalMsg::PeerAdded) if !extension_updated => {
-                let _ = actor.finish_onboarding_step(OnboardingStep::Extension).await;
+                let _ = actor
+                    .finish_onboarding_step(OnboardingStep::Extension)
+                    .await;
                 extension_updated = true;
             }
             _ => (),

@@ -90,16 +90,31 @@ impl DbInner {
             hash: B256::from_str(&row.hash.unwrap()).unwrap(),
             trace_address,
             from: Address::from_str(&row.from_address).unwrap(),
-            to: row.to_address.as_deref().and_then(|v| Address::from_str(v).ok()),
-            value: row.value.as_deref().map(|v| U256::from_str_radix(v, 10).unwrap()),
-            data: row.data.as_deref().map(|data| Bytes::from_str(data).unwrap()),
+            to: row
+                .to_address
+                .as_deref()
+                .and_then(|v| Address::from_str(v).ok()),
+            value: row
+                .value
+                .as_deref()
+                .map(|v| U256::from_str_radix(v, 10).unwrap()),
+            data: row
+                .data
+                .as_deref()
+                .map(|data| Bytes::from_str(data).unwrap()),
             block_number: row.block_number.map(|b| b as u64),
             position: row.position.map(|p| p as usize),
             status: row.status.unwrap_or_default() as u64,
             gas_limit: row.gas_limit.as_deref().map(|v: &str| v.parse().unwrap()),
             gas_used: row.gas_used.as_deref().map(|v: &str| v.parse().unwrap()),
-            max_fee_per_gas: row.max_fee_per_gas.as_deref().map(|v: &str| v.parse().unwrap()),
-            max_priority_fee_per_gas: row.max_priority_fee_per_gas.as_deref().map(|v: &str| v.parse().unwrap()),
+            max_fee_per_gas: row
+                .max_fee_per_gas
+                .as_deref()
+                .map(|v: &str| v.parse().unwrap()),
+            max_priority_fee_per_gas: row
+                .max_priority_fee_per_gas
+                .as_deref()
+                .map(|v: &str| v.parse().unwrap()),
             r#type: row.r#type.map(|t| t as u64),
             nonce: row.nonce.map(|n| n as u64),
             incomplete: row.incomplete,
