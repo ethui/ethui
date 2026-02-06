@@ -10,6 +10,7 @@ import { useWallets } from "./useWallets";
 
 interface State {
   nativeBalance?: bigint;
+  nativeBalanceError?: string;
   erc20Balances: TokenBalance[];
 
   address?: Address;
@@ -29,16 +30,21 @@ const store: StateCreator<Store> = (set, get) => ({
   erc20Balances: [],
 
   async reload() {
-    const { address, chainId } = get();
+    const { address, chainId, nativeBalance } = get();
     if (!address || !chainId) return;
 
-    let nativeBalance = "0";
+    let nextNativeBalance = nativeBalance;
+    let nativeBalanceError: string | undefined;
     try {
-      nativeBalance = await invoke<string>("sync_get_native_balance", {
+      const balance = await invoke<string>("sync_get_native_balance", {
         address,
         chainId,
       });
-    } catch (_e) {}
+      nextNativeBalance = BigInt(balance);
+    } catch (error) {
+      nativeBalanceError =
+        error instanceof Error ? error.message : String(error);
+    }
     const erc20Balances = await invoke<TokenBalance[]>(
       "db_get_erc20_balances",
       {
@@ -48,7 +54,8 @@ const store: StateCreator<Store> = (set, get) => ({
     );
 
     set({
-      nativeBalance: BigInt(nativeBalance),
+      nativeBalance: nextNativeBalance,
+      nativeBalanceError,
       erc20Balances,
     });
   },
