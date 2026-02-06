@@ -4,7 +4,6 @@ import {
   useMatch,
   useMatches,
 } from "@tanstack/react-router";
-import cloneDeep from "lodash-es/cloneDeep";
 import {
   AnimatePresence,
   cubicBezier,
@@ -37,7 +36,7 @@ export const AnimatedOutlet = forwardRef<HTMLDivElement>((_, ref) => {
   const nextMatch = matches[nextMatchIndex];
 
   if (isPresent) {
-    renderedContext.current = cloneDeep(routerContext);
+    renderedContext.current = { ...routerContext };
   }
 
   return (
