@@ -127,8 +127,11 @@ export function AddressView({
           <ContextMenuItem
             onClick={(e) => {
               e.stopPropagation();
-              invoke("settings_set_alias", { address, alias: null });
-              refetch();
+              invoke("settings_set_alias", { address, alias: null })
+                .then(() => refetch())
+                .catch((err) =>
+                  console.warn("Failed to clear alias", err),
+                );
             }}
           >
             Clear alias
@@ -180,9 +183,12 @@ function AliasForm({ address, alias, refetch, onSubmit }: AliasFormProps) {
   });
 
   const submit = (data: AliasFormData) => {
-    invoke("settings_set_alias", { address, alias: data.alias });
-    refetch();
-    onSubmit();
+    invoke("settings_set_alias", { address, alias: data.alias })
+      .then(() => {
+        refetch();
+        onSubmit();
+      })
+      .catch((err) => console.warn("Failed to save alias", err));
   };
 
   return (

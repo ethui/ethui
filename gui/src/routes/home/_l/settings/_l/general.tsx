@@ -32,9 +32,13 @@ function SettingsGeneral() {
             Dark mode
           </Label>
           <Select
-            onValueChange={(darkMode: string) =>
-              invoke("settings_set", { params: { darkMode } })
-            }
+            onValueChange={async (darkMode: string) => {
+              try {
+                await invoke("settings_set", { params: { darkMode } });
+              } catch (err) {
+                console.warn("Failed to update dark mode", err);
+              }
+            }}
             defaultValue={general.darkMode}
           >
             <SelectTrigger>

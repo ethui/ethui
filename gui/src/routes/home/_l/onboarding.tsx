@@ -93,7 +93,9 @@ function RouteComponent() {
   const progress = (complete.length / steps.length) * 100;
 
   const skipAll = () => {
-    invoke("settings_onboarding_finish_all");
+    invoke("settings_onboarding_finish_all").catch((err) =>
+      console.warn("Failed to skip onboarding", err),
+    );
   };
 
   return (
@@ -200,5 +202,7 @@ function useAutofill() {
 }
 
 function skipStep(id: OnboardingStepKey) {
-  invoke("settings_onboarding_finish_step", { id });
+  invoke("settings_onboarding_finish_step", { id }).catch((err) =>
+    console.warn("Failed to skip onboarding step", err),
+  );
 }
