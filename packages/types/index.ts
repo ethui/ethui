@@ -14,9 +14,9 @@ export interface TokenBalance {
 
 export interface TokenMetadata {
   address: Address;
-  name: string;
-  symbol: string;
-  decimals: number;
+  name?: string | null;
+  symbol?: string | null;
+  decimals?: number | null;
 }
 
 export interface Erc20Metadata {
@@ -63,19 +63,22 @@ export interface ErcFullData {
 
 export interface Tx {
   hash: `0x${string}`;
+  traceAddress?: number[] | null;
   from: Address;
   status: number;
-  to?: Address;
-  value?: string;
-  data?: `0x${string}`;
-  blockNumber?: number;
-  gasLimit?: string;
-  gasUsed?: string;
-  maxFeePerGas?: string;
-  maxPriorityFeePerGas?: string;
-  type?: number;
-  nonce?: number;
-  position?: number;
+  to?: Address | null;
+  value?: string | null;
+  data?: `0x${string}` | null;
+  blockNumber?: number | null;
+  gasLimit?: string | null;
+  gasUsed?: string | null;
+  maxFeePerGas?: string | null;
+  maxPriorityFeePerGas?: string | null;
+  type?: number | null;
+  nonce?: number | null;
+  position?: number | null;
+  deployedContract?: Address | null;
+  incomplete: boolean;
 }
 
 export interface PaginatedTx {
@@ -88,19 +91,19 @@ export interface PaginatedTx {
 }
 
 export interface Contract {
-  alias?: string;
-  name?: string;
   address: Address;
   chainId: number;
-  proxyName?: string;
-  proxyFor?: Address;
-  proxiedBy?: Address;
+  dedupId: number;
+  name?: string | null;
+  proxyFor?: Address | null;
+  proxiedBy?: Address | null;
 }
 
 export interface Peer {
   origin: string;
   socket: string;
-  url: string;
+  url?: string | null;
+  alive: boolean;
 }
 
 export type Affinity = { sticky: NetworkId } | "global" | "unset";
