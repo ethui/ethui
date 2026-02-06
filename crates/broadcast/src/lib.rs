@@ -158,8 +158,8 @@ mod internal_msgs {
 
     #[instrument(level = "trace")]
     async fn send(msg: InternalMsg) {
-        debug!("UI msg: {:?}", msg);
-        INTERNAL.read().await.send(msg).unwrap();
+        debug!("Internal msg: {:?}", msg);
+        let _ = INTERNAL.read().await.send(msg);
     }
 }
 
@@ -207,6 +207,6 @@ mod ui_msgs {
     #[instrument(level = "trace")]
     async fn send(msg: UIMsg) {
         debug!("UI msg: {:?}", msg);
-        INTERNAL.read().await.send(msg).unwrap();
+        let _ = INTERNAL.read().await.send(msg);
     }
 }
