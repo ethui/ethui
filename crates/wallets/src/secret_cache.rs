@@ -8,7 +8,7 @@ use tokio::{
     sync::{Mutex, MutexGuard, RwLock, RwLockReadGuard},
     task::JoinHandle,
 };
-use zeroize::Zeroize;
+use zeroize::Zeroizing;
 
 /// A cache for secret material (private keys, mnemonics) that automatically expires after a
 /// timeout. Wraps the secret in `SecretVec` for memory safety (mlock'd pages).
@@ -73,12 +73,10 @@ impl SecretGuard<'_> {
 
 /// Converts a `String` (mnemonic or private key) into a `SecretVec<u8>`.
 pub fn string_into_secret(value: String) -> SecretVec<u8> {
-    let mut bytes = value.into_bytes();
-    let secret = SecretVec::new(bytes.len(), |s| {
+    let bytes = Zeroizing::new(value.into_bytes());
+    SecretVec::new(bytes.len(), |s| {
         s.copy_from_slice(&bytes);
-    });
-    bytes.zeroize();
-    secret
+    })
 }
 
 /// Recovers a `String` from a `SecretVec<u8>`.
