@@ -69,8 +69,8 @@ impl WalletControl for PrivateKeyWallet {
     async fn build_signer(&self, chain_id: u64, _path: &str) -> Result<Signer> {
         self.unlock().await?;
 
-        let guard = self.cache.read().await;
-        let secret = guard.as_ref().unwrap().lock().await;
+        let guard = self.cache.read().await?;
+        let secret = guard.lock().await;
 
         let mut signer = signer_from_secret(&secret);
         // TODO: use u64 for chain id

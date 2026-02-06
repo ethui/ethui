@@ -94,8 +94,8 @@ impl WalletControl for HDWallet {
 
         self.unlock().await?;
 
-        let guard = self.cache.read().await;
-        let secret = guard.as_ref().unwrap().lock().await;
+        let guard = self.cache.read().await?;
+        let secret = guard.lock().await;
 
         let mnemonic = string_from_secret(&secret);
         let mut signer = MnemonicBuilder::<English>::default()
@@ -146,8 +146,8 @@ impl HDWallet {
     async fn update_derived_addresses(&mut self) -> color_eyre::Result<()> {
         self.unlock().await?;
 
-        let guard = self.cache.read().await;
-        let secret = guard.as_ref().unwrap().lock().await;
+        let guard = self.cache.read().await?;
+        let secret = guard.lock().await;
         let mnemonic = string_from_secret(&secret);
 
         let addresses = utils::derive_addresses(&mnemonic, &self.derivation_path, self.count);

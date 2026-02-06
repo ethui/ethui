@@ -5,7 +5,7 @@ use ethui_dialogs::{Dialog, DialogMsg};
 use ethui_types::prelude::*;
 use secrets::SecretVec;
 use tokio::{
-    sync::{Mutex, RwLock},
+    sync::{Mutex, MutexGuard, RwLock, RwLockReadGuard},
     task::JoinHandle,
 };
 
@@ -35,9 +35,15 @@ impl SecretCache {
     }
 
     /// Stores a `SecretVec` in the cache and sets a 60-second expiration timer.
+    /// Aborts any existing expirer task before replacing.
     pub async fn store(&self, secret: SecretVec<u8>) {
         let mut expirer_handle = self.expirer.write().await;
         let mut secret_handle = self.secret.write().await;
+
+        // abort the previous expirer so it doesn't clear the new secret
+        if let Some(handle) = expirer_handle.take() {
+            handle.abort();
+        }
 
         *secret_handle = Some(Mutex::new(secret));
 
@@ -49,10 +55,27 @@ impl SecretCache {
         }));
     }
 
-    /// Acquires a read lock on the cached secret. Panics if the cache is empty --
-    /// callers must ensure `is_unlocked()` is true (typically by calling `unlock` first).
-    pub async fn read(&self) -> tokio::sync::RwLockReadGuard<'_, Option<Mutex<SecretVec<u8>>>> {
-        self.secret.read().await
+    /// Acquires a read lock on the cached secret, returning an error if the cache is empty.
+    ///
+    /// Callers should ensure the cache is populated first (typically by calling `unlock`),
+    /// but this method handles the race where the expirer task clears the cache in between.
+    pub async fn read(&self) -> color_eyre::Result<SecretGuard<'_>> {
+        let guard = self.secret.read().await;
+        if guard.is_none() {
+            return Err(eyre!("secret cache is empty; wallet may be locked"));
+        }
+        Ok(SecretGuard(guard))
+    }
+}
+
+/// RAII guard that holds a read lock on the secret cache and provides access to the inner
+/// `Mutex<SecretVec<u8>>`.
+pub struct SecretGuard<'a>(RwLockReadGuard<'a, Option<Mutex<SecretVec<u8>>>>);
+
+impl SecretGuard<'_> {
+    pub async fn lock(&self) -> MutexGuard<'_, SecretVec<u8>> {
+        // safe: we only construct SecretGuard when the Option is Some
+        self.0.as_ref().unwrap().lock().await
     }
 }
 
