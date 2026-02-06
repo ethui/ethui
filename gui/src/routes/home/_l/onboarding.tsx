@@ -191,7 +191,12 @@ function useAutofill() {
     ) {
       skipStep("alchemy");
     }
-  });
+  }, [
+    settings?.alchemyApiKey,
+    settings?.onboarding.steps.alchemy,
+    settings?.onboarding.steps.wallet,
+    wallets.length,
+  ]);
 }
 
 function skipStep(id: OnboardingStepKey) {
