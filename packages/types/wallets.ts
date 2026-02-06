@@ -60,7 +60,7 @@ export const privateKeySchema = z.object({
   type: z.literal("privateKey"),
   name: z.string().min(1),
   address: addressSchema,
-  privateKey: z.string().regex(/^0x[a-fA-F0-9]{128}$/),
+  privateKey: z.string().regex(/^0x[a-fA-F0-9]{64}$/),
   password: passwordSchema,
 });
 
