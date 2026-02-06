@@ -7,10 +7,7 @@ use crate::actor::{SolArtifactsActor, SolArtifactsActorExt as _};
 pub async fn init() -> color_eyre::Result<()> {
     let handle = SolArtifactsActor::spawn(());
     handle.register("sol_artifacts").unwrap();
-    let settings = settings()
-        .get_all()
-        .await
-        .expect("Failed to get settings");
+    let settings = settings().get_all().await.expect("Failed to get settings");
 
     if let Some(ref path) = settings.abi_watch_path {
         handle.update_roots(vec![path.clone().into()]).await?;
@@ -30,10 +27,7 @@ async fn receiver(handle: ActorRef<SolArtifactsActor>) -> ! {
         if let Ok(msg) = rx.recv().await {
             match msg {
                 InternalMsg::SettingsUpdated => {
-                    let settings = settings()
-                        .get_all()
-                        .await
-                        .expect("Failed to get settings");
+                    let settings = settings().get_all().await.expect("Failed to get settings");
                     if let Some(ref path) = settings.abi_watch_path {
                         // TODO: support multiple
                         handle

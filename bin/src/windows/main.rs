@@ -4,10 +4,7 @@ use tauri::{AppHandle, Manager};
 use super::build_window;
 
 pub(crate) async fn show(app: &AppHandle) {
-    let settings = settings()
-        .get_all()
-        .await
-        .expect("Failed to get settings");
+    let settings = settings().get_all().await.expect("Failed to get settings");
 
     if let Some(w) = app.get_webview_window("main") {
         w.show().unwrap()

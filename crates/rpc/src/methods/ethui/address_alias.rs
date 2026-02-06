@@ -4,7 +4,7 @@ use ethui_types::prelude::*;
 use jsonrpc_core::Params as RpcParams;
 use serde::Deserialize;
 
-use crate::{params::extract_single_param, methods::Method, Error, Result};
+use crate::{Error, Result, methods::Method, params::extract_single_param};
 
 #[derive(Debug)]
 pub(crate) struct AddressAlias {

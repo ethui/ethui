@@ -1,10 +1,10 @@
 use alloy::json_abi::JsonAbi;
 use ethui_types::{
-    events::Tx, prelude::*, transactions::Transaction, Contract, Erc721TokenData, TokenBalance,
-    TokenMetadata,
+    Contract, Erc721TokenData, TokenBalance, TokenMetadata, events::Tx, prelude::*,
+    transactions::Transaction,
 };
 
-use crate::{pagination::TxIdx, Db};
+use crate::{Db, pagination::TxIdx};
 
 #[tauri::command]
 pub async fn db_get_newer_transactions(

@@ -1,13 +1,13 @@
 use alloy::{
     network::{Network, TransactionBuilder as _},
-    primitives::{b256, Address, B256},
+    primitives::{Address, B256, b256},
     providers::Provider,
 };
 
 use crate::{
+    ProxyType,
     error::DetectProxyResult,
     utils::{bytes_to_b256_fallible, u256_to_address},
-    ProxyType,
 };
 
 const EIP_897_INTERFACE: [B256; 2] = [

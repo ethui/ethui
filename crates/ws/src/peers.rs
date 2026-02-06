@@ -1,6 +1,6 @@
 use std::net::SocketAddr;
 
-use ethui_networks::{networks, NetworksActorExt as _};
+use ethui_networks::{NetworksActorExt as _, networks};
 use ethui_types::{Affinity, NetworkId, prelude::*};
 use serde_json::json;
 use tokio::sync::mpsc;

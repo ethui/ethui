@@ -3,12 +3,11 @@ mod ext;
 use std::{ops::ControlFlow, path::PathBuf};
 
 use ethui_types::prelude::*;
+pub use ext::StacksActorExt;
 use kameo::prelude::*;
 use tracing::error;
 
 use crate::docker::{ContainerNotRunning, ContainerRunning, DockerManager, initialize};
-
-pub use ext::StacksActorExt;
 
 pub fn stacks() -> ActorRef<StacksActor> {
     try_stacks().expect("stacks actor not initialized")

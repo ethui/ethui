@@ -1,6 +1,6 @@
 use alloy::{
     network::Network,
-    primitives::{Address, Bytes, B256, U256},
+    primitives::{Address, B256, Bytes, U256},
     providers::Provider,
 };
 

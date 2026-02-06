@@ -1,5 +1,5 @@
 use alloy::{network::Ethereum, providers::RootProvider, rpc::types::Header};
-use ethui_types::{prelude::*, Network};
+use ethui_types::{Network, prelude::*};
 use futures::Stream;
 
 use super::worker::SyncInfo;

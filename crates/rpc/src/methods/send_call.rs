@@ -1,4 +1,6 @@
-use alloy::{network::TransactionBuilder as _, providers::Provider as _, rpc::types::TransactionRequest};
+use alloy::{
+    network::TransactionBuilder as _, providers::Provider as _, rpc::types::TransactionRequest,
+};
 use ethui_types::prelude::*;
 use ethui_wallets::WalletControl;
 use serde::Deserialize;

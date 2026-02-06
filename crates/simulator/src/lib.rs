@@ -9,9 +9,9 @@ use alloy::{
 };
 use ethui_types::prelude::*;
 use revm::{
-    context::{result::ExecResultAndState, TxEnv},
-    database::{AlloyDB, CacheDB, WrapDatabaseAsync},
     ExecuteEvm as _, MainBuilder as _, MainContext as _,
+    context::{TxEnv, result::ExecResultAndState},
+    database::{AlloyDB, CacheDB, WrapDatabaseAsync},
 };
 pub use types::{Request, SimResult};
 
