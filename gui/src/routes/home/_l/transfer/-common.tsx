@@ -1,4 +1,6 @@
-import type { Address } from "viem";
+import type { Network, TokenBalance } from "@ethui/types";
+import { useMemo } from "react";
+import { type Address, ethAddress } from "viem";
 
 export interface Token {
   currency?: string;
@@ -21,4 +23,33 @@ export function parseAmount(num: string, decimals: number): bigint {
     baseUnits += BigInt(frac);
   }
   return baseUnits;
+}
+
+export function useTokenList({
+  network,
+  native,
+  erc20s,
+}: {
+  network?: Network;
+  native?: bigint;
+  erc20s: TokenBalance[];
+}): Token[] {
+  return useMemo(() => {
+    if (!network || !native) return [];
+
+    const erc20Tokens = erc20s.map(({ metadata, balance, contract }) => ({
+      currency: metadata?.symbol,
+      decimals: metadata?.decimals,
+      balance: BigInt(balance),
+      contract,
+    }));
+    const nativeToken = {
+      currency: network.currency,
+      decimals: network.decimals,
+      balance: native,
+      contract: ethAddress,
+    };
+
+    return [nativeToken, ...erc20Tokens];
+  }, [erc20s, native, network]);
 }

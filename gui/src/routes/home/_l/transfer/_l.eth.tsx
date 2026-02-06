@@ -18,7 +18,7 @@ import { type AddressData, useAllAddresses } from "#/hooks/useAllAddresses";
 import { useBalances } from "#/store/useBalances";
 import { useNetworks } from "#/store/useNetworks";
 import { useWallets } from "#/store/useWallets";
-import { parseAmount, type Token } from "./-common";
+import { parseAmount, useTokenList } from "./-common";
 
 export interface Params {
   chainId: string;
@@ -45,26 +45,7 @@ function RouteComponent() {
   );
   const [result, setResult] = useState<string | null>(null);
   const [decimals, setDecimals] = useState<number>();
-
-  // map list of tokens
-  const [tokens, setTokens] = useState<Token[]>([]);
-  useEffect(() => {
-    if (!network || !native) return;
-
-    const newTokens = erc20s.map(({ metadata, balance, contract }) => ({
-      currency: metadata?.symbol,
-      decimals: metadata?.decimals,
-      balance: BigInt(balance),
-      contract: contract,
-    }));
-    const nativeToken = {
-      currency: network.currency,
-      decimals: network.decimals,
-      balance: native,
-      contract: ethAddress,
-    };
-    setTokens([nativeToken, ...newTokens]);
-  }, [native, erc20s, network]);
+  const tokens = useTokenList({ network, native, erc20s });
 
   const schema = z.object({
     to: addressSchema.optional(),
