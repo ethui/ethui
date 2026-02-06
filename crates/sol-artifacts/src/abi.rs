@@ -3,6 +3,9 @@ use std::{ffi::OsStr, fs::File, io::BufReader, path::PathBuf};
 use ethui_types::prelude::*;
 use kameo::Reply;
 
+/// Directories to ignore when processing artifacts
+const IGNORED_ARTIFACT_DIRS: &[&str] = &["node_modules", "dependencies", "lib"];
+
 #[derive(Debug, Clone, Reply, Serialize, Deserialize)]
 pub struct SolArtifact {
     pub path: PathBuf,
@@ -26,6 +29,21 @@ impl TryFrom<PathBuf> for SolArtifact {
 
         // ignore non-json files
         if path.extension().is_none_or(|p| p != "json") {
+            return Err(());
+        }
+
+        let path_str = path.to_string_lossy();
+
+        // only process files in output directories
+        if !path_str.contains("/out/") && !path_str.contains("/artifacts/") {
+            return Err(());
+        }
+
+        // ignore files in dependency directories
+        if IGNORED_ARTIFACT_DIRS
+            .iter()
+            .any(|dir| path_str.contains(&format!("/{}/", dir)))
+        {
             return Err(());
         }
 
@@ -91,6 +109,12 @@ impl TryFrom<notify::Event> for SolArtifact {
 
     fn try_from(event: notify::Event) -> Result<Self, Self::Error> {
         use notify::EventKind;
+
+        // Skip events with no paths
+        if event.paths.is_empty() {
+            return Err(());
+        }
+
         match event.kind {
             EventKind::Access(_) => Err(()),
             _ => event.paths[0].clone().try_into(),

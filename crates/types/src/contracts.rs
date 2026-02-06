@@ -22,3 +22,12 @@ pub struct ContractWithAbi {
     pub address: Address,
     pub abi: Option<JsonAbi>,
 }
+
+#[derive(Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct Project {
+    pub name: String,
+    pub path: String,
+    pub git_root: Option<String>,
+    pub addresses: Vec<Address>,
+}

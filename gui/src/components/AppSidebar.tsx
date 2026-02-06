@@ -25,6 +25,7 @@ import {
   CircleUser,
   Cog,
   Database,
+  FolderCode,
   Globe,
   Wallet,
   Wifi,
@@ -198,6 +199,11 @@ const items = [
     title: "Account",
     url: "/home/account",
     icon: <CircleUser />,
+  },
+  {
+    title: "Projects",
+    url: "/home/projects",
+    icon: <FolderCode />,
   },
   {
     title: "Wallets",

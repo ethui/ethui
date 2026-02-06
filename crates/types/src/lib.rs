@@ -12,7 +12,7 @@ pub mod ui_events;
 pub use affinity::Affinity;
 pub use alloy::primitives::{Address, B256, U64, U256, address};
 pub use color_eyre::eyre::eyre;
-pub use contracts::{Contract, ContractWithAbi};
+pub use contracts::{Contract, ContractWithAbi, Project};
 pub use error::{SerializableError, TauriResult};
 pub use events::Event;
 pub use global_state::GlobalState;

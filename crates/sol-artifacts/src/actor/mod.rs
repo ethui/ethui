@@ -20,6 +20,8 @@ use notify_debouncer_full::{
 use tokio::task;
 use walkdir::{DirEntry, WalkDir};
 
+use crate::project::Project;
+
 /// Config files that indicate a project root (Foundry or Hardhat)
 const PROJECT_CONFIG_FILES: &[&str] = &[
     "foundry.toml",
@@ -58,7 +60,7 @@ pub fn try_sol_artifacts() -> color_eyre::Result<ActorRef<SolArtifactsActor>> {
 #[derive(Default)]
 pub struct SolArtifactsActor {
     roots: HashSet<PathBuf>,
-    project_roots: HashSet<PathBuf>,
+    project_roots: HashSet<Project>,
     watcher: Option<Debouncer<RecommendedWatcher, RecommendedCache>>,
 
     abis_by_path: BTreeMap<PathBuf, SolArtifact>,
@@ -82,7 +84,9 @@ impl Actor for SolArtifactsActor {
             None,
             move |result: DebounceEventResult| match result {
                 Ok(events) => {
-                    let _ = actor_ref.tell(ProcessDebouncedEvents { events });
+                    if let Err(e) = actor_ref.tell(ProcessDebouncedEvents { events }).try_send() {
+                        tracing::warn!("Failed to send events to actor: {:?}", e);
+                    }
                 }
                 Err(e) => tracing::warn!("watch error: {:?}", e),
             },
@@ -107,7 +111,7 @@ impl Actor for SolArtifactsActor {
 impl SolArtifactsActor {
     #[message]
     #[instrument(skip_all, level = "trace")]
-    async fn update_roots(&mut self, roots: Vec<PathBuf>) {
+    async fn update_roots(&mut self, roots: Vec<PathBuf>) -> Result<()> {
         let to_remove: Vec<_> = self
             .roots
             .iter()
@@ -129,17 +133,20 @@ impl SolArtifactsActor {
             let _ = self.add_path(path).await;
         }
 
-        let _ = self
-            .self_ref
-            .as_ref()
-            .unwrap()
-            .tell(PollProjectRoots)
-            .try_send();
+        // Wait for project discovery to complete before returning
+        self.update_project_roots().await?;
+
+        Ok(())
     }
 
     #[message]
-    async fn poll_project_roots(&mut self) {
+    async fn poll_projects(&mut self) {
         let _ = self.update_project_roots().await;
+    }
+
+    #[message]
+    fn get_projects(&self) -> Vec<Project> {
+        self.project_roots.iter().cloned().collect()
     }
 
     #[message]
@@ -149,12 +156,17 @@ impl SolArtifactsActor {
 
     #[message]
     async fn process_debounced_events(&mut self, events: Vec<DebouncedEvent>) {
-        trace!("process_debounced_events");
         for debounced in events.into_iter() {
-            let path = debounced.event.paths[0].clone();
-            match debounced.event.try_into() {
-                Ok(abi) => self.insert_abi(abi),
-                Err(_) => self.remove_abi(&path),
+            match TryInto::<SolArtifact>::try_into(debounced.event) {
+                Ok(abi) => {
+                    debug!("Artifact added/updated: {} at {:?}", abi.name, abi.path);
+                    self.insert_abi(abi);
+                }
+                Err(_) => {
+                    // Ignore failed conversions (deleted files, non-ABI files, etc.)
+                    // We don't remove ABIs here because files might be temporarily deleted
+                    // during compilation and recreated immediately after
+                }
             }
         }
 
@@ -341,17 +353,29 @@ impl SolArtifactsActor {
             .cloned()
             .collect();
 
-        for path in to_add.iter() {
-            self.scan_project(path).await?;
+        for project in to_add.iter() {
+            if let Err(e) = self.scan_project(&project.contracts_root).await {
+                tracing::warn!(
+                    "Failed to scan project at {:?}: {}",
+                    project.contracts_root,
+                    e
+                );
+            }
         }
 
         match self.watcher.as_mut() {
             Some(watcher) => {
-                for path in to_remove {
-                    watcher.unwatch(path.join("out"))?;
+                for project in &to_remove {
+                    if let Err(e) = watcher.unwatch(&project.contracts_root) {
+                        tracing::warn!("Failed to unwatch {:?}: {}", project.contracts_root, e);
+                    }
                 }
-                for path in to_add {
-                    watcher.watch(path.join("out"), RecursiveMode::Recursive)?;
+                for project in to_add {
+                    // Watch the entire project root to detect when artifacts are created
+                    if let Err(e) = watcher.watch(&project.contracts_root, RecursiveMode::Recursive)
+                    {
+                        tracing::warn!("Failed to watch {:?}: {}", project.contracts_root, e);
+                    }
                 }
             }
 
@@ -359,6 +383,12 @@ impl SolArtifactsActor {
                 warn!("forge watcher not initialized");
             }
         }
+
+        // Update the project_roots set with the newly discovered roots
+        self.project_roots = new_roots;
+
+        // Notify frontend that projects have been updated
+        ethui_broadcast::ui_notify(UINotify::ContractsUpdated).await;
 
         Ok(())
     }
@@ -398,7 +428,7 @@ impl SolArtifactsActor {
     /// Uses depth-first search to stop searching deeper once config file is found.
     /// Includes directory blacklist to avoid searching in node_modules, hidden directories, etc.
     #[instrument(skip_all, level = "trace")]
-    async fn find_project_roots(&self) -> Result<HashSet<PathBuf>> {
+    async fn find_project_roots(&self) -> Result<HashSet<Project>> {
         let roots = self.roots.clone();
 
         // Process all roots in parallel using spawn_blocking
@@ -446,8 +476,11 @@ impl SolArtifactsActor {
         all_dirs.sort();
 
         Ok(all_dirs.into_iter().fold(HashSet::new(), |mut acc, dir| {
-            if !acc.iter().any(|p| dir.starts_with(p)) {
-                acc.insert(dir);
+            if !acc
+                .iter()
+                .any(|p: &Project| dir.starts_with(&p.contracts_root))
+            {
+                acc.insert(Project::from_contracts_root(dir));
             }
             acc
         }))
@@ -456,11 +489,6 @@ impl SolArtifactsActor {
     #[instrument(level = "trace", skip_all, fields(project = abi.project, name = abi.name))]
     fn insert_abi(&mut self, abi: SolArtifact) {
         self.abis_by_path.insert(abi.path.clone(), abi);
-    }
-
-    /// removes a previously known ABI by their path
-    fn remove_abi(&mut self, path: &PathBuf) {
-        self.abis_by_path.remove(path);
     }
 }
 

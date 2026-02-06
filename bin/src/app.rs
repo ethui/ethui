@@ -102,6 +102,7 @@ impl EthUIApp {
                 ethui_db::commands::db_get_native_balance,
                 ethui_db::commands::db_get_erc721_tokens,
                 ethui_sol_artifacts::commands::fetch_forge_abis,
+                ethui_sol_artifacts::commands::sol_artifacts_get_projects,
                 ethui_ws::commands::ws_peers_by_domain,
                 ethui_ws::commands::ws_peer_count,
                 ethui_wallets::commands::wallets_get_all,
