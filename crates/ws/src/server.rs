@@ -144,7 +144,7 @@ async fn handle_message(
             .handle(request)
             .await
             .map(|r| {
-                serde_json::to_value(&r).unwrap_or_else(|e| {
+                serde_json::to_value(&r).unwrap_or_else(|_e| {
                     json_rpc_error(
                         -32603,
                         "Internal error".to_string(),
@@ -156,7 +156,7 @@ async fn handle_message(
         Err(e) => json_rpc_parse_error(e, serde_json::Value::Null),
     };
 
-    sender.send(Message::Text(reply.to_string())).await?;
+    sender.send(Message::Text(reply.to_string().into())).await?;
     Ok(())
 }
 
