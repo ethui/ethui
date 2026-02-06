@@ -13,19 +13,10 @@ use tokio::{
 /// timeout. Wraps the secret in `SecretVec` for memory safety (mlock'd pages).
 ///
 /// The additional `Mutex` within is there because `SecretVec` is not `Send`.
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Default)]
 pub struct SecretCache {
     secret: Arc<RwLock<Option<Mutex<SecretVec<u8>>>>>,
     expirer: Arc<RwLock<Option<JoinHandle<()>>>>,
-}
-
-impl Default for SecretCache {
-    fn default() -> Self {
-        Self {
-            secret: Default::default(),
-            expirer: Default::default(),
-        }
-    }
 }
 
 impl SecretCache {
