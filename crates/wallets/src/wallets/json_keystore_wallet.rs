@@ -1,4 +1,4 @@
-use std::{fs::File, io::BufReader, path::PathBuf, str::FromStr, sync::Arc, time::Duration};
+use std::{fs::File, io::BufReader, path::PathBuf, str::FromStr};
 
 use alloy::{
     primitives::B256,
@@ -6,36 +6,22 @@ use alloy::{
 };
 use async_trait::async_trait;
 use coins_bip32::ecdsa;
-use ethui_dialogs::{Dialog, DialogMsg};
 use ethui_types::prelude::*;
 use secrets::SecretVec;
-use tokio::{
-    sync::{Mutex, RwLock},
-    task::JoinHandle,
-};
 
-use crate::{Signer, Wallet, WalletControl, wallet::WalletCreate};
+use crate::{
+    Signer, Wallet, WalletControl,
+    secret_cache::{SecretCache, unlock_with_dialog},
+    wallet::WalletCreate,
+};
 
 #[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
 pub struct JsonKeystoreWallet {
     name: String,
     pub file: PathBuf,
 
-    /// The signer is cached inside a `RwLock` so we can have interior mutability
-    /// Since JSON keystore signers are time-consuming to decrypt, we can't do it on-the-fly for
-    /// every incoming signing request
-    ///
-    /// The cache is stored as a
-    /// [SecretVec](https://docs.rs/secrets/latest/secrets/struct.SecretVec.html#method.new) for
-    /// some in-memory safety guarantees
-    ///
-    /// The additional Mutex within is there because `SecretVec` is not Send
     #[serde(skip)]
-    secret: Arc<RwLock<Option<Mutex<SecretVec<u8>>>>>,
-
-    /// A join handle that will expire the signer after some time
-    #[serde(skip)]
-    expirer: Arc<RwLock<Option<JoinHandle<()>>>>,
+    cache: SecretCache,
 }
 
 #[async_trait]
@@ -83,8 +69,8 @@ impl WalletControl for JsonKeystoreWallet {
     async fn build_signer(&self, chain_id: u64, _path: &str) -> color_eyre::Result<Signer> {
         self.unlock().await?;
 
-        let secret = self.secret.read().await;
-        let secret = secret.as_ref().unwrap().lock().await;
+        let guard = self.cache.read().await;
+        let secret = guard.as_ref().unwrap().lock().await;
 
         let mut signer = signer_from_secret(&secret);
         // TODO: use u64 for chain id
@@ -94,60 +80,13 @@ impl WalletControl for JsonKeystoreWallet {
 }
 
 impl JsonKeystoreWallet {
-    async fn is_unlocked(&self) -> bool {
-        let secret = self.secret.read().await;
-        secret.is_some()
-    }
-
     async fn unlock(&self) -> color_eyre::Result<()> {
-        // if we already have a signer, then we're good
-        if self.is_unlocked().await {
-            return Ok(());
-        }
-
-        // open the dialog
-        let dialog = Dialog::new("wallet-unlock", serde_json::to_value(self).unwrap());
-        dialog.open().await?;
-
-        // attempt to receive a password at most 3 times
-        for _ in 0..3 {
-            let password = if let Some(DialogMsg::Data(payload)) = dialog.recv().await {
-                let password = payload["password"].clone();
-                password
-                    .as_str()
-                    .with_context(|| "wallet unlock rejected by user".to_string())?
-                    .to_string()
-            } else {
-                return Err(eyre!("wallet unlock rejected by user"));
-            };
-
-            // if password was given, and correctly decrypts the keystore
-            if let Ok(keystore) = LocalSigner::decrypt_keystore(self.file.clone(), password) {
-                self.store_secret(&keystore).await;
-                return Ok(());
-            }
-
-            dialog.send("failed", None).await?;
-        }
-
-        Err(eyre!("user failed to unlock the wallet"))
-    }
-
-    async fn store_secret(&self, keystore: &LocalSigner<ecdsa::SigningKey>) {
-        // acquire both write locks
-        let mut expirer_handle = self.expirer.write().await;
-        let mut secret_handle = self.secret.write().await;
-
-        let secret = signer_into_secret(keystore);
-
-        *secret_handle = Some(Mutex::new(secret));
-
-        // set up cache expiration for 1 minute
-        let clone = Arc::clone(&self.secret);
-        *expirer_handle = Some(tokio::spawn(async move {
-            tokio::time::sleep(Duration::from_secs(60)).await;
-            clone.write().await.take();
-        }));
+        let file = self.file.clone();
+        unlock_with_dialog(&self.cache, &self.name, |password| {
+            let keystore = LocalSigner::decrypt_keystore(file.clone(), password)?;
+            Ok(signer_into_secret(&keystore))
+        })
+        .await
     }
 }
 
@@ -158,9 +97,7 @@ fn signer_into_secret(keystore: &LocalSigner<ecdsa::SigningKey>) -> SecretVec<u8
     let bytes = signer_bytes.as_slice();
 
     SecretVec::new(bytes.len(), |s| {
-        (0..bytes.len()).for_each(|i| {
-            s[i] = bytes[i];
-        });
+        s.copy_from_slice(bytes);
     })
 }
 

@@ -1,5 +1,6 @@
 pub mod commands;
 mod init;
+pub(crate) mod secret_cache;
 mod signer;
 mod utils;
 mod wallet;
@@ -55,7 +56,6 @@ impl Wallets {
         None
     }
 
-
     /// Gets a reference the current default wallet
     pub fn get_current_wallet(&self) -> &Wallet {
         &self.wallets[self.current]
@@ -88,10 +88,10 @@ impl Wallets {
 
         self.current = id;
         self.on_wallet_changed().await?;
-        
+
         let wallet_type = self.wallets[id].wallet_type();
         ethui_broadcast::wallet_connected(wallet_type.to_string()).await;
-        
+
         self.save()?;
         Ok(())
     }
