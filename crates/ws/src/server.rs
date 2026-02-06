@@ -139,7 +139,20 @@ async fn handle_message(
         Peers::write().await.peer_alive(p).await;
     }
 
-    let reply = handler.handle(serde_json::from_str(&text).unwrap()).await;
+    let request = match serde_json::from_str(&text) {
+        Ok(req) => req,
+        Err(e) => {
+            let error_response = serde_json::json!({
+                "jsonrpc": "2.0",
+                "error": { "code": -32700, "message": format!("Parse error: {e}") },
+                "id": null
+            });
+            sender.send(error_response.to_string().into()).await?;
+            return Ok(());
+        }
+    };
+
+    let reply = handler.handle(request).await;
     let reply = reply
         .map(|r| serde_json::to_string(&r).unwrap())
         .unwrap_or_else(|| serde_json::Value::Null.to_string());
