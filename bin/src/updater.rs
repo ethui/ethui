@@ -32,7 +32,7 @@ pub(crate) fn spawn(handle: tauri::AppHandle) {
 #[instrument(level = "info", skip_all)]
 async fn update(handle: &tauri::AppHandle) -> color_eyre::Result<()> {
     if let Some(update) = handle.updater()?.check().await? {
-        let mut downloaded: u64 = 0;
+        let mut downloaded: usize = 0;
         let mut last_percent = -0.1;
 
         update
@@ -40,7 +40,7 @@ async fn update(handle: &tauri::AppHandle) -> color_eyre::Result<()> {
                 |chunk_length, content_length| {
                     downloaded += chunk_length;
                     if let Some(length) = content_length {
-                        notify_download_progress(downloaded, length, &mut last_percent);
+                        notify_download_progress(downloaded, length as usize, &mut last_percent);
                     }
                 },
                 || info!(percent = 100.),
@@ -56,7 +56,7 @@ async fn update(handle: &tauri::AppHandle) -> color_eyre::Result<()> {
     Ok(())
 }
 
-fn notify_download_progress(downloaded: u64, length: u64, last_percent: &mut f64) {
+fn notify_download_progress(downloaded: usize, length: usize, last_percent: &mut f64) {
     if length == 0 {
         return;
     }
