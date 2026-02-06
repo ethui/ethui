@@ -1,8 +1,6 @@
 import { invoke } from "@tauri-apps/api/core";
 import { z } from "zod";
 
-import { passwordSchema } from "./password";
-
 export const mnemonicSchema = z
   .string()
   .regex(/^([a-z]+\s)+[a-z]+$/, {
@@ -39,67 +37,58 @@ export const addressSchema = z
     message: "Not a valid ETH address",
   });
 
-export const hdWalletSchema = z.object({
-  type: z.literal("HDWallet"),
-  count: z.number().int().min(1).max(100),
-  name: z.string().min(1),
-  current: z.array(z.string()).length(2).optional(),
-  mnemonic: mnemonicSchema,
-  derivationPath: derivationPathSchema,
-  password: passwordSchema,
-});
+export interface HdWallet {
+  type: "HDWallet";
+  count: number;
+  name: string;
+  current?: string[];
+  mnemonic: string;
+  derivationPath: string;
+  password: string;
+}
 
-export const jsonKeystoreSchema = z.object({
-  type: z.literal("jsonKeystore"),
-  name: z.string().min(1),
-  file: z.string().min(1),
-  currentPath: z.string().optional(),
-});
+export interface JsonKeystoreWallet {
+  type: "jsonKeystore";
+  name: string;
+  file: string;
+  currentPath?: string;
+}
 
-export const privateKeySchema = z.object({
-  type: z.literal("privateKey"),
-  name: z.string().min(1),
-  address: addressSchema,
-  privateKey: z.string().regex(/^0x[a-fA-F0-9]{128}$/),
-  password: passwordSchema,
-});
+export interface PrivateKeyWallet {
+  type: "privateKey";
+  name: string;
+  address: string;
+  privateKey: string;
+  password: string;
+}
 
-export const plaintextSchema = z.object({
-  type: z.literal("plaintext"),
-  name: z.string().min(1),
-  mnemonic: mnemonicSchema,
-  derivationPath: derivationPathSchema,
-  count: z.number().int().min(1),
-  currentPath: z.string().optional(),
-});
+export interface PlaintextWallet {
+  type: "plaintext";
+  name: string;
+  mnemonic: string;
+  derivationPath: string;
+  count: number;
+  currentPath?: string;
+}
 
-export const impersonatorSchema = z.object({
-  type: z.literal("impersonator"),
-  name: z.string().min(1),
-  addresses: z.array(addressSchema).min(1),
-  current: z.number().optional(),
-});
+export interface ImpersonatorWallet {
+  type: "impersonator";
+  name: string;
+  addresses: string[];
+  current?: number;
+}
 
-export const ledgerSchema = z.object({
-  type: z.literal("ledger"),
-  name: z.string().min(1),
-  addresses: z.array(z.tuple([z.string(), addressSchema])),
-  current: z.number().optional(),
-});
+export interface LedgerWallet {
+  type: "ledger";
+  name: string;
+  addresses: [string, string][];
+  current?: number;
+}
 
-export const walletSchema = z.discriminatedUnion("type", [
-  hdWalletSchema,
-  jsonKeystoreSchema,
-  plaintextSchema,
-  impersonatorSchema,
-  ledgerSchema,
-  privateKeySchema,
-]);
-
-export type Wallet = z.infer<typeof walletSchema>;
-export type HdWallet = z.infer<typeof hdWalletSchema>;
-export type JsonKeystoreWallet = z.infer<typeof jsonKeystoreSchema>;
-export type PlaintextWallet = z.infer<typeof plaintextSchema>;
-export type ImpersonatorWallet = z.infer<typeof impersonatorSchema>;
-export type LedgerWallet = z.infer<typeof ledgerSchema>;
-export type PrivateKeyWallet = z.infer<typeof privateKeySchema>;
+export type Wallet =
+  | HdWallet
+  | JsonKeystoreWallet
+  | PlaintextWallet
+  | ImpersonatorWallet
+  | LedgerWallet
+  | PrivateKeyWallet;
