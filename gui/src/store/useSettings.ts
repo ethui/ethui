@@ -27,8 +27,25 @@ const store: StateCreator<Store> = (set) => ({
 
 export const useSettings = create<Store>()(subscribeWithSelector(store));
 
-event.listen("settings-changed", () => {
-  useSettings.getState().reload();
-});
+const listenerUnsubscribers: Array<Promise<() => void>> = [];
+const trackListener = (listener: Promise<() => void>) => {
+  listenerUnsubscribers.push(listener);
+};
+
+const disposeListeners = () => {
+  for (const listener of listenerUnsubscribers) {
+    listener.then((unlisten) => unlisten()).catch(() => {});
+  }
+};
+
+if (import.meta.hot) {
+  import.meta.hot.dispose(disposeListeners);
+}
+
+trackListener(
+  event.listen("settings-changed", () => {
+    useSettings.getState().reload();
+  }),
+);
 
 useSettings.getState().reload();

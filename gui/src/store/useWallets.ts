@@ -64,12 +64,31 @@ const store: StateCreator<Store> = (set, get) => ({
 
 export const useWallets = create<Store>()(subscribeWithSelector(store));
 
-event.listen("settings-changed", async () => {
-  await useWallets.getState().reload();
-});
-event.listen("wallets-changed", async () => {
-  await useWallets.getState().reload();
-});
+const listenerUnsubscribers: Array<Promise<() => void>> = [];
+const trackListener = (listener: Promise<() => void>) => {
+  listenerUnsubscribers.push(listener);
+};
+
+const disposeListeners = () => {
+  for (const listener of listenerUnsubscribers) {
+    listener.then((unlisten) => unlisten()).catch(() => {});
+  }
+};
+
+if (import.meta.hot) {
+  import.meta.hot.dispose(disposeListeners);
+}
+
+trackListener(
+  event.listen("settings-changed", async () => {
+    await useWallets.getState().reload();
+  }),
+);
+trackListener(
+  event.listen("wallets-changed", async () => {
+    await useWallets.getState().reload();
+  }),
+);
 
 (async () => {
   await useWallets.getState().reload();

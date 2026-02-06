@@ -121,9 +121,26 @@ const store: StateCreator<Store> = (set, get) => ({
 
 export const useContracts = create<Store>()(subscribeWithSelector(store));
 
-event.listen("contracts-updated", async () => {
-  await useContracts.getState().reload();
-});
+const listenerUnsubscribers: Array<Promise<() => void>> = [];
+const trackListener = (listener: Promise<() => void>) => {
+  listenerUnsubscribers.push(listener);
+};
+
+const disposeListeners = () => {
+  for (const listener of listenerUnsubscribers) {
+    listener.then((unlisten) => unlisten()).catch(() => {});
+  }
+};
+
+if (import.meta.hot) {
+  import.meta.hot.dispose(disposeListeners);
+}
+
+trackListener(
+  event.listen("contracts-updated", async () => {
+    await useContracts.getState().reload();
+  }),
+);
 
 useNetworks.subscribe(
   (s) => s.current?.id,
