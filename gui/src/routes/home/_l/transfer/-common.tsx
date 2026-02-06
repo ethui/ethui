@@ -1,4 +1,5 @@
-import type { Network, TokenBalance } from "@ethui/types";
+import type { TokenBalance } from "@ethui/types";
+import type { Network } from "@ethui/types/network";
 import { useMemo } from "react";
 import { type Address, ethAddress } from "viem";
 
