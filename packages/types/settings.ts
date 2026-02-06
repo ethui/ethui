@@ -27,6 +27,7 @@ export const generalSettingsSchema = z.object({
   onboarding: onboardingSchema,
   rustLog: z.string().optional(),
   runLocalStacks: z.boolean(),
+  analyticsId: z.string().optional().nullable(),
 });
 
 export type OnboardingStepKey = z.infer<typeof onboardingSteps>;

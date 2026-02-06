@@ -11,6 +11,7 @@ pub trait SettingsActorExt {
     async fn set_all(&self, map: serde_json::Map<String, serde_json::Value>) -> Result<()>;
     async fn set_dark_mode(&self, mode: DarkMode) -> Result<()>;
     async fn set_fast_mode(&self, mode: bool) -> Result<()>;
+    async fn set_analytics_id(&self, id: String) -> Result<()>;
     async fn finish_onboarding(&self) -> Result<()>;
     async fn finish_onboarding_step(&self, step: OnboardingStep) -> Result<()>;
     async fn set_alias(&self, address: Address, alias: Option<String>) -> Result<()>;
@@ -45,6 +46,14 @@ impl SettingsActorExt for ActorRef<SettingsActor> {
     async fn set_fast_mode(&self, mode: bool) -> Result<()> {
         self.ask(Set {
             value: SetValue::FastMode(mode),
+        })
+        .await?;
+        Ok(())
+    }
+
+    async fn set_analytics_id(&self, id: String) -> Result<()> {
+        self.ask(Set {
+            value: SetValue::AnalyticsId(id),
         })
         .await?;
         Ok(())

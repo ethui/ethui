@@ -56,6 +56,9 @@ pub struct Settings {
     pub run_local_stacks: bool,
 
     #[serde(default)]
+    pub analytics_id: Option<String>,
+
+    #[serde(default)]
     pub onboarding: Onboarding,
 
     version: LatestVersion,
@@ -78,6 +81,7 @@ impl Default for Settings {
             onboarding: Onboarding::default(),
             run_local_stacks: false,
             check_for_updates: true,
+            analytics_id: None,
         }
     }
 }

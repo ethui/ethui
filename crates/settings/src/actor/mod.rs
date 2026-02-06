@@ -69,6 +69,7 @@ pub(crate) enum SetValue {
     All(serde_json::Map<String, serde_json::Value>),
     DarkMode(DarkMode),
     FastMode(bool),
+    AnalyticsId(String),
     FinishOnboardingStep(OnboardingStep),
     FinishOnboarding,
     Alias(ethui_types::Address, Option<String>),
@@ -186,6 +187,9 @@ impl SettingsActor {
             }
             SetValue::FastMode(mode) => {
                 self.inner.fast_mode = mode;
+            }
+            SetValue::AnalyticsId(id) => {
+                self.inner.analytics_id = Some(id);
             }
 
             SetValue::FinishOnboardingStep(step) => {

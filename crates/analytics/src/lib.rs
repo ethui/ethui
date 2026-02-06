@@ -1,5 +1,6 @@
 use std::{collections::HashMap, sync::OnceLock};
 
+use ethui_settings::{SettingsActorExt as _, settings};
 use ethui_types::prelude::*;
 use tauri::AppHandle;
 #[cfg(feature = "aptabase")]
@@ -16,35 +17,44 @@ pub struct Analytics {
 }
 
 impl Analytics {
-    fn new() -> Self {
-        let user_id = Self::get_machine_based_user_id();
+    fn new(user_id: Uuid) -> Self {
         Self { user_id }
     }
 
     pub fn instance() -> &'static Analytics {
-        ANALYTICS.get_or_init(Analytics::new)
+        ANALYTICS.get_or_init(|| Analytics::new(Uuid::new_v4()))
     }
 
-    fn get_machine_based_user_id() -> Uuid {
-        let machine_id = Self::get_machine_identifier();
-        let mut buf = [0u8; 16];
-        let bytes = machine_id.as_bytes();
-        let len = bytes.len().min(16);
-        buf[..len].copy_from_slice(&bytes[..len]);
-        Uuid::new_v8(buf)
-    }
+    async fn init_from_settings() -> Self {
+        let user_id = match settings().get_all().await {
+            Ok(settings) => match settings.analytics_id {
+                Some(id) => match Uuid::parse_str(&id) {
+                    Ok(parsed) => parsed,
+                    Err(_) => {
+                        let id = Uuid::new_v4();
+                        let _ = settings()
+                            .set_analytics_id(id.to_string())
+                            .await
+                            .map_err(|err| error!("failed to save analytics id: {err}"));
+                        id
+                    }
+                },
+                None => {
+                    let id = Uuid::new_v4();
+                    let _ = settings()
+                        .set_analytics_id(id.to_string())
+                        .await
+                        .map_err(|err| error!("failed to save analytics id: {err}"));
+                    id
+                }
+            },
+            Err(err) => {
+                error!("failed to load settings for analytics id: {err}");
+                Uuid::new_v4()
+            }
+        };
 
-    fn get_machine_identifier() -> String {
-        if let Ok(Some(mac_addr)) = mac_address::get_mac_address() {
-            return mac_addr.to_string();
-        }
-
-        if let Ok(hostname) = hostname::get().map(|h| h.to_string_lossy().to_string())
-            && !hostname.is_empty()
-        {
-            return format!("fallback-{hostname}");
-        }
-        "fallback-unknown-machine".to_string()
+        Self::new(user_id)
     }
 
     pub fn get_common_properties(&self) -> HashMap<String, serde_json::Value> {

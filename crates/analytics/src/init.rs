@@ -4,8 +4,9 @@ use tauri::{AppHandle, Manager};
 use crate::track_event;
 
 pub async fn init(handle: &AppHandle) {
-    let analytics = crate::Analytics::instance();
-    handle.manage(analytics);
+    let analytics = crate::Analytics::init_from_settings().await;
+    let _ = crate::ANALYTICS.set(analytics);
+    handle.manage(crate::Analytics::instance());
 
     let handle = handle.clone();
     tauri::async_runtime::spawn(async move {

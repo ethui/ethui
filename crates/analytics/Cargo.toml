@@ -11,12 +11,11 @@ authors.workspace = true
 [dependencies]
 ethui-types.workspace = true
 ethui-broadcast.workspace = true
+ethui-settings.workspace = true
 serde_json.workspace = true
 tauri.workspace = true
 tokio.workspace = true
-uuid = { version = "1.20", features = ["v8", "serde"] }
-mac_address = "1.1"
-hostname = "0.4"
+uuid = { version = "1.20", features = ["v4", "serde"] }
 tracing.workspace = true
 
 # Optional Aptabase support

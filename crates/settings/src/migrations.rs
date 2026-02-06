@@ -113,6 +113,9 @@ pub struct SettingsV2 {
     #[serde(default)]
     pub onboarding: Onboarding,
 
+    #[serde(default)]
+    pub analytics_id: Option<String>,
+
     version: ConstI64<2>,
 }
 
@@ -186,6 +189,7 @@ fn run_migrations(settings: Versions) -> Settings {
                     } else {
                         Onboarding::default()
                     },
+                    analytics_id: None,
                 });
             }
 
@@ -205,6 +209,7 @@ fn run_migrations(settings: Versions) -> Settings {
                     onboarding: v2.onboarding,
                     run_local_stacks: false,
                     check_for_updates: true,
+                    analytics_id: v2.analytics_id,
                 });
             }
 
@@ -274,6 +279,7 @@ impl Default for SettingsV2 {
             rust_log: "warn".into(),
             version: ConstI64,
             onboarding: Onboarding::default(),
+            analytics_id: None,
         }
     }
 }
