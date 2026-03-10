@@ -17,7 +17,9 @@ export function WalletEdit({ wallet }: { wallet: Wallet }) {
   };
 
   const onRemove = async () => {
-    invoke("wallets_remove", { name: wallet.name });
+    await invoke("wallets_remove", { name: wallet.name }).catch((err) =>
+      console.warn("Failed to remove wallet", err),
+    );
     navigate({ to: "/home/wallets" });
   };
 
