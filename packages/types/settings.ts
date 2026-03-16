@@ -15,17 +15,17 @@ export const onboardingSchema = z.object({
 
 export const generalSettingsSchema = z.object({
   darkMode: z.enum(["auto", "dark", "light"]),
-  autostart: z.boolean(),
-  abiWatch: z.boolean(),
   abiWatchPath: z.string().optional().nullable(),
   alchemyApiKey: z.string().optional().nullable(),
   etherscanApiKey: z.string().optional().nullable(),
   hideEmptyTokens: z.boolean(),
+  aliases: z.record(z.string()),
+  fastMode: z.boolean(),
+  autostart: z.boolean(),
   startMinimized: z.boolean(),
   checkForUpdates: z.boolean(),
-  fastMode: z.boolean(),
   onboarding: onboardingSchema,
-  rustLog: z.string().optional(),
+  rustLog: z.string(),
   runLocalStacks: z.boolean(),
 });
 
