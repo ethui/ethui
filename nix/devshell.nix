@@ -5,6 +5,7 @@
 let
   buildInputs = with pkgs; [
     openssl
+    libsodium
     webkitgtk_4_1
     gtk3
     cairo
