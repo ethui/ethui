@@ -9,7 +9,7 @@ import { Button } from "@ethui/ui/components/shadcn/button";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { invoke } from "@tauri-apps/api/core";
 import type { Address } from "abitype";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useFieldArray, useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
 import { useLedgerDetect } from "#/hooks/useLedgerDetect";
@@ -45,6 +45,7 @@ export function Ledger({ wallet, onSubmit, onRemove }: Props) {
     : defaultValues;
 
   const [addresses, setAddresses] = useState<Map<string, Address>>(new Map());
+  const addressesRef = useRef<Map<string, Address>>(addresses);
 
   const form = useForm({
     mode: "onBlur",
@@ -64,9 +65,15 @@ export function Ledger({ wallet, onSubmit, onRemove }: Props) {
   const paths = useWatch({ control: form.control, name: "paths" });
 
   useEffect(() => {
+    addressesRef.current = addresses;
+  }, [addresses]);
+
+  useEffect(() => {
+    let cancelled = false;
+
     (async () => {
       const newPaths = paths
-        .filter(({ path }) => path && !addresses.has(path))
+        .filter(({ path }) => path && !addressesRef.current.has(path))
         .map(({ path }) => path);
 
       if (newPaths.length === 0) return;
@@ -75,15 +82,21 @@ export function Ledger({ wallet, onSubmit, onRemove }: Props) {
         paths: newPaths,
       });
 
-      if (!addrs) return;
+      if (!addrs || cancelled) return;
 
-      for (const [path, address] of addrs) {
-        addresses.set(path, address);
-      }
-
-      setAddresses(new Map(addresses));
+      setAddresses((prev) => {
+        const next = new Map(prev);
+        for (const [path, address] of addrs) {
+          next.set(path, address);
+        }
+        return next;
+      });
     })();
-  }, [paths, addresses]);
+
+    return () => {
+      cancelled = true;
+    };
+  }, [paths]);
 
   const {
     fields: pathsFields,
