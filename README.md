@@ -4,7 +4,7 @@
 [good-first-issue]: https://github.com/naps62/ethui/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22
 [releases]: https://github.com/ethui/ethui/releases
 [prank-wallet]: https://ethglobal.com/showcase/prank-wallet-cgnb3
-[anvil]: https://book.getfoundry.sh/anvil/
+[anvil]: https://book.getFoundry.sh/anvil/
 [chrome-extension]: https://chrome.google.com/webstore/detail/ethui/eljobehkpcnpekmbcjiidekjhkbcnpkf
 [firefox-extension]: https://addons.mozilla.org/en-US/firefox/addon/ethui/
 
