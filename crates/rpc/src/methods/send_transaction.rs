@@ -50,12 +50,23 @@ impl Method for SendTransaction {
 
 impl SendTransaction {
     async fn estimate_gas(&mut self) -> &mut SendTransaction {
-        // TODO: we're defaulting to 1_000_000 gas cost if estimation fails
-        // estimation failing means the tx will fail anyway, so this is fine'ish
-        // but can probably be improved a lot in the future
-        let gas_limit = 1_000_000;
+        // Honor an explicit gas limit from the caller as-is.
+        if self.request.gas.is_some() {
+            return self;
+        }
 
-        self.request.set_gas_limit(gas_limit * 120 / 100);
+        // Otherwise ask the node and apply a 20% buffer. If estimation fails
+        // (usually meaning the tx would revert), fall back to a default and let
+        // it through so the user sees the on-chain error.
+        let estimate = match self.network.get_alloy_provider().await {
+            Ok(provider) => provider
+                .estimate_gas(self.request.clone())
+                .await
+                .unwrap_or(1_000_000),
+            Err(_) => 1_000_000,
+        };
+
+        self.request.set_gas_limit(estimate * 120 / 100);
         self
     }
 

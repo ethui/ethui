@@ -15,7 +15,7 @@ pub(crate) struct CallParams {
     to: Option<Address>,
     value: Option<U256>,
     data: Option<Bytes>,
-    gas: Option<u64>,
+    gas: Option<U256>,
 }
 
 impl CallParams {
@@ -53,7 +53,7 @@ impl From<CallParams> for TransactionRequest {
             request.set_input(data);
         }
         if let Some(gas) = params.gas {
-            request.set_gas_limit(gas);
+            request.set_gas_limit(gas.saturating_to::<u64>());
         }
 
         request
