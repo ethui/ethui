@@ -19,6 +19,9 @@
         overlays = [ (import rust) ];
         pkgs = import nixpkgs {
           inherit system overlays;
+          # Tauri v1 stack (webkitgtk_4_1 + libsoup_2_4) requires libsoup 2,
+          # which newer nixpkgs flags as EOL/insecure. We already depend on it.
+          config.permittedInsecurePackages = [ "libsoup-2.74.3" ];
         };
 
         # `minimal` (rustc + cargo + rust-std) keeps the build working while
