@@ -21,7 +21,10 @@
           inherit system overlays;
         };
 
-        rustToolchain = pkgs.rust-bin.nightly.latest.default.override {
+        # `minimal` (rustc + cargo + rust-std) keeps the build working while
+        # dropping rust-docs/clippy/rustfmt, which otherwise leak ~570MB of
+        # rust-docs into the runtime closure. Add only what the build needs.
+        rustToolchain = pkgs.rust-bin.nightly.latest.minimal.override {
           extensions = [ "rust-src" ];
         };
         rustNightly = pkgs.makeRustPlatform {
