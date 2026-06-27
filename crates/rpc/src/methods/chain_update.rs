@@ -1,42 +1,52 @@
+use ethui_connections::Ctx;
 use ethui_dialogs::{Dialog, DialogMsg};
-use ethui_networks::Networks;
-use ethui_types::{GlobalState, Network, NewNetworkParams};
-use serde::Serialize;
+use ethui_networks::{NetworksActorExt as _, networks};
+use ethui_types::{Json, Network, NewNetworkParams, U64};
+use jsonrpc_core::Params as RpcParams;
+use serde::{Deserialize, Serialize};
+use url::Url;
 
-use super::chain_add::Params;
-use crate::{Error, Result};
+use super::chain_add::Currency;
+use crate::{Error, Result, methods::Method, params::extract_single_param, utils};
 
-#[derive(Debug)]
-pub struct ChainUpdate {
-    network: Network,
-    new_network_params: Option<NewNetworkParams>,
+#[derive(Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
+struct NetworkSwitch {
+    old_id: u64,
+    new_id: u64,
 }
 
-impl ChainUpdate {
-    pub fn build() -> ChainUpdateBuilder {
-        ChainUpdateBuilder::default()
+#[derive(Debug, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub(crate) struct ChainUpdate {
+    chain_id: U64,
+    chain_name: String,
+    rpc_urls: Vec<Url>,
+    native_currency: Currency,
+    block_explorer_urls: Option<Vec<Url>>,
+}
+
+impl Method for ChainUpdate {
+    async fn build(params: RpcParams, _ctx: Ctx) -> Result<Self> {
+        Ok(serde_json::from_value(extract_single_param(params))?)
     }
 
-    pub async fn run(self) -> Result<()> {
-        if self.already_active().await {
-            return Ok(());
+    async fn run(self) -> Result<Json> {
+        let (network, new_network_params) = self.build_network().await?;
+
+        if self.already_active(&network).await {
+            return Ok(true.into());
         }
 
-        if !self.already_exists().await {
-            let add_dialog = Dialog::new(
-                "chain-add",
-                serde_json::to_value(&self.new_network_params).unwrap(),
-            );
+        if !self.already_exists(&network).await? {
+            let add_dialog = Dialog::new("chain-add", serde_json::to_value(&new_network_params)?);
             add_dialog.open().await?;
 
             while let Some(msg) = add_dialog.recv().await {
                 match msg {
                     DialogMsg::Data(msg) => {
                         if let Some("accept") = msg.as_str() {
-                            let mut networks = Networks::write().await;
-                            networks
-                                .add_network(self.new_network_params.clone().unwrap())
-                                .await?;
+                            networks().add(new_network_params.clone()).await?;
                             break;
                         }
                     }
@@ -45,18 +55,15 @@ impl ChainUpdate {
             }
         }
 
-        let switch_data = self.get_switch_data().await;
-        let switch_dialog = Dialog::new("chain-switch", serde_json::to_value(switch_data).unwrap());
+        let switch_data = self.get_switch_data(&network).await;
+        let switch_dialog = Dialog::new("chain-switch", serde_json::to_value(switch_data)?);
         switch_dialog.open().await?;
 
         while let Some(msg) = switch_dialog.recv().await {
             match msg {
                 DialogMsg::Data(msg) => {
                     if let Some("accept") = msg.as_str() {
-                        let mut networks = Networks::write().await;
-                        networks
-                            .set_current_by_dedup_chain_id(self.network.dedup_chain_id())
-                            .await?;
+                        networks().set_current(network.id()).await?;
                         break;
                     }
                 }
@@ -64,92 +71,65 @@ impl ChainUpdate {
             }
         }
 
-        Ok(())
-    }
-
-    pub async fn get_switch_data(&self) -> NetworkSwitch {
-        let networks = Networks::read().await;
-        let current_chain = networks.get_current();
-        NetworkSwitch {
-            old_id: current_chain.chain_id(),
-            new_id: self.network.chain_id(),
-        }
-    }
-
-    async fn already_active(&self) -> bool {
-        let networks = Networks::read().await;
-        networks.get_current().chain_id() == self.network.chain_id()
-    }
-
-    async fn already_exists(&self) -> bool {
-        let networks = Networks::read().await;
-        networks.get_network_by_name(&self.network.name).is_some()
+        Ok(Json::Null)
     }
 }
 
-#[derive(Debug, Serialize)]
-#[serde(rename_all = "camelCase")]
-pub struct NetworkSwitch {
-    pub old_id: u32,
-    pub new_id: u32,
-}
+impl ChainUpdate {
+    async fn build_network(&self) -> Result<(Network, NewNetworkParams)> {
+        let chain_name = self.chain_name.clone();
 
-#[derive(Default)]
-pub struct ChainUpdateBuilder {
-    params: Option<Params>,
-}
-
-impl ChainUpdateBuilder {
-    pub fn set_params(mut self, params: serde_json::Value) -> Result<Self> {
-        let params: serde_json::Value = if params.is_array() {
-            params.as_array().unwrap()[0].clone()
-        } else {
-            params
-        };
-
-        self.params = Some(serde_json::from_value(params)?);
-        Ok(self)
-    }
-
-    pub async fn build(self) -> ChainUpdate {
-        let networks = Networks::read().await;
-        let params = self.params.unwrap();
-        let chain_name = params.chain_name.clone();
-
-        let chain_id = TryInto::<u32>::try_into(params.chain_id).unwrap();
+        let chain_id = TryInto::<u64>::try_into(self.chain_id).map_err(|_| Error::ParseError)?;
         let new_network_params = NewNetworkParams {
             chain_id,
             name: chain_name.clone(),
-            explorer_url: params
+            explorer_url: self
                 .block_explorer_urls
+                .clone()
                 .unwrap_or_default()
                 .first()
                 .map(|u| u.to_string()),
-            http_url: params
+            http_url: self
                 .rpc_urls
                 .iter()
                 .find(|s| s.scheme().starts_with("http"))
                 .cloned()
                 .expect("http url not found"),
-            ws_url: params
+            ws_url: self
                 .rpc_urls
                 .iter()
                 .find(|s| s.scheme().starts_with("ws"))
                 .cloned(),
-            currency: params.native_currency.symbol,
-            decimals: params.native_currency.decimals as u32,
+            currency: self.native_currency.symbol.clone(),
+            decimals: self.native_currency.decimals as u32,
             is_stack: false,
         };
 
-        let deduplication_id = networks
-            .get_network_by_name(&chain_name)
-            .map(|network| network.dedup_chain_id().dedup_id());
+        let dedup_id = networks()
+            .get(chain_name)
+            .await?
+            .map(|network| network.id().dedup_id())
+            .unwrap_or(0);
 
-        ChainUpdate {
-            network: new_network_params
-                .clone()
-                .into_network(deduplication_id.unwrap_or_default()),
-            new_network_params: Some(new_network_params),
+        Ok((
+            new_network_params.clone().into_network(dedup_id),
+            new_network_params,
+        ))
+    }
+
+    async fn get_switch_data(&self, network: &Network) -> NetworkSwitch {
+        let current_chain = utils::get_current_network().await;
+        NetworkSwitch {
+            old_id: current_chain.chain_id(),
+            new_id: network.chain_id(),
         }
+    }
+
+    async fn already_active(&self, network: &Network) -> bool {
+        utils::get_current_network().await.chain_id() == network.chain_id()
+    }
+
+    async fn already_exists(&self, network: &Network) -> Result<bool> {
+        Ok(networks().get(network.name.clone()).await?.is_some())
     }
 }

@@ -4,11 +4,9 @@ use tauri::{AppHandle, Manager};
 use crate::track_event;
 
 pub async fn init(handle: &AppHandle) {
-    
     let analytics = crate::Analytics::instance();
     handle.manage(analytics);
-    
-    
+
     let handle = handle.clone();
     tauri::async_runtime::spawn(async move {
         receiver(handle).await;
@@ -24,7 +22,7 @@ async fn receiver(handle: AppHandle) -> ! {
             internal_msg = internal_rx.recv() => {
                 if let Ok(msg) = internal_msg {
                     use InternalMsg::*;
-                    
+
                     match msg {
                         PeerAdded => {
                             let _ = track_event(&handle, "peer_added", None);
@@ -46,11 +44,11 @@ async fn receiver(handle: AppHandle) -> ! {
                     }
                 }
             }
-            
+
             ui_msg = ui_rx.recv() => {
                 if let Ok(msg) = ui_msg {
                     use UIMsg::*;
-                    
+
                     if let DialogOpen(params) = msg {
                         let mut properties = std::collections::HashMap::new();
                         properties.insert("title".to_string(), params.title.into());

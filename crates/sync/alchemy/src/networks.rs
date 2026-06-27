@@ -10,8 +10,8 @@ pub struct Network {
     pub default_from_block: u64,
 }
 
-pub static NETWORKS: Lazy<HashMap<u32, Network>> = Lazy::new(|| {
-    let mut map: HashMap<u32, Network> = Default::default();
+pub static NETWORKS: Lazy<HashMap<u64, Network>> = Lazy::new(|| {
+    let mut map: HashMap<u64, Network> = Default::default();
 
     map.insert(
         1,
@@ -128,22 +128,22 @@ pub static NETWORKS: Lazy<HashMap<u32, Network>> = Lazy::new(|| {
     map
 });
 
-pub fn supports_network(chain_id: u32) -> bool {
+pub fn supports_network(chain_id: u64) -> bool {
     NETWORKS.get(&chain_id).is_some()
 }
 
-pub fn get_network(chain_id: &u32) -> Option<Network> {
+pub fn get_network(chain_id: &u64) -> Option<Network> {
     NETWORKS.get(chain_id).cloned()
 }
 
-pub fn default_from_block(chain_id: u32) -> u64 {
+pub fn default_from_block(chain_id: u64) -> u64 {
     NETWORKS
         .get(&chain_id)
         .map(|network| network.default_from_block)
         .unwrap_or(0)
 }
 
-pub fn get_endpoint(chain_id: u32, path: &str, api_key: &str) -> color_eyre::Result<reqwest::Url> {
+pub fn get_endpoint(chain_id: u64, path: &str, api_key: &str) -> color_eyre::Result<reqwest::Url> {
     let endpoint = match get_network(&chain_id) {
         Some(network) => network.base_url,
         None => return Err(eyre!("Unsupported chain id: {}", chain_id)),

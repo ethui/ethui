@@ -2,6 +2,7 @@
 
 use std::time::Duration;
 
+use ethui_settings::{SettingsActorExt as _, settings};
 use ethui_types::UINotify;
 use tauri_plugin_updater::UpdaterExt as _;
 use tokio::time::interval;
@@ -13,12 +14,14 @@ pub(crate) fn spawn(handle: tauri::AppHandle) {
 
         loop {
             interval.tick().await;
-            
-            let check_for_updates = ethui_settings::ask(ethui_settings::GetAll)
+
+            let check_for_updates = settings()
+                .get_all()
                 .await
+                .ok()
                 .map(|s| s.check_for_updates)
                 .unwrap_or(true);
-            
+
             if check_for_updates {
                 let _ = update(&handle).await;
             }
@@ -29,7 +32,7 @@ pub(crate) fn spawn(handle: tauri::AppHandle) {
 #[instrument(level = "info", skip_all)]
 async fn update(handle: &tauri::AppHandle) -> color_eyre::Result<()> {
     if let Some(update) = handle.updater()?.check().await? {
-        let mut downloaded = 0;
+        let mut downloaded: usize = 0;
         let mut last_percent = -0.1;
 
         update
@@ -37,8 +40,7 @@ async fn update(handle: &tauri::AppHandle) -> color_eyre::Result<()> {
                 |chunk_length, content_length| {
                     downloaded += chunk_length;
                     if let Some(length) = content_length {
-                        notify_download_progress(downloaded as f64 / length as f64, last_percent);
-                        last_percent += 0.1;
+                        notify_download_progress(downloaded, length as usize, &mut last_percent);
                     }
                 },
                 || info!(percent = 100.),
@@ -54,11 +56,17 @@ async fn update(handle: &tauri::AppHandle) -> color_eyre::Result<()> {
     Ok(())
 }
 
-fn notify_download_progress(percent: f64, last_percent: f64) {
-    if percent > last_percent {
+fn notify_download_progress(downloaded: usize, length: usize, last_percent: &mut f64) {
+    if length == 0 {
+        return;
+    }
+
+    let percent = downloaded as f64 / length as f64;
+    if percent >= *last_percent + 0.1 || percent >= 1.0 {
+        *last_percent = percent;
         info!(
             progress = format!("{:.0}%", percent * 100.),
-            mbs = percent / 1024. / 1024.
+            mbs = downloaded as f64 / 1024. / 1024.
         );
     }
 }

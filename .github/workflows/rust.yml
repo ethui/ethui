@@ -97,6 +97,8 @@ jobs:
           shared-key: "debug"
           save-if: ${{ github.ref == 'refs/heads/main' }}
 
+      - run: cargo fmt --check
+
       - name: Stub frontend build dir
         run: mkdir gui/dist
 

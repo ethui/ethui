@@ -5,9 +5,9 @@
 //! Encrypted secrets are secured by a password. We use Argon2 to derive a key from it, and then
 //! the ChaCha20poly1305 scheme to encrypt the data.
 
-use aead::{rand_core::RngCore as _, KeyInit, OsRng};
+use aead::{KeyInit, OsRng, rand_core::RngCore as _};
 use chacha20poly1305::XChaCha20Poly1305;
-use color_eyre::{eyre::eyre, Result};
+use color_eyre::{Result, eyre::eyre};
 use zeroize::Zeroize;
 
 #[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]

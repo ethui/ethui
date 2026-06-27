@@ -1,10 +1,10 @@
 use alloy::{
     network::Network,
-    primitives::{b256, Address, B256},
+    primitives::{Address, B256, b256},
     providers::Provider,
 };
 
-use crate::{error::DetectProxyResult, utils::storage_slot_as_address, ProxyType};
+use crate::{ProxyType, error::DetectProxyResult, utils::storage_slot_as_address};
 
 const OPEN_ZEPPELIN_PREFIX: B256 =
     b256!("7050c9e0f4ca769c69bd3a8ef740bc37934f8e2c036e5a723fd8ee048ed3f8c3");

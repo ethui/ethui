@@ -67,21 +67,25 @@ export function ERC20View({
       <div className="flex">
         {contract && (
           <Button variant="ghost" size="icon" asChild>
-            <Link to="/home/transfer/erc20" search={{ contract }}>
+            <Link
+              to="/home/transfer/erc20"
+              search={{ contract }}
+              aria-label="Send token"
+            >
               <ArrowTopRightIcon />
             </Link>
           </Button>
         )}
         {!contract && (
           <Button variant="ghost" size="icon" asChild>
-            <Link to="/home/transfer/eth">
+            <Link to="/home/transfer/eth" aria-label="Send ETH">
               <ArrowTopRightIcon />
             </Link>
           </Button>
         )}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon">
+            <Button variant="ghost" size="icon" aria-label="Token actions">
               <DotsVerticalIcon />
             </Button>
           </DropdownMenuTrigger>

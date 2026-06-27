@@ -11,7 +11,7 @@ export default defineConfig(() => ({
     react(),
     tailwindcss(),
     tanstackRouter({ autoCodeSplitting: true }),
-    tsconfigPaths({ parseNative: true }),
+    tsconfigPaths(),
   ],
 
   // Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`

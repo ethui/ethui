@@ -2,40 +2,124 @@ use std::str::FromStr;
 
 use alloy::{
     dyn_abi::TypedData,
+    hex,
     primitives::{Bytes, Signature},
     signers::Signer as _,
 };
+use ethui_connections::Ctx;
 use ethui_dialogs::{Dialog, DialogMsg};
-use ethui_settings::GetAll;
-use ethui_types::Network;
+use ethui_settings::{SettingsActorExt as _, settings};
+use ethui_types::{Address, Json, Network};
 use ethui_wallets::{Signer, Wallet, WalletControl};
+use jsonrpc_core::Params as RpcParams;
 use serde::Serialize;
 
-use crate::{Error, Result};
+use crate::{Error, Result, methods::Method};
 
-/// Orchestrates message signing
-/// Takes references to both the wallet and network
-pub struct SignMessage<'a> {
-    pub wallet: &'a Wallet,
-    pub wallet_path: String,
-    pub network: Network,
-    data: Data,
+#[derive(Serialize, Debug)]
+#[serde(rename_all = "camelCase")]
+enum SignData {
+    Raw(String),
+    Typed(Box<TypedData>),
 }
 
-impl<'a> SignMessage<'a> {
-    pub fn build() -> SignMessageBuilder<'a> {
-        Default::default()
+/// Handler for eth_sign / personal_sign
+pub(crate) struct EthSign {
+    inner: SignMessage,
+}
+
+impl Method for EthSign {
+    async fn build(params: RpcParams, ctx: Ctx) -> Result<Self> {
+        // Params format: [message, address]
+        let params: Vec<Option<String>> = params.parse()?;
+        let message = params
+            .first()
+            .and_then(|v| v.clone())
+            .ok_or(Error::ParseError)?;
+        // TODO: use address to verify it matches the wallet
+        let _address = params
+            .get(1)
+            .and_then(|v| v.as_ref())
+            .and_then(|s| Address::from_str(s).ok())
+            .ok_or(Error::ParseError)?;
+
+        let wallet = ethui_wallets::get_current_wallet().await;
+        let wallet_path = wallet.get_current_path();
+        let network = ctx.network().await;
+
+        Ok(Self {
+            inner: SignMessage {
+                wallet,
+                wallet_path,
+                network,
+                data: SignData::Raw(message),
+            },
+        })
     }
 
+    async fn run(mut self) -> Result<Json> {
+        let result = self.inner.finish().await?;
+        Ok(format!("0x{}", hex::encode(result.as_bytes())).into())
+    }
+}
+
+/// Handler for eth_signTypedData / eth_signTypedData_v4
+pub(crate) struct EthSignTypedData {
+    inner: SignMessage,
+}
+
+impl Method for EthSignTypedData {
+    async fn build(params: RpcParams, ctx: Ctx) -> Result<Self> {
+        // Params format: [address, typed_data_json]
+        let params: Vec<Option<String>> = params.parse()?;
+        // TODO: use address to verify it matches the wallet
+        let _address = params
+            .first()
+            .and_then(|v| v.as_ref())
+            .and_then(|s| Address::from_str(s).ok());
+        let typed_data_str = params
+            .get(1)
+            .and_then(|v| v.clone())
+            .ok_or(Error::ParseError)?;
+        let typed_data: TypedData = serde_json::from_str(&typed_data_str)?;
+
+        let wallet = ethui_wallets::get_current_wallet().await;
+        let wallet_path = wallet.get_current_path();
+        let network = ctx.network().await;
+
+        Ok(Self {
+            inner: SignMessage {
+                wallet,
+                wallet_path,
+                network,
+                data: SignData::Typed(Box::new(typed_data)),
+            },
+        })
+    }
+
+    async fn run(mut self) -> Result<Json> {
+        let result = self.inner.finish().await?;
+        Ok(format!("0x{}", hex::encode(result.as_bytes())).into())
+    }
+}
+
+/// Orchestrates message signing (internal implementation)
+struct SignMessage {
+    wallet: Wallet,
+    wallet_path: String,
+    network: Network,
+    data: SignData,
+}
+
+impl SignMessage {
     pub async fn finish(&mut self) -> Result<Signature> {
-        let skip = {
-            self.network.is_dev().await && self.wallet.is_dev() && {
-                let settings = ethui_settings::ask(GetAll)
-                    .await
-                    .expect("Failed to get settings");
-                settings.fast_mode
-            }
-        };
+        let skip = self.network.is_dev().await?
+            && self.wallet.is_dev()
+            && settings()
+                .get_all()
+                .await
+                .expect("Failed to get settings")
+                .fast_mode;
 
         if !skip {
             self.spawn_dialog().await?;
@@ -67,74 +151,21 @@ impl<'a> SignMessage<'a> {
     }
 
     pub async fn sign(&mut self) -> Result<Signature> {
-        let signer = self.build_signer().await;
+        let signer = self.build_signer().await?;
 
         match self.data {
-            Data::Raw(ref msg) => {
+            SignData::Raw(ref msg) => {
                 let bytes = Bytes::from_str(msg).unwrap();
                 Ok(signer.sign_message(&bytes).await?)
             }
-            Data::Typed(ref data) => Ok(signer.sign_dynamic_typed_data(data).await?),
+            SignData::Typed(ref data) => Ok(signer.sign_dynamic_typed_data(data).await?),
         }
     }
 
-    async fn build_signer(&self) -> Signer {
+    async fn build_signer(&self) -> Result<Signer> {
         self.wallet
             .build_signer(self.network.chain_id(), &self.wallet_path)
             .await
-            .unwrap()
-    }
-}
-
-#[derive(Serialize, Debug)]
-#[serde(rename_all = "camelCase")]
-enum Data {
-    Raw(String),
-    Typed(Box<TypedData>),
-}
-
-#[derive(Default)]
-pub struct SignMessageBuilder<'a> {
-    pub wallet: Option<&'a Wallet>,
-    pub wallet_path: Option<String>,
-    pub network: Option<Network>,
-    data: Option<Data>,
-}
-
-impl<'a> SignMessageBuilder<'a> {
-    pub fn set_wallet(mut self, wallet: &'a Wallet) -> SignMessageBuilder<'a> {
-        self.wallet = Some(wallet);
-        self
-    }
-
-    pub fn set_wallet_path(mut self, wallet_path: String) -> SignMessageBuilder<'a> {
-        self.wallet_path = Some(wallet_path);
-        self
-    }
-
-    pub fn set_network(mut self, network: Network) -> SignMessageBuilder<'a> {
-        self.network = Some(network);
-        self
-    }
-
-    pub fn set_string_data(mut self, msg: String) -> SignMessageBuilder<'a> {
-        self.data = Some(Data::Raw(msg));
-        self
-    }
-
-    pub fn set_typed_data(mut self, data: TypedData) -> SignMessageBuilder<'a> {
-        self.data = Some(Data::Typed(Box::new(data)));
-        self
-    }
-
-    pub fn build(self) -> SignMessage<'a> {
-        tracing::debug!("building SendTransaction");
-
-        SignMessage {
-            wallet: self.wallet.unwrap(),
-            wallet_path: self.wallet_path.unwrap(),
-            network: self.network.unwrap(),
-            data: self.data.unwrap(),
-        }
+            .map_err(|e| Error::SignerBuild(e.to_string()))
     }
 }

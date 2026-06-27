@@ -1,4 +1,4 @@
-use ethui_types::{events::Tx, prelude::*, TokenMetadata};
+use ethui_types::{TokenMetadata, events::Tx, prelude::*};
 
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]

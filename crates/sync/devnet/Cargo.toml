@@ -1,0 +1,35 @@
+[package]
+name = "ethui-sync-devnet"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+homepage.workspace = true
+repository.workspace = true
+exclude.workspace = true
+authors.workspace = true
+
+[[bin]]
+name = "devnet-sync-test"
+path = "src/bin/devnet-sync-test.rs"
+
+[dependencies]
+ethui-db.workspace = true
+ethui-abis.workspace = true
+ethui-types.workspace = true
+ethui-broadcast.workspace = true
+ethui-proxy-detect.workspace = true
+
+alloy.workspace = true
+tokio.workspace = true
+serde_json.workspace = true
+color-eyre.workspace = true
+once_cell.workspace = true
+tracing.workspace = true
+tracing-subscriber = "0.3"
+url.workspace = true
+futures.workspace = true
+clap.workspace = true
+reqwest = { version = "0.12", features = ["json"] }
+
+[dev-dependencies]
+serial_test = "3.0"

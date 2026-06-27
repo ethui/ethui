@@ -2,6 +2,7 @@ import type { GeneralSettings } from "@ethui/types/settings";
 import { event } from "@tauri-apps/api";
 import { invoke } from "@tauri-apps/api/core";
 import { create, type StateCreator } from "zustand";
+import { createHmrListenerTracker } from "./hmrListeners";
 
 interface Store {
   mode: "auto" | "light" | "dark";
@@ -39,11 +40,13 @@ const store: StateCreator<Store> = (set, get) => ({
   },
 });
 
-event.listen("settings-changed", async () => {
-  await useTheme.getState().reload();
-});
-
 export const useTheme = create<Store>()(store);
+
+const trackListener = createHmrListenerTracker();
+
+trackListener(
+  event.listen("settings-changed", () => useTheme.getState().reload()),
+);
 
 (async () => {
   await useTheme.getState().reload();

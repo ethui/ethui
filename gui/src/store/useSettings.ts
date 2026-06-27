@@ -3,6 +3,7 @@ import { event } from "@tauri-apps/api";
 import { invoke } from "@tauri-apps/api/core";
 import { create, type StateCreator } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
+import { createHmrListenerTracker } from "./hmrListeners";
 
 interface Store {
   settings?: GeneralSettings;
@@ -27,8 +28,12 @@ const store: StateCreator<Store> = (set) => ({
 
 export const useSettings = create<Store>()(subscribeWithSelector(store));
 
-event.listen("settings-changed", () => {
-  useSettings.getState().reload();
-});
+const trackListener = createHmrListenerTracker();
+
+trackListener(
+  event.listen("settings-changed", () => {
+    useSettings.getState().reload();
+  }),
+);
 
 useSettings.getState().reload();

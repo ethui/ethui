@@ -5,14 +5,14 @@ procs:
     cmd: ["anvil", "--host", "0.0.0.0"]
   demo/web:
     cwd: "../demo"
-    cmd: ["sh", "-c", "[ -f package.json ] && yarn dev || echo '../demo not found'"]
+    cmd: ["yarn", "dev"]
   demo/contracts:
     cwd: "../demo"
-    cmd: ["sh", "-c", "[ -f package.json ] && yarn eth-watch || echo '../demo not found'"]
+    cmd: ["yarn", "eth-watch"]
   ui/storybook:
     cwd: "../ui"
-    cmd: ["sh", "-c", "[ -f package.json ] && yarn dev || echo '../ui not found'"]
+    cmd: ["yarn", "dev"]
   explorer:
     cwd: "../explorer"
-    cmd: ["sh", "-c", "[ -f package.json ] && yarn dev || echo '../explorer not found'"]
+    cmd: ["yarn", "dev"]
 

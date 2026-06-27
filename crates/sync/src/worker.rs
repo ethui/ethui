@@ -16,9 +16,9 @@ use crate::{Msg, utils};
 #[derive(Debug)]
 pub struct Worker {
     addresses: HashSet<Address>,
-    chain_ids: HashSet<u32>,
-    current: (Option<Address>, Option<u32>),
-    workers: HashMap<(Address, u32), (JoinHandle<()>, mpsc::UnboundedSender<()>)>,
+    chain_ids: HashSet<u64>,
+    current: (Option<Address>, Option<u64>),
+    workers: HashMap<(Address, u64), (JoinHandle<()>, mpsc::UnboundedSender<()>)>,
 }
 
 impl Worker {
@@ -72,7 +72,7 @@ impl Worker {
 
     /// creates a new worker per addr for this chain_id
     #[instrument(skip(self), level = "trace")]
-    fn track_network(&mut self, chain_id: u32) {
+    fn track_network(&mut self, chain_id: u64) {
         if ethui_sync_alchemy::supports_network(chain_id) {
             self.chain_ids.insert(chain_id);
             for addr in self.addresses.iter() {
@@ -84,9 +84,9 @@ impl Worker {
 
     /// drops all existing workers for this chain_id
     #[instrument(skip(self), level = "trace")]
-    fn untrack_network(&mut self, chain_id: u32) {
+    fn untrack_network(&mut self, chain_id: u64) {
         self.chain_ids.remove(&chain_id);
-        self.workers.retain(|(_, c), _| c != &chain_id);
+        self.workers.retain(|(_, c), _| *c != chain_id);
     }
 
     /// replaces worker for this addr & current chain_id with a priority one
@@ -103,7 +103,7 @@ impl Worker {
 
     /// replaces worker for this chain_id & current addr with a priority one
     #[instrument(skip(self), level = "trace")]
-    fn prioritize_network(&mut self, chain_id: u32) {
+    fn prioritize_network(&mut self, chain_id: u64) {
         if ethui_sync_alchemy::supports_network(chain_id) {
             self.current.1 = Some(chain_id);
 
@@ -115,7 +115,7 @@ impl Worker {
         }
     }
 
-    fn spawn(&self, addr: Address, chain_id: u32) -> (JoinHandle<()>, mpsc::UnboundedSender<()>) {
+    fn spawn(&self, addr: Address, chain_id: u64) -> (JoinHandle<()>, mpsc::UnboundedSender<()>) {
         let (tx, rx) = mpsc::unbounded_channel();
 
         (
@@ -145,7 +145,7 @@ impl Worker {
     #[instrument(skip(self), level = "trace")]
     fn fetch_full_tx_sync(
         &self,
-        chain_id: u32,
+        chain_id: u64,
         hash: B256,
         oneshot: Arc<Mutex<Option<oneshot::Sender<()>>>>,
     ) {
@@ -167,7 +167,7 @@ impl Worker {
         });
     }
 
-    fn fetch_erc20_metadata(&self, chain_id: u32, address: Address) {
+    fn fetch_erc20_metadata(&self, chain_id: u64, address: Address) {
         tokio::spawn(async move {
             if ethui_sync_alchemy::supports_network(chain_id) {
                 let _ = utils::fetch_erc20_metadata(chain_id, address).await;
@@ -183,7 +183,7 @@ impl Worker {
 #[instrument(skip(rx), level = "trace")]
 async fn unit_worker(
     addr: Address,
-    chain_id: u32,
+    chain_id: u64,
     mut rx: mpsc::UnboundedReceiver<()>,
 ) -> Result<()> {
     loop {
@@ -201,7 +201,7 @@ async fn unit_worker(
     }
 }
 
-async fn get_alchemy(chain_id: u32) -> Result<ethui_sync_alchemy::Alchemy> {
+async fn get_alchemy(chain_id: u64) -> Result<ethui_sync_alchemy::Alchemy> {
     let api_key = match ethui_sync_alchemy::get_current_api_key().await {
         Ok(Some(api_key)) => api_key,
         _ => return Err(eyre!("No API key")),

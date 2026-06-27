@@ -1,12 +1,12 @@
 use alloy::signers::{
-    local::{coins_bip39::English, MnemonicBuilder},
     Signer as _,
+    local::{MnemonicBuilder, coins_bip39::English},
 };
 use async_trait::async_trait;
 use coins_bip32::path::DerivationPath;
 use ethui_types::prelude::*;
 
-use crate::{utils, wallet::WalletCreate, Signer, Wallet, WalletControl};
+use crate::{Signer, Wallet, WalletControl, utils, wallet::WalletCreate};
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(try_from = "Deserializer", rename_all = "camelCase")]
@@ -14,7 +14,7 @@ pub struct PlaintextWallet {
     name: String,
     mnemonic: String,
     derivation_path: String,
-    count: u32,
+    count: usize,
     current_path: String,
 }
 
@@ -70,13 +70,13 @@ impl WalletControl for PlaintextWallet {
         true
     }
 
-    async fn build_signer(&self, chain_id: u32, path: &str) -> color_eyre::Result<Signer> {
+    async fn build_signer(&self, chain_id: u64, path: &str) -> color_eyre::Result<Signer> {
         let signer = MnemonicBuilder::<English>::default()
             .phrase(&self.mnemonic)
             .derivation_path(path)?
             .build()
             .map(|mut v| {
-                v.set_chain_id(Some(chain_id.into()));
+                v.set_chain_id(Some(chain_id));
                 v
             })?;
 
@@ -106,7 +106,7 @@ struct Deserializer {
     name: String,
     mnemonic: String,
     derivation_path: String,
-    count: u32,
+    count: usize,
     current_path: Option<String>,
 }
 

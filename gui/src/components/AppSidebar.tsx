@@ -86,6 +86,7 @@ export function AppSidebar() {
                 icon={<Globe />}
                 title="Explorer"
                 items={getExplorerItems(isAnvilNetwork)}
+                defaultOpen={true}
               />
               <CollapsibleMenuSection
                 icon={<Cog />}
@@ -143,17 +144,19 @@ interface CollapsibleMenuSectionProps {
   icon: React.ReactNode;
   title: string;
   items: Array<{ title: string; url: string }>;
+  defaultOpen?: boolean;
 }
 
 function CollapsibleMenuSection({
   icon,
   title,
   items,
+  defaultOpen = false,
 }: CollapsibleMenuSectionProps) {
   const location = useLocation();
 
   return (
-    <Collapsible className="group/collapsible">
+    <Collapsible className="group/collapsible" defaultOpen={defaultOpen}>
       <SidebarMenuItem>
         <CollapsibleTrigger asChild className="cursor-pointer">
           <SidebarMenuButton>

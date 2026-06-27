@@ -55,17 +55,9 @@ pub struct ForgeTest {
 }
 
 const fn default_ws_port() -> u16 {
-    if cfg!(debug_assertions) {
-        9102
-    } else {
-        9002
-    }
+    if cfg!(debug_assertions) { 9102 } else { 9002 }
 }
 
 const fn default_stacks_port() -> u16 {
-    if cfg!(debug_assertions) {
-        9110
-    } else {
-        9010
-    }
+    if cfg!(debug_assertions) { 9110 } else { 9010 }
 }

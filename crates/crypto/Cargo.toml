@@ -16,7 +16,7 @@ color-eyre.workspace = true
 chacha20poly1305 = "0.10.1"
 rust-argon2 = "3.0"
 aead = { version = "0.5.2", features = ["stream"], default-features = false }
-zeroize = "1.8"
+zeroize.workspace = true
 
 [package.metadata.cargo-machete]
 ignored = ["rust-argon2"]

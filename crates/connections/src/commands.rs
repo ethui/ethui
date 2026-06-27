@@ -1,5 +1,5 @@
-use ethui_networks::Networks;
-use ethui_types::{prelude::*, Affinity};
+use ethui_networks::{NetworksActorExt as _, networks};
+use ethui_types::{Affinity, prelude::*};
 
 use crate::Store;
 
@@ -10,21 +10,22 @@ pub async fn connections_affinity_for(domain: String) -> Affinity {
 
 #[tauri::command]
 pub async fn connections_set_affinity(domain: &str, affinity: Affinity) -> TauriResult<()> {
-    let dedup_chain_id = match affinity {
-        Affinity::Sticky(dedup_chain_id) => {
-            let chain_id = dedup_chain_id.chain_id();
+    let networks = networks();
+    let id = match affinity {
+        Affinity::Sticky(id) => {
+            let chain_id = id.chain_id();
 
-            if !Networks::read().await.validate_chain_id(chain_id) {
+            if !networks.validate_chain_id(chain_id).await? {
                 return Err(eyre!("Invalid chain ID {chain_id}").into());
             }
 
-            dedup_chain_id
+            id
         }
-        _ => Networks::read().await.get_current().dedup_chain_id(),
+        _ => networks.get_current().await?.id(),
     };
 
     Store::write().await.set_affinity(domain, affinity)?;
-    ethui_broadcast::chain_changed(dedup_chain_id, Some(domain.into()), affinity).await;
+    ethui_broadcast::chain_changed(id, Some(domain.into()), affinity).await;
 
     Ok(())
 }

@@ -2,8 +2,11 @@ mod id;
 
 use alloy::{
     network::Ethereum,
-    providers::{Provider, ProviderBuilder, RootProvider, ext::AnvilApi},
-    rpc::{client::ClientBuilder, types::anvil::ForkedNetwork},
+    providers::{Provider, ProviderBuilder, RootProvider},
+    rpc::{
+        client::ClientBuilder,
+        types::anvil::{ForkedNetwork, Metadata},
+    },
     transports::layers::RetryBackoffLayer,
 };
 pub use id::NetworkId;
@@ -12,7 +15,7 @@ use url::Url;
 
 use crate::prelude::*;
 
-#[derive(Debug, Deserialize, Serialize, Clone)]
+#[derive(Debug, Deserialize, Serialize, Clone, kameo::Reply)]
 pub struct Network {
     // previously named "dedup_chain_id"
     // aliasing allows for backwards compatibility without needing a migration
@@ -89,35 +92,50 @@ impl Network {
         vec![Self::anvil(0), Self::mainnet(0), Self::sepolia(0)]
     }
 
-    pub fn dedup_chain_id(&self) -> NetworkId {
+    pub fn id(&self) -> NetworkId {
         self.id
     }
 
-    pub fn chain_id(&self) -> u32 {
+    pub fn chain_id(&self) -> u64 {
         self.id.chain_id()
+    }
+
+    pub fn dedup_id(&self) -> u64 {
+        self.id.dedup_id()
     }
 
     pub fn chain_id_hex(&self) -> String {
         format!("0x{:x}", self.chain_id())
     }
 
-    pub async fn is_dev(&self) -> bool {
+    pub async fn is_dev(&self) -> color_eyre::Result<bool> {
         if self.is_stack {
-            return true;
+            return Ok(true);
         }
 
         if self.chain_id() == 31337 {
-            return true;
+            return Ok(true);
         }
 
-        let provider = self.get_alloy_provider().await.unwrap();
+        let provider = self.get_alloy_provider().await?;
         // TODO cache node_info for entire chain
-        self.chain_id() == 31337 || provider.anvil_node_info().await.is_ok()
+        Ok(self.chain_id() == 31337
+            || provider
+                .client()
+                .request::<(), serde_json::Value>("hardhat_metadata", ())
+                .await
+                .is_ok())
     }
 
     pub async fn get_forked_network(&self) -> color_eyre::Result<Option<ForkedNetwork>> {
         let provider = self.get_alloy_provider().await?;
-        Ok(provider.anvil_metadata().await?.forked_network)
+
+        // hardhat_metadata is aliased to anvil_metadata on anvil
+        Ok(provider
+            .client()
+            .request::<(), Metadata>("hardhat_metadata", ())
+            .await?
+            .forked_network)
     }
 
     pub async fn get_alloy_provider(&self) -> color_eyre::Result<RootProvider<Ethereum>> {

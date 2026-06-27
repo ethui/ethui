@@ -4,9 +4,9 @@ use ethui_db::{
     Db,
     utils::{fetch_etherscan_abi, fetch_etherscan_contract_name},
 };
-use ethui_forge::GetAbiFor;
 use ethui_proxy_detect::ProxyType;
-use ethui_types::{Address, GlobalState, TauriResult, UINotify};
+use ethui_sol_artifacts::{SolArtifactsActorExt as _, sol_artifacts};
+use ethui_types::{Address, TauriResult, UINotify};
 use serde::Serialize;
 
 #[derive(Serialize)]
@@ -44,11 +44,7 @@ pub async fn add_contract(
     address: Address,
     db: tauri::State<'_, Db>,
 ) -> TauriResult<()> {
-    let networks = ethui_networks::Networks::read().await;
-
-    let network = networks
-        .get_network(chain_id as u32)
-        .wrap_err_with(|| format!("Invalid network {chain_id}"))?;
+    let network = ethui_networks::get_network(chain_id).await?;
     let provider = network.get_alloy_provider().await?;
 
     let code = provider
@@ -63,7 +59,7 @@ pub async fn add_contract(
     let (name, abi) = if let Some(ProxyType::Eip1167(_)) = proxy {
         // if it's an EIP1167 proxy, there's no ABI to fetch
         (Some("EIP1167".into()), None)
-    } else if let Some(abi) = ethui_forge::ask(GetAbiFor(code.clone())).await? {
+    } else if let Some(abi) = sol_artifacts().get_abi_for(code.clone()).await? {
         // if we have a local match, use that
         (
             Some(abi.name),
@@ -76,7 +72,7 @@ pub async fn add_contract(
                 .await?
                 .map(|abi| serde_json::to_string(&abi).unwrap()),
         )
-    } else if !network.is_dev().await {
+    } else if !network.is_dev().await? {
         (
             fetch_etherscan_contract_name(chain_id.into(), address).await?,
             fetch_etherscan_abi(chain_id.into(), address)
@@ -109,7 +105,7 @@ pub async fn add_contract(
 
 #[tauri::command]
 pub async fn remove_contract(
-    chain_id: u32,
+    chain_id: u64,
     dedup_id: i32,
     address: Address,
     db: tauri::State<'_, Db>,

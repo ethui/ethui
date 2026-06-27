@@ -107,9 +107,13 @@ function Inner({ dialog, request, network }: InnerProps) {
   });
 
   useEffect(() => {
-    listen<Simulation>("simulation-result", ({ payload }) => {
+    const unlisten = listen<Simulation>("simulation-result", ({ payload }) => {
       setSimulation(payload);
     });
+
+    return () => {
+      unlisten.then((cb) => cb());
+    };
   }, [listen]);
 
   useEffect(() => {

@@ -1,10 +1,10 @@
 use alloy::{
     network::Network,
-    primitives::{bytes, Address, Bytes},
+    primitives::{Address, Bytes, bytes},
     providers::Provider,
 };
 
-use crate::{error::DetectProxyResult, ProxyType};
+use crate::{ProxyType, error::DetectProxyResult};
 
 const EIP1167_PREFIX: Bytes = bytes!("363d3d373d3d3d363d");
 const EIP1167_SUFFIX: Bytes = bytes!("57fd5bf3");

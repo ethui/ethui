@@ -2,8 +2,14 @@ use std::path::PathBuf;
 
 use ethui_args::Args;
 use ethui_broadcast::UIMsg;
+use ethui_settings::{SettingsActorExt as _, settings};
+#[cfg(feature = "stacks")]
+use ethui_stacks::actor::{StacksActorExt as _, try_stacks};
 use named_lock::NamedLock;
-use tauri::{AppHandle, Builder, Emitter as _, Manager as _, Runtime, plugin::TauriPlugin};
+use tauri::{AppHandle, Builder, Emitter as _, Manager as _};
+#[cfg(feature = "aptabase")]
+use tauri::{Runtime, plugin::TauriPlugin};
+#[cfg(feature = "aptabase")]
 use tauri_plugin_aptabase::EventTracker;
 
 #[cfg(all(feature = "updater", any(debug_assertions, target_os = "macos")))]
@@ -95,7 +101,7 @@ impl EthUIApp {
                 ethui_db::commands::db_clear_erc20_blacklist,
                 ethui_db::commands::db_get_native_balance,
                 ethui_db::commands::db_get_erc721_tokens,
-                ethui_forge::commands::fetch_forge_abis,
+                ethui_sol_artifacts::commands::fetch_forge_abis,
                 ethui_ws::commands::ws_peers_by_domain,
                 ethui_ws::commands::ws_peer_count,
                 ethui_wallets::commands::wallets_get_all,
@@ -156,7 +162,7 @@ impl EthUIApp {
     }
 
     pub async fn run(self) {
-        let settings = ethui_settings::ask(ethui_settings::GetAll).await;
+        let settings = settings().get_all().await.ok();
         let start_minimized = settings.map(|s| s.start_minimized).unwrap_or(false);
         if !self.hidden && !start_minimized {
             windows::main::show(self.app.handle()).await;
@@ -181,7 +187,9 @@ impl EthUIApp {
                 {
                     tokio::task::block_in_place(|| {
                         tokio::runtime::Handle::current().block_on(async {
-                            let _ = ethui_stacks::actor::ask(ethui_stacks::actor::Shutdown()).await;
+                            if let Ok(r) = try_stacks() {
+                                let _ = r.shutdown().await;
+                            }
                         });
                     });
                 }
@@ -218,7 +226,7 @@ async fn init(app: &tauri::App, args: &Args) -> color_eyre::Result<()> {
     ethui_connections::init(resource(app, "connections.json", args)).await;
     ethui_wallets::init(resource(app, "wallets.json", args)).await;
     ethui_networks::init(resource(app, "networks.json", args)).await;
-    ethui_forge::init().await?;
+    ethui_sol_artifacts::init().await?;
     ethui_analytics::init(app.handle()).await;
 
     ethui_analytics::track_event(app.handle(), "app_started", None)?;

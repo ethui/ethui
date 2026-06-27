@@ -73,7 +73,7 @@ impl WalletControl for Impersonator {
         true
     }
 
-    async fn build_signer(&self, _chain_id: u32, _path: &str) -> color_eyre::Result<Signer> {
+    async fn build_signer(&self, _chain_id: u64, _path: &str) -> color_eyre::Result<Signer> {
         Err(eyre!("This wallet type cannot sign"))
     }
 }

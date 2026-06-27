@@ -17,7 +17,7 @@ name = "ethui"
 
 [dependencies]
 ethui-analytics.workspace = true
-ethui-forge.workspace = true
+ethui-sol-artifacts.workspace = true
 ethui-forge-traces = { workspace = true, optional = true }
 ethui-settings.workspace = true
 ethui-networks.workspace = true
@@ -58,7 +58,7 @@ tauri-build = { version = "2.4", default-features = false, features = [] }
 ethui-token-list.workspace = true
 
 [features]
-default = ["aptabase"]
+default = []
 production = ["aptabase", "updater"]
 nix = ["ethui-analytics/nix"]
 forge-traces = [

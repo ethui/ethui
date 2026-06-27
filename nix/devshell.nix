@@ -11,7 +11,7 @@ let
     gdk-pixbuf
     glib
     dbus
-    libsoup_2_4
+    libsoup_3
     pkg-config
     at-spi2-atk
     atkmm
@@ -37,6 +37,8 @@ pkgs.mkShell {
 
     export XDG_DATA_DIRS=${pkgs.gsettings-desktop-schemas}/share/gsettings-schemas/${pkgs.gsettings-desktop-schemas.name}:${pkgs.gtk3}/share/gsettings-schemas/${pkgs.gtk3.name}:$XDG_DATA_DIRS
 
-    export GIO_MODULE_DIR="${pkgs.glib-networking}/lib/gio/modules/";
+    # Both variables needed for GIO TLS modules (glib-networking)
+    export GIO_MODULE_DIR="${pkgs.glib-networking}/lib/gio/modules/"
+    export GIO_EXTRA_MODULES="${pkgs.glib-networking}/lib/gio/modules/"
   '';
 }

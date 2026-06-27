@@ -14,13 +14,13 @@ use self::networks::default_from_block;
 use crate::client::{Client, Direction};
 
 pub struct Alchemy {
-    chain_id: u32,
+    chain_id: u64,
     db: Db,
     client: Client,
 }
 
 impl Alchemy {
-    pub fn new(api_key: &str, db: Db, chain_id: u32) -> Result<Self> {
+    pub fn new(api_key: &str, db: Db, chain_id: u64) -> Result<Self> {
         Ok(Self {
             chain_id,
             db,
@@ -99,10 +99,7 @@ impl Alchemy {
     }
 
     #[instrument(skip(self), level = "trace")]
-    pub async fn fetch_erc20_metadata(
-        &self,
-        address: Address,
-    ) -> Result<Erc20Metadata> {
+    pub async fn fetch_erc20_metadata(&self, address: Address) -> Result<Erc20Metadata> {
         let metadata = self.client.get_erc20_metadata(address).await?;
         Ok(metadata)
     }
@@ -122,10 +119,7 @@ impl Alchemy {
     }
 
     #[instrument(skip(self), level = "trace")]
-    pub async fn fetch_erc_owners(
-        &self,
-        address: Address,
-    ) -> Result<ErcOwnersResponse> {
+    pub async fn fetch_erc_owners(&self, address: Address) -> Result<ErcOwnersResponse> {
         let owners_response = self.client.get_erc_owners(address).await?;
         Ok(owners_response)
     }

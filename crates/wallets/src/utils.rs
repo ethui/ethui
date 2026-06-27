@@ -11,7 +11,7 @@ pub(crate) static HID_MUTEX: Lazy<Mutex<()>> = Lazy::new(Default::default);
 pub fn derive_addresses(
     mnemonic: &str,
     derivation_path: &str,
-    count: u32,
+    count: usize,
 ) -> Vec<(String, Address)> {
     let builder = MnemonicBuilder::<English>::default().phrase(mnemonic);
 
@@ -53,9 +53,7 @@ pub(crate) async fn ledger_derive(path: &str) -> Result<Address> {
         .map_err(|e| eyre!("Ledger error: {}", e))
 }
 
-pub(crate) async fn ledger_derive_multiple(
-    paths: Vec<String>,
-) -> Result<Vec<(String, Address)>> {
+pub(crate) async fn ledger_derive_multiple(paths: Vec<String>) -> Result<Vec<(String, Address)>> {
     let mut res = vec![];
 
     for path in paths.into_iter() {

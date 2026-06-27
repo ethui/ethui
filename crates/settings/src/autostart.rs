@@ -1,4 +1,4 @@
-use auto_launch::{AutoLaunch, AutoLaunchBuilder};
+use auto_launch::{AutoLaunch, AutoLaunchBuilder, MacOSLaunchMode};
 
 pub fn update(v: bool) -> color_eyre::Result<()> {
     let handle = handle()?;
@@ -26,7 +26,7 @@ fn handle() -> color_eyre::Result<AutoLaunch> {
     Ok(AutoLaunchBuilder::new()
         .set_app_name("ethui")
         .set_app_path(&app_path)
-        .set_use_launch_agent(true)
+        .set_macos_launch_mode(MacOSLaunchMode::LaunchAgent)
         .set_args(&["--hidden"])
         .build()?)
 }

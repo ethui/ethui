@@ -1,13 +1,13 @@
 use alloy::{
     network::{Network, TransactionBuilder as _},
-    primitives::{b256, bytes, Address, Bytes, B256},
+    primitives::{Address, B256, Bytes, b256, bytes},
     providers::Provider,
 };
 
 use crate::{
+    ProxyType,
     error::DetectProxyResult,
     utils::{storage_slot_as_address, u256_to_address},
-    ProxyType,
 };
 
 // bytes32(uint256(keccak256('eip1967.proxy.implementation')) - 1)
