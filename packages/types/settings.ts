@@ -20,6 +20,7 @@ export const generalSettingsSchema = z.object({
   abiWatchPath: z.string().optional().nullable(),
   alchemyApiKey: z.string().optional().nullable(),
   etherscanApiKey: z.string().optional().nullable(),
+  walletconnectProjectId: z.string().optional().nullable(),
   hideEmptyTokens: z.boolean(),
   startMinimized: z.boolean(),
   checkForUpdates: z.boolean(),

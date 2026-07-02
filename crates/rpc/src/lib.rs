@@ -39,6 +39,13 @@ impl Handler {
         self.io.handle_rpc_request(request, self.ctx.clone()).await
     }
 
+    /// Names of every RPC method this handler has registered — used to filter
+    /// method lists a caller (e.g. WalletConnect) claims to need down to what
+    /// ethui can actually serve, instead of blindly trusting the request.
+    pub fn method_names(&self) -> impl Iterator<Item = &str> {
+        self.io.iter().map(|(name, _)| name.as_str())
+    }
+
     fn add_handlers(&mut self) {
         macro_rules! self_handler {
             // For handlers where params can be converted directly (TryFrom<Params>)

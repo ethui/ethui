@@ -159,6 +159,11 @@ impl SettingsActor {
                     self.inner.etherscan_api_key = v;
                 }
 
+                if let Some(v) = map.get("walletconnectProjectId") {
+                    let v: String = serde_json::from_value(v.clone()).unwrap();
+                    self.inner.walletconnect_project_id = Some(v).filter(|s| !s.is_empty());
+                }
+
                 if let Some(v) = map.get("hideEmptyTokens") {
                     self.inner.hide_empty_tokens = serde_json::from_value(v.clone()).unwrap()
                 }

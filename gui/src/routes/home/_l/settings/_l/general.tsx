@@ -8,6 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@ethui/ui/components/shadcn/select";
+import { toast } from "@ethui/ui/hooks/use-toast";
 import { createFileRoute } from "@tanstack/react-router";
 import { invoke } from "@tauri-apps/api/core";
 import { useInvoke } from "#/hooks/useInvoke";
@@ -113,6 +114,21 @@ function SettingsGeneral() {
         callback={async (etherscanApiKey: string) =>
           await invoke("settings_set", { params: { etherscanApiKey } })
         }
+      />
+
+      <AutoSubmitTextInput
+        name="walletconnectProjectId"
+        label="WalletConnect Project ID"
+        placeholder="Optional, defaults to ethui's shared project ID"
+        successLabel="Saved"
+        value={general.walletconnectProjectId || ""}
+        callback={async (walletconnectProjectId: string) => {
+          await invoke("settings_set", { params: { walletconnectProjectId } });
+          toast({
+            title: "WalletConnect Project ID saved",
+            description: "Restart ethui for this to take effect.",
+          });
+        }}
       />
 
       <div className="w-80">
