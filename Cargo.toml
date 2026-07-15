@@ -112,7 +112,7 @@ alloy-chains = { version = "0.2", default-features = false, features = [
 foundry-block-explorers = "0.22"
 url = { version = "2.5", features = ["serde"] }
 futures = { version = "0.3", default-features = false }
-rand = "0.9"
+rand = "0.10"
 rstest = "0.26"
 regex = "1.12"
 color-eyre = { version = "0.6" }
