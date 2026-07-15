@@ -5,6 +5,7 @@
 let
   buildInputs = with pkgs; [
     openssl
+    zlib
     webkitgtk_4_1
     gtk3
     cairo
@@ -12,11 +13,14 @@ let
     glib
     dbus
     libsoup_3
-    pkg-config
     at-spi2-atk
     atkmm
-    gobject-introspection
     harfbuzz
+  ];
+
+  nativeBuildInputs = with pkgs; [
+    pkg-config
+    gobject-introspection
   ];
 
   libraries = with pkgs; [
@@ -30,7 +34,7 @@ let
   ];
 in
 pkgs.mkShell {
-  inherit buildInputs;
+  inherit buildInputs nativeBuildInputs;
 
   shellHook = ''
     export LD_LIBRARY_PATH=${pkgs.lib.makeLibraryPath libraries}:$LD_LIBRARY_PATH
