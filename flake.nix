@@ -19,9 +19,15 @@
         overlays = [ (import rust) ];
         pkgs = import nixpkgs {
           inherit system overlays;
+          # Tauri v1 stack (webkitgtk_4_1 + libsoup_2_4) requires libsoup 2,
+          # which newer nixpkgs flags as EOL/insecure. We already depend on it.
+          config.permittedInsecurePackages = [ "libsoup-2.74.3" ];
         };
 
-        rustToolchain = pkgs.rust-bin.nightly.latest.default.override {
+        # `minimal` (rustc + cargo + rust-std) keeps the build working while
+        # dropping rust-docs/clippy/rustfmt, which otherwise leak ~570MB of
+        # rust-docs into the runtime closure. Add only what the build needs.
+        rustToolchain = pkgs.rust-bin.nightly.latest.minimal.override {
           extensions = [ "rust-src" ];
         };
         rustNightly = pkgs.makeRustPlatform {
