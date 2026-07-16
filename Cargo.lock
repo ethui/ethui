@@ -3641,6 +3641,7 @@ dependencies = [
  "serde",
  "serde_json",
  "tauri",
+ "tempfile",
  "tokio",
  "zeroize",
 ]
