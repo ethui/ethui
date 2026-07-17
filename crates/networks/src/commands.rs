@@ -1,3 +1,4 @@
+use alloy::primitives::U256;
 use ethui_types::{NewNetworkParams, prelude::*};
 
 use crate::actor::{NetworksActorExt as _, networks};
@@ -42,6 +43,26 @@ pub async fn networks_is_dev(id: NetworkId) -> TauriResult<bool> {
         .with_context(|| "Network not found")?;
 
     Ok(network.is_dev().await?)
+}
+
+#[tauri::command]
+pub async fn networks_anvil_snapshot(id: NetworkId) -> TauriResult<U256> {
+    let network = networks()
+        .get(id)
+        .await?
+        .with_context(|| "Network not found")?;
+
+    Ok(network.anvil_snapshot().await?)
+}
+
+#[tauri::command]
+pub async fn networks_anvil_revert(id: NetworkId, snapshot_id: U256) -> TauriResult<bool> {
+    let network = networks()
+        .get(id)
+        .await?
+        .with_context(|| "Network not found")?;
+
+    Ok(network.anvil_revert(snapshot_id).await?)
 }
 
 #[tauri::command]

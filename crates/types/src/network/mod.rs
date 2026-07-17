@@ -2,6 +2,7 @@ mod id;
 
 use alloy::{
     network::Ethereum,
+    primitives::U256,
     providers::{Provider, ProviderBuilder, RootProvider},
     rpc::{
         client::ClientBuilder,
@@ -136,6 +137,24 @@ impl Network {
             .request::<(), Metadata>("hardhat_metadata", ())
             .await?
             .forked_network)
+    }
+
+    pub async fn anvil_snapshot(&self) -> color_eyre::Result<U256> {
+        let provider = self.get_alloy_provider().await?;
+
+        Ok(provider
+            .client()
+            .request::<(), U256>("anvil_snapshot", ())
+            .await?)
+    }
+
+    pub async fn anvil_revert(&self, snapshot_id: U256) -> color_eyre::Result<bool> {
+        let provider = self.get_alloy_provider().await?;
+
+        Ok(provider
+            .client()
+            .request::<(U256,), bool>("anvil_revert", (snapshot_id,))
+            .await?)
     }
 
     pub async fn get_alloy_provider(&self) -> color_eyre::Result<RootProvider<Ethereum>> {

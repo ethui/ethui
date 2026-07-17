@@ -5,6 +5,7 @@ import { toast } from "@ethui/ui/hooks/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { invoke } from "@tauri-apps/api/core";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNetworks } from "#/store/useNetworks";
 
@@ -48,6 +49,44 @@ function Content({ network }: { network: NetworkInputs }) {
     router.history.back();
   };
 
+  const isAnvil = network.id.chain_id === 31337;
+  const [snapshotId, setSnapshotId] = useState<string>();
+
+  const snapshot = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    try {
+      const id = await invoke<string>("networks_anvil_snapshot", {
+        id: network.id,
+      });
+      setSnapshotId(id);
+      toast({ title: "Snapshot taken" });
+    } catch (err: any) {
+      toast({
+        title: "Error",
+        description: err.toString(),
+        variant: "destructive",
+      });
+    }
+  };
+
+  const revert = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    if (!snapshotId) return;
+    try {
+      await invoke("networks_anvil_revert", {
+        id: network.id,
+        snapshotId,
+      });
+      toast({ title: "Reverted to snapshot" });
+    } catch (err: any) {
+      toast({
+        title: "Error",
+        description: err.toString(),
+        variant: "destructive",
+      });
+    }
+  };
+
   // TODO: fix remove button
   return (
     <Form form={form} onSubmit={create} className="gap-4">
@@ -83,6 +122,17 @@ function Content({ network }: { network: NetworkInputs }) {
         <Form.Text label="Currency" name="currency" />
         <Form.NumberField label="Decimals" name="decimals" />
       </div>
+
+      {isAnvil && (
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={snapshot}>
+            Snapshot
+          </Button>
+          <Button variant="outline" onClick={revert} disabled={!snapshotId}>
+            Revert
+          </Button>
+        </div>
+      )}
 
       <div className="flex gap-2">
         <Button variant="destructive" onClick={remove}>
