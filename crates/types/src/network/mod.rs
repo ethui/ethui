@@ -35,6 +35,26 @@ pub struct Network {
 
     #[serde(default)]
     pub is_stack: bool,
+
+    #[serde(default)]
+    pub anvil_snapshots: Vec<AnvilSnapshot>,
+
+    // best-effort: set when a snapshot is taken or reverted to; not tracked across other
+    // state-changing RPC calls (txs, mining, etc), so treat as a hint rather than ground truth
+    #[serde(default)]
+    pub current_snapshot: Option<U256>,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize)]
+pub struct AnvilSnapshot {
+    pub id: U256,
+    pub taken_at: i64,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct AnvilSnapshotsState {
+    pub snapshots: Vec<AnvilSnapshot>,
+    pub current: Option<U256>,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Deserialize, Serialize)]
@@ -58,6 +78,8 @@ impl Network {
             decimals: 18,
             status: Default::default(),
             is_stack: false,
+            anvil_snapshots: vec![],
+            current_snapshot: None,
         }
     }
 
@@ -72,6 +94,8 @@ impl Network {
             decimals: 18,
             status: Default::default(),
             is_stack: false,
+            anvil_snapshots: vec![],
+            current_snapshot: None,
         }
     }
 
@@ -86,6 +110,8 @@ impl Network {
             decimals: 18,
             status: Default::default(),
             is_stack: false,
+            anvil_snapshots: vec![],
+            current_snapshot: None,
         }
     }
 
@@ -155,6 +181,17 @@ impl Network {
             .client()
             .request::<(U256,), bool>("anvil_revert", (snapshot_id,))
             .await?)
+    }
+
+    pub async fn anvil_reset(&self) -> color_eyre::Result<()> {
+        let provider = self.get_alloy_provider().await?;
+
+        provider
+            .client()
+            .request::<(), serde_json::Value>("anvil_reset", ())
+            .await?;
+
+        Ok(())
     }
 
     pub async fn get_alloy_provider(&self) -> color_eyre::Result<RootProvider<Ethereum>> {

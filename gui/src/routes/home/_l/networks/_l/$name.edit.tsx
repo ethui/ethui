@@ -1,3 +1,4 @@
+import type { AnvilSnapshotsState, Network } from "@ethui/types/network";
 import { type NetworkInputs, networkSchema } from "@ethui/types/network";
 import { Form } from "@ethui/ui/components/form";
 import { Button } from "@ethui/ui/components/shadcn/button";
@@ -22,7 +23,7 @@ export const Route = createFileRoute("/home/_l/networks/_l/$name/edit")({
   },
 });
 
-function Content({ network }: { network: NetworkInputs }) {
+function Content({ network }: { network: Network }) {
   const form = useForm({
     mode: "onBlur",
     resolver: zodResolver(networkSchema),
@@ -50,15 +51,19 @@ function Content({ network }: { network: NetworkInputs }) {
   };
 
   const isAnvil = network.id.chain_id === 31337;
-  const [snapshotId, setSnapshotId] = useState<string>();
+  const [anvilState, setAnvilState] = useState<AnvilSnapshotsState>({
+    snapshots: network.anvil_snapshots ?? [],
+    current: network.current_snapshot ?? null,
+  });
 
   const snapshot = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     try {
-      const id = await invoke<string>("networks_anvil_snapshot", {
-        id: network.id,
-      });
-      setSnapshotId(id);
+      const updated = await invoke<AnvilSnapshotsState>(
+        "networks_anvil_snapshot",
+        { id: network.id },
+      );
+      setAnvilState(updated);
       toast({ title: "Snapshot taken" });
     } catch (err: any) {
       toast({
@@ -69,15 +74,54 @@ function Content({ network }: { network: NetworkInputs }) {
     }
   };
 
-  const revert = async (e: React.MouseEvent<HTMLButtonElement>) => {
+  const revert =
+    (snapshotId: string) => async (e: React.MouseEvent<HTMLButtonElement>) => {
+      e.preventDefault();
+      try {
+        const updated = await invoke<AnvilSnapshotsState>(
+          "networks_anvil_revert",
+          { id: network.id, snapshotId },
+        );
+        setAnvilState(updated);
+        toast({ title: "Reverted to snapshot" });
+      } catch (err: any) {
+        toast({
+          title: "Error",
+          description: err.toString(),
+          variant: "destructive",
+        });
+      }
+    };
+
+  const deleteSnapshot =
+    (snapshotId: string) => async (e: React.MouseEvent<HTMLButtonElement>) => {
+      e.preventDefault();
+      try {
+        const updated = await invoke<AnvilSnapshotsState>(
+          "networks_anvil_delete_snapshot",
+          { id: network.id, snapshotId },
+        );
+        setAnvilState(updated);
+      } catch (err: any) {
+        toast({
+          title: "Error",
+          description: err.toString(),
+          variant: "destructive",
+        });
+      }
+    };
+
+  const reset = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    if (!snapshotId) return;
     try {
-      await invoke("networks_anvil_revert", {
-        id: network.id,
-        snapshotId,
-      });
-      toast({ title: "Reverted to snapshot" });
+      const updated = await invoke<AnvilSnapshotsState>(
+        "networks_anvil_reset",
+        {
+          id: network.id,
+        },
+      );
+      setAnvilState(updated);
+      toast({ title: "Anvil reset" });
     } catch (err: any) {
       toast({
         title: "Error",
@@ -124,13 +168,38 @@ function Content({ network }: { network: NetworkInputs }) {
       </div>
 
       {isAnvil && (
-        <div className="flex gap-2">
-          <Button variant="outline" onClick={snapshot}>
-            Snapshot
-          </Button>
-          <Button variant="outline" onClick={revert} disabled={!snapshotId}>
-            Revert
-          </Button>
+        <div className="flex flex-col gap-2">
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={snapshot}>
+              Take snapshot
+            </Button>
+            <Button variant="outline" onClick={reset}>
+              Reset anvil
+            </Button>
+          </div>
+
+          {anvilState.snapshots.length > 0 && (
+            <ul className="flex flex-col gap-1">
+              {anvilState.snapshots.map((s) => (
+                <li key={s.id} className="flex items-center gap-2">
+                  <span className="text-sm">
+                    #{s.id} — {new Date(s.taken_at).toLocaleString()}
+                    {anvilState.current === s.id && " (current)"}
+                  </span>
+                  <Button variant="outline" size="sm" onClick={revert(s.id)}>
+                    Revert
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={deleteSnapshot(s.id)}
+                  >
+                    Delete
+                  </Button>
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
       )}
 

@@ -86,6 +86,8 @@ impl EthUIApp {
                 ethui_networks::commands::networks_is_dev,
                 ethui_networks::commands::networks_anvil_snapshot,
                 ethui_networks::commands::networks_anvil_revert,
+                ethui_networks::commands::networks_anvil_delete_snapshot,
+                ethui_networks::commands::networks_anvil_reset,
                 ethui_networks::commands::networks_chain_id_from_provider,
                 ethui_db::commands::db_get_contracts,
                 ethui_db::commands::db_get_newer_transactions,

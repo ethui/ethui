@@ -156,6 +156,8 @@ fn migrate_networks_from_v2_to_v3(
                     decimals: network.decimals,
                     status: NetworkStatus::Unknown,
                     is_stack: false,
+                    anvil_snapshots: vec![],
+                    current_snapshot: None,
                 },
             )
         })

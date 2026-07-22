@@ -83,6 +83,8 @@ mod tests {
             decimals: 18,
             status: NetworkStatus::Unknown,
             is_stack: true,
+            anvil_snapshots: vec![],
+            current_snapshot: None,
         }
     }
 
@@ -260,6 +262,8 @@ mod tests {
             decimals: 18,
             status: NetworkStatus::Unknown,
             is_stack: true,
+            anvil_snapshots: vec![],
+            current_snapshot: None,
         };
 
         let worker = create_worker(ws_network.clone());
@@ -282,6 +286,8 @@ mod tests {
             decimals: 18,
             status: NetworkStatus::Unknown,
             is_stack: true,
+            anvil_snapshots: vec![],
+            current_snapshot: None,
         };
 
         let worker = create_worker(http_network.clone());
