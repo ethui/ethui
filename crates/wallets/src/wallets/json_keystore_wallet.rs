@@ -1,4 +1,4 @@
-use std::path::PathBuf;
+use std::{path::PathBuf, str::FromStr};
 
 use alloy::{
     primitives::B256,
@@ -15,7 +15,7 @@ use crate::{
     wallet::WalletCreate,
 };
 
-#[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
+#[derive(Debug, serde::Serialize, Clone)]
 pub struct JsonKeystoreWallet {
     name: String,
     pub file: PathBuf,
@@ -23,6 +23,44 @@ pub struct JsonKeystoreWallet {
 
     #[serde(skip)]
     cache: SecretCache,
+}
+
+/// Wallets persisted before `address` was added to this struct don't have it in
+/// storage. Rather than panic on load (breaking every existing JSON keystore
+/// wallet), fall back to the legacy lookup of the keystore file's own
+/// (non-standard, optional) `address` field.
+impl<'de> serde::Deserialize<'de> for JsonKeystoreWallet {
+    fn deserialize<D>(deserializer: D) -> std::result::Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        #[derive(serde::Deserialize)]
+        struct Raw {
+            name: String,
+            file: PathBuf,
+            #[serde(default)]
+            address: Option<Address>,
+        }
+
+        let raw = Raw::deserialize(deserializer)?;
+        let address = raw
+            .address
+            .or_else(|| legacy_file_address(&raw.file))
+            .unwrap_or_default();
+
+        Ok(Self {
+            name: raw.name,
+            file: raw.file,
+            address,
+            cache: Default::default(),
+        })
+    }
+}
+
+fn legacy_file_address(file: &std::path::Path) -> Option<Address> {
+    let file = std::fs::File::open(file).ok()?;
+    let json: serde_json::Value = serde_json::from_reader(std::io::BufReader::new(file)).ok()?;
+    Address::from_str(json["address"].as_str()?).ok()
 }
 
 /// The keystore's own `address` field is a non-standard, optional extension
@@ -168,6 +206,31 @@ mod tests {
         let Wallet::JsonKeystore(wallet) = wallet else {
             panic!("expected a JsonKeystore wallet");
         };
+
+        assert_eq!(
+            wallet.address,
+            Address::from_str("0xe27952879c504b1c8e9fF34aB53Fa0d3c08C47B9").unwrap()
+        );
+    }
+
+    /// Wallets persisted before `address` was added to the struct must still
+    /// deserialize instead of panicking `wallets.json` load for existing users.
+    #[test]
+    fn deserializes_legacy_wallet_without_persisted_address() {
+        let dir = tempfile::tempdir().unwrap();
+        let file = dir.path().join("keystore.json");
+        std::fs::write(
+            &file,
+            r#"{"address":"e27952879c504b1c8e9fF34aB53Fa0d3c08C47B9","crypto":{}}"#,
+        )
+        .unwrap();
+
+        let persisted = serde_json::json!({
+            "name": "legacy",
+            "file": file,
+        });
+
+        let wallet: JsonKeystoreWallet = serde_json::from_value(persisted).unwrap();
 
         assert_eq!(
             wallet.address,

@@ -52,7 +52,6 @@ export interface JsonKeystoreWallet {
   name: string;
   file: string;
   address: string;
-  password: string;
   currentPath?: string;
 }
 

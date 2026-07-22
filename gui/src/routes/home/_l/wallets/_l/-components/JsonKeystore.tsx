@@ -33,7 +33,7 @@ export function JsonKeystore({
 
   const prepareAndSubmit = (data: z.infer<typeof schema>) => {
     onSubmit({ type: "jsonKeystore", ...data } as Wallet);
-    form.reset(data);
+    form.reset();
   };
 
   return (
