@@ -104,7 +104,7 @@ impl Wallets {
     pub async fn get_all_addresses(&self) -> Vec<(String, Address)> {
         let mut res = vec![];
         for wallet in self.wallets.iter() {
-            res.extend(wallet.get_all_addresses().await.into_iter());
+            res.extend(wallet.get_all_addresses().await);
         }
 
         res

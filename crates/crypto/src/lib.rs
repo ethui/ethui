@@ -5,10 +5,34 @@
 //! Encrypted secrets are secured by a password. We use Argon2 to derive a key from it, and then
 //! the ChaCha20poly1305 scheme to encrypt the data.
 
-use aead::{KeyInit, OsRng, rand_core::RngCore as _};
-use chacha20poly1305::XChaCha20Poly1305;
+use aead::{Aead, KeyInit, OsRng, rand_core::RngCore as _};
+use chacha20poly1305::{ChaCha20Poly1305, Key, Nonce, XChaCha20Poly1305};
 use color_eyre::{Result, eyre::eyre};
 use zeroize::Zeroize;
+
+/// Encrypts `plaintext` with plain ChaCha20-Poly1305 (12-byte nonce) given an
+/// already-derived key. For higher-level, password-protected secret storage,
+/// see [`encrypt`] instead.
+pub fn chacha20poly1305_encrypt(
+    key: &[u8; 32],
+    nonce: &[u8; 12],
+    plaintext: &[u8],
+) -> Result<Vec<u8>> {
+    ChaCha20Poly1305::new(Key::from_slice(key))
+        .encrypt(Nonce::from_slice(nonce), plaintext)
+        .map_err(|e| eyre!("chacha20poly1305 encrypt failed: {e}"))
+}
+
+/// Decrypts a ChaCha20-Poly1305 ciphertext produced by [`chacha20poly1305_encrypt`].
+pub fn chacha20poly1305_decrypt(
+    key: &[u8; 32],
+    nonce: &[u8; 12],
+    ciphertext: &[u8],
+) -> Result<Vec<u8>> {
+    ChaCha20Poly1305::new(Key::from_slice(key))
+        .decrypt(Nonce::from_slice(nonce), ciphertext)
+        .map_err(|e| eyre!("chacha20poly1305 decrypt failed: {e}"))
+}
 
 #[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
 pub struct EncryptedData<T: serde::Serialize + serde::de::DeserializeOwned> {
@@ -121,6 +145,22 @@ mod tests {
         let decrypted: SecretData = decrypt(&encrypted_data, password)?;
 
         assert_eq!(decrypted, secret);
+        Ok(())
+    }
+
+    #[test]
+    fn test_chacha20poly1305_roundtrip() -> Result<()> {
+        let key = [0x42u8; 32];
+        let nonce = [0x24u8; 12];
+        let plaintext = b"hello chacha20poly1305";
+
+        let ciphertext = chacha20poly1305_encrypt(&key, &nonce, plaintext)?;
+        let recovered = chacha20poly1305_decrypt(&key, &nonce, &ciphertext)?;
+        assert_eq!(recovered, plaintext);
+
+        let wrong_key = [0x99u8; 32];
+        assert!(chacha20poly1305_decrypt(&wrong_key, &nonce, &ciphertext).is_err());
+
         Ok(())
     }
 }

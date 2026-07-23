@@ -99,7 +99,7 @@ impl Ctx {
         let ret = request.clone().into_request_permissions_result();
 
         let new_permissions: Vec<_> = request
-            .into_permissions(self.domain.clone().unwrap())
+            .into_permissions(self.domain.clone().unwrap_or_default())
             .collect();
 
         self.permissions.extend(new_permissions);
@@ -111,7 +111,7 @@ impl Ctx {
         let ret = request.clone().into_request_permissions_result();
 
         let to_revoke: Vec<_> = request
-            .into_permissions(self.domain.clone().unwrap())
+            .into_permissions(self.domain.clone().unwrap_or_default())
             .collect();
 
         self.permissions.retain(|p| !to_revoke.contains(p));

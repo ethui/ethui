@@ -21,6 +21,7 @@ import { Route as HomeLTransferLRouteImport } from './routes/home/_l/transfer/_l
 import { Route as HomeLSettingsLRouteImport } from './routes/home/_l/settings/_l'
 import { Route as HomeLNetworksLRouteImport } from './routes/home/_l/networks/_l'
 import { Route as HomeLExplorerLRouteImport } from './routes/home/_l/explorer/_l'
+import { Route as DialogLWcSessionProposalIdRouteImport } from './routes/dialog/_l/wc-session-proposal.$id'
 import { Route as DialogLWalletUnlockIdRouteImport } from './routes/dialog/_l/wallet-unlock.$id'
 import { Route as DialogLTxReviewIdRouteImport } from './routes/dialog/_l/tx-review.$id'
 import { Route as DialogLMsgSignIdRouteImport } from './routes/dialog/_l/msg-sign.$id'
@@ -146,6 +147,12 @@ const HomeLExplorerLRoute = HomeLExplorerLRouteImport.update({
   id: '/_l',
   getParentRoute: () => HomeLExplorerRoute,
 } as any)
+const DialogLWcSessionProposalIdRoute =
+  DialogLWcSessionProposalIdRouteImport.update({
+    id: '/wc-session-proposal/$id',
+    path: '/wc-session-proposal/$id',
+    getParentRoute: () => DialogLRoute,
+  } as any)
 const DialogLWalletUnlockIdRoute = DialogLWalletUnlockIdRouteImport.update({
   id: '/wallet-unlock/$id',
   path: '/wallet-unlock/$id',
@@ -339,6 +346,7 @@ export interface FileRoutesByFullPath {
   '/dialog/msg-sign/$id': typeof DialogLMsgSignIdRoute
   '/dialog/tx-review/$id': typeof DialogLTxReviewIdRoute
   '/dialog/wallet-unlock/$id': typeof DialogLWalletUnlockIdRoute
+  '/dialog/wc-session-proposal/$id': typeof DialogLWcSessionProposalIdRoute
   '/home/explorer': typeof HomeLExplorerLRouteWithChildren
   '/home/networks': typeof HomeLNetworksLRouteWithChildren
   '/home/settings': typeof HomeLSettingsLRouteWithChildren
@@ -383,6 +391,7 @@ export interface FileRoutesByTo {
   '/dialog/msg-sign/$id': typeof DialogLMsgSignIdRoute
   '/dialog/tx-review/$id': typeof DialogLTxReviewIdRoute
   '/dialog/wallet-unlock/$id': typeof DialogLWalletUnlockIdRoute
+  '/dialog/wc-session-proposal/$id': typeof DialogLWcSessionProposalIdRoute
   '/home/explorer': typeof HomeLExplorerLRouteWithChildren
   '/home/networks': typeof HomeLNetworksLIndexRoute
   '/home/settings': typeof HomeLSettingsLRouteWithChildren
@@ -427,6 +436,7 @@ export interface FileRoutesById {
   '/dialog/_l/msg-sign/$id': typeof DialogLMsgSignIdRoute
   '/dialog/_l/tx-review/$id': typeof DialogLTxReviewIdRoute
   '/dialog/_l/wallet-unlock/$id': typeof DialogLWalletUnlockIdRoute
+  '/dialog/_l/wc-session-proposal/$id': typeof DialogLWcSessionProposalIdRoute
   '/home/_l/explorer': typeof HomeLExplorerRouteWithChildren
   '/home/_l/explorer/_l': typeof HomeLExplorerLRouteWithChildren
   '/home/_l/networks': typeof HomeLNetworksRouteWithChildren
@@ -480,6 +490,7 @@ export interface FileRouteTypes {
     | '/dialog/msg-sign/$id'
     | '/dialog/tx-review/$id'
     | '/dialog/wallet-unlock/$id'
+    | '/dialog/wc-session-proposal/$id'
     | '/home/explorer'
     | '/home/networks'
     | '/home/settings'
@@ -524,6 +535,7 @@ export interface FileRouteTypes {
     | '/dialog/msg-sign/$id'
     | '/dialog/tx-review/$id'
     | '/dialog/wallet-unlock/$id'
+    | '/dialog/wc-session-proposal/$id'
     | '/home/explorer'
     | '/home/networks'
     | '/home/settings'
@@ -567,6 +579,7 @@ export interface FileRouteTypes {
     | '/dialog/_l/msg-sign/$id'
     | '/dialog/_l/tx-review/$id'
     | '/dialog/_l/wallet-unlock/$id'
+    | '/dialog/_l/wc-session-proposal/$id'
     | '/home/_l/explorer'
     | '/home/_l/explorer/_l'
     | '/home/_l/networks'
@@ -730,6 +743,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/home/explorer'
       preLoaderRoute: typeof HomeLExplorerLRouteImport
       parentRoute: typeof HomeLExplorerRoute
+    }
+    '/dialog/_l/wc-session-proposal/$id': {
+      id: '/dialog/_l/wc-session-proposal/$id'
+      path: '/wc-session-proposal/$id'
+      fullPath: '/dialog/wc-session-proposal/$id'
+      preLoaderRoute: typeof DialogLWcSessionProposalIdRouteImport
+      parentRoute: typeof DialogLRoute
     }
     '/dialog/_l/wallet-unlock/$id': {
       id: '/dialog/_l/wallet-unlock/$id'
@@ -981,6 +1001,7 @@ interface DialogLRouteChildren {
   DialogLMsgSignIdRoute: typeof DialogLMsgSignIdRoute
   DialogLTxReviewIdRoute: typeof DialogLTxReviewIdRoute
   DialogLWalletUnlockIdRoute: typeof DialogLWalletUnlockIdRoute
+  DialogLWcSessionProposalIdRoute: typeof DialogLWcSessionProposalIdRoute
 }
 
 const DialogLRouteChildren: DialogLRouteChildren = {
@@ -992,6 +1013,7 @@ const DialogLRouteChildren: DialogLRouteChildren = {
   DialogLMsgSignIdRoute: DialogLMsgSignIdRoute,
   DialogLTxReviewIdRoute: DialogLTxReviewIdRoute,
   DialogLWalletUnlockIdRoute: DialogLWalletUnlockIdRoute,
+  DialogLWcSessionProposalIdRoute: DialogLWcSessionProposalIdRoute,
 }
 
 const DialogLRouteWithChildren =

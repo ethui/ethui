@@ -31,6 +31,11 @@ pub struct Settings {
     pub abi_watch_path: Option<String>,
     pub alchemy_api_key: Option<String>,
     pub etherscan_api_key: Option<String>,
+    /// Overrides ethui's built-in WalletConnect Cloud project ID. `None` uses
+    /// the shared default baked into the binary — which is never exposed
+    /// here or anywhere else in settings; only a user-provided override
+    /// round-trips through this field.
+    pub walletconnect_project_id: Option<String>,
     #[serde(default = "default_true")]
     pub hide_empty_tokens: bool,
 
@@ -68,6 +73,7 @@ impl Default for Settings {
             abi_watch_path: None,
             alchemy_api_key: None,
             etherscan_api_key: None,
+            walletconnect_project_id: None,
             hide_empty_tokens: true,
             aliases: HashMap::new(),
             fast_mode: false,
