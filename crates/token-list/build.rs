@@ -8,6 +8,8 @@ use serde::{Deserialize, Serialize};
 const FILE: &str = "../../packages/data/gen/tokens.json";
 const URI: &str = "https://tokens.1inch.eth.link/";
 
+const USER_AGENT: &str = concat!("ethui-token-list/", env!("CARGO_PKG_VERSION"));
+
 const CHAIN_ID_WHITELIST: [i32; 3] = [1, 137, 10];
 
 #[derive(Debug, Deserialize, Serialize)]
@@ -56,7 +58,12 @@ fn should_update() -> Result<bool> {
 }
 
 fn update() -> Result<()> {
-    let tokens: Vec<Token> = blocking::get(URI)?
+    let client = blocking::Client::builder().user_agent(USER_AGENT).build()?;
+
+    let tokens: Vec<Token> = client
+        .get(URI)
+        .send()?
+        .error_for_status()?
         .json::<TokenList>()?
         .tokens
         .into_iter()
