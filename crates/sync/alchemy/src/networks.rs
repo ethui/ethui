@@ -125,6 +125,14 @@ pub static NETWORKS: Lazy<HashMap<u64, Network>> = Lazy::new(|| {
         },
     );
 
+    map.insert(
+        43114,
+        Network {
+            base_url: Url::parse("https://avax-mainnet.g.alchemy.com").unwrap(),
+            default_from_block: 1,
+        },
+    );
+
     map
 });
 
