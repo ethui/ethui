@@ -323,8 +323,8 @@ impl<B: Backend> EthuiMcp<B> {
                        method names and parameter shapes. Write methods open an approval dialog \
                        in the ethui app and may be rejected — skipped only under ethui's Fast \
                        Mode, which requires a dev wallet AND a dev network AND the setting \
-                       enabled; unlike the dedicated tools, concurrent rpc_call writes are not \
-                       serialized."
+                       enabled. Concurrent writes are not serialized, so issuing several at once \
+                       stacks approval dialogs on the human; send them one at a time."
     )]
     pub async fn rpc_call(&self, Parameters(args): Parameters<RpcCallArgs>) -> ToolResult {
         let method = args.method;
