@@ -19,6 +19,30 @@ use url::Url;
 pub use crate::error::{WsError, WsResult};
 use crate::peers::{Peer, Peers};
 
+/// The token a peer must present to be treated as local. Set once at startup,
+/// before the listener accepts anything.
+static LOCAL_TOKEN: std::sync::OnceLock<String> = std::sync::OnceLock::new();
+
+pub(crate) fn set_local_token(token: String) {
+    let _ = LOCAL_TOKEN.set(token);
+}
+
+/// The trust level for a connection, decided only from a token the peer had to
+/// read off disk. Everything else in the handshake — `origin`, `url` — is
+/// whatever the peer typed, so none of it can raise trust.
+pub(crate) fn trust_for(query_params: &HashMap<String, String>) -> ethui_rpc::Trust {
+    let Some(expected) = LOCAL_TOKEN.get() else {
+        return ethui_rpc::Trust::Origin;
+    };
+
+    match query_params.get("token") {
+        Some(presented) if ethui_args::token::matches(expected, presented) => {
+            ethui_rpc::Trust::Local
+        }
+        _ => ethui_rpc::Trust::Origin,
+    }
+}
+
 #[instrument(level = "debug")]
 pub(crate) async fn server(port: u16) {
     let addr = format!("127.0.0.1:{port}");
@@ -51,7 +75,7 @@ async fn accept(socket: SocketAddr, stream: TcpStream) {
     let (snd, rcv) = mpsc::unbounded_channel::<serde_json::Value>();
     let url = query_params.get("url").cloned().unwrap_or_default();
 
-    let peer = Peer::new(socket, snd, &query_params);
+    let peer = Peer::new(socket, snd, &query_params, trust_for(&query_params));
 
     Peers::write().await.add_peer(peer.clone()).await;
     let res = handle(peer, ws_stream, rcv).await;

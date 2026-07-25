@@ -123,8 +123,48 @@ pub struct CallArgs {
 
 #[derive(Debug, Deserialize, JsonSchema)]
 pub struct SwitchNetworkArgs {
-    /// The decimal chain id to switch to.
-    pub chain_id: u64,
+    /// The decimal chain id to switch to. Give this or `name`, not both.
+    pub chain_id: Option<u64>,
+    /// The ethui network name to switch to, as shown by `list_wallets`'s
+    /// sibling in the app. Picks between networks sharing a chain id, which
+    /// `chain_id` cannot. Give this or `chain_id`, not both.
+    pub name: Option<String>,
+}
+
+#[derive(Debug, Deserialize, JsonSchema)]
+pub struct CreateWalletArgs {
+    /// Wallet type: one of `plaintext`, `jsonKeystore`, `HDWallet`,
+    /// `impersonator`, `ledger`, `privateKey`.
+    #[serde(rename = "type")]
+    pub wallet_type: String,
+    /// The name to give the wallet. Must be unique.
+    pub name: String,
+    /// The remaining per-type fields, passed through verbatim — e.g.
+    /// `{"mnemonic": "...", "derivationPath": "m/44'/60'/0'/0", "count": 3,
+    /// "password": "..."}` for an HDWallet, `{"addresses": ["0x..."]}` for an
+    /// impersonator. Secret fields are redacted from ethui's logs, but they do
+    /// pass through this conversation — prefer `impersonator` or `ledger` when
+    /// the task does not need a real key.
+    pub params: Option<serde_json::Map<String, Value>>,
+}
+
+#[derive(Debug, Deserialize, JsonSchema)]
+pub struct WalletNameArgs {
+    /// The wallet name, exactly as `list_wallets` reports it.
+    pub name: String,
+}
+
+#[derive(Debug, Deserialize, JsonSchema)]
+pub struct PathKeyArgs {
+    /// One of the `paths[].key` values `list_wallets` reports for the current
+    /// wallet.
+    pub key: String,
+}
+
+#[derive(Debug, Deserialize, JsonSchema)]
+pub struct FastModeArgs {
+    /// `true` skips approval dialogs for a dev wallet on a dev network.
+    pub enabled: bool,
 }
 
 #[derive(Debug, Deserialize, JsonSchema)]
@@ -271,12 +311,96 @@ impl<B: Backend> EthuiMcp<B> {
         &self,
         Parameters(args): Parameters<SwitchNetworkArgs>,
     ) -> ToolResult {
-        let hex = format!("0x{:x}", args.chain_id);
+        match (args.chain_id, args.name) {
+            (Some(_), Some(_)) => Err(tool_error(Error::unsupported(
+                "Give either chain_id or name, not both.",
+            ))),
 
-        self.request("wallet_switchEthereumChain", json!([{"chainId": hex}]))
+            (None, None) => Err(tool_error(Error::unsupported(
+                "Give either chain_id or name.",
+            ))),
+
+            // By name goes through ethui's own method, which can pick between
+            // networks that share a chain id — including stacks.
+            (None, Some(name)) => {
+                self.request("ethui_setCurrentNetwork", json!([{ "name": name }]))
+                    .await?;
+
+                Ok(format!("switched to network {name}"))
+            }
+
+            (Some(chain_id), None) => {
+                let hex = format!("0x{chain_id:x}");
+
+                self.request("wallet_switchEthereumChain", json!([{"chainId": hex}]))
+                    .await?;
+
+                Ok(format!("switched to chain {chain_id}"))
+            }
+        }
+    }
+
+    #[tool(description = "List the wallets ethui holds, with each wallet's name, type, current \
+                       address, and the derivation paths it exposes. Names from here are what \
+                       set_current_wallet takes, and path keys are what set_current_path takes.")]
+    pub async fn list_wallets(&self) -> ToolResult {
+        let wallets = self.request("ethui_listWallets", json!([])).await?;
+
+        Ok(serde_json::to_string_pretty(&wallets).unwrap_or_else(|_| wallets.to_string()))
+    }
+
+    #[tool(description = "Create a wallet. Types that carry key material (plaintext, HDWallet, \
+                       privateKey, jsonKeystore) mean that material passes through this \
+                       conversation before reaching ethui — prefer impersonator or ledger \
+                       unless a real signer is required. Creating a wallet does not make it \
+                       current; use set_current_wallet for that.")]
+    pub async fn create_wallet(
+        &self,
+        Parameters(args): Parameters<CreateWalletArgs>,
+    ) -> ToolResult {
+        let mut params = args.params.unwrap_or_default();
+        params.insert("type".to_owned(), json!(args.wallet_type));
+        params.insert("name".to_owned(), json!(args.name));
+
+        self.request("ethui_createWallet", json!([params])).await?;
+
+        Ok(format!("created wallet {}", args.name))
+    }
+
+    #[tool(description = "Switch ethui's current wallet by name. This changes the signer the \
+                       desktop app and every connected dApp will use, not just this MCP \
+                       session.")]
+    pub async fn set_current_wallet(
+        &self,
+        Parameters(args): Parameters<WalletNameArgs>,
+    ) -> ToolResult {
+        self.request("ethui_setCurrentWallet", json!([{ "name": args.name }]))
             .await?;
 
-        Ok(format!("switched to chain {}", args.chain_id))
+        Ok(format!("current wallet is now {}", args.name))
+    }
+
+    #[tool(description = "Switch the active derivation path within the current wallet, which \
+                       changes the active address. Takes a key from list_wallets.")]
+    pub async fn set_current_path(&self, Parameters(args): Parameters<PathKeyArgs>) -> ToolResult {
+        self.request("ethui_setCurrentPath", json!([{ "key": args.key }]))
+            .await?;
+
+        Ok(format!("current path is now {}", args.key))
+    }
+
+    #[tool(description = "Turn ethui's Fast Mode on or off. Fast Mode is what lets ethui skip \
+                       approval dialogs for a dev wallet on a dev network, so turning it on \
+                       removes the human confirmation step from later transactions and \
+                       signatures. Confirm with the human before enabling it.")]
+    pub async fn set_fast_mode(&self, Parameters(args): Parameters<FastModeArgs>) -> ToolResult {
+        self.request("ethui_setFastMode", json!([{ "enabled": args.enabled }]))
+            .await?;
+
+        Ok(format!(
+            "fast mode {}",
+            if args.enabled { "enabled" } else { "disabled" }
+        ))
     }
 
     #[tool(
@@ -608,7 +732,10 @@ mod tests {
         let server = EthuiMcp::new(backend.clone());
 
         let confirmation = server
-            .switch_network(args(SwitchNetworkArgs { chain_id: 8453 }))
+            .switch_network(args(SwitchNetworkArgs {
+                chain_id: Some(8453),
+                name: None,
+            }))
             .await
             .unwrap();
 
@@ -622,6 +749,87 @@ mod tests {
         assert!(
             confirmation.contains("8453"),
             "the agent needs the chain confirmed back, got: {confirmation}"
+        );
+    }
+
+    /// By name goes through ethui's own method, since a chain id cannot pick
+    /// between two networks that share one.
+    #[tokio::test]
+    async fn switch_network_by_name_uses_the_ethui_method() {
+        let backend = Arc::new(MockBackend::returning(json!(null)));
+        let server = EthuiMcp::new(backend.clone());
+
+        server
+            .switch_network(args(SwitchNetworkArgs {
+                chain_id: None,
+                name: Some("anvil".to_owned()),
+            }))
+            .await
+            .unwrap();
+
+        assert_eq!(
+            backend.calls(),
+            vec![(
+                "ethui_setCurrentNetwork".to_owned(),
+                json!([{"name": "anvil"}])
+            )]
+        );
+    }
+
+    #[tokio::test]
+    async fn switch_network_refuses_an_ambiguous_or_empty_request() {
+        let backend = Arc::new(MockBackend::returning(json!(null)));
+        let server = EthuiMcp::new(backend.clone());
+
+        for bad in [
+            SwitchNetworkArgs {
+                chain_id: Some(1),
+                name: Some("anvil".to_owned()),
+            },
+            SwitchNetworkArgs {
+                chain_id: None,
+                name: None,
+            },
+        ] {
+            assert!(server.switch_network(args(bad)).await.is_err());
+        }
+
+        assert!(
+            backend.calls().is_empty(),
+            "a rejected request must not reach ethui; got {:?}",
+            backend.calls()
+        );
+    }
+
+    #[tokio::test]
+    async fn create_wallet_folds_type_and_name_into_the_params() {
+        let backend = Arc::new(MockBackend::returning(json!({"name": "dev"})));
+        let server = EthuiMcp::new(backend.clone());
+
+        server
+            .create_wallet(args(CreateWalletArgs {
+                wallet_type: "impersonator".to_owned(),
+                name: "dev".to_owned(),
+                params: Some(
+                    json!({ "addresses": ["0x0000000000000000000000000000000000000001"] })
+                        .as_object()
+                        .unwrap()
+                        .clone(),
+                ),
+            }))
+            .await
+            .unwrap();
+
+        assert_eq!(
+            backend.calls(),
+            vec![(
+                "ethui_createWallet".to_owned(),
+                json!([{
+                    "addresses": ["0x0000000000000000000000000000000000000001"],
+                    "type": "impersonator",
+                    "name": "dev",
+                }])
+            )]
         );
     }
 
@@ -1009,14 +1217,19 @@ mod tests {
             names,
             vec![
                 "call",
+                "create_wallet",
                 "get_accounts",
                 "get_balance",
                 "get_chain",
                 "get_contract_abi",
                 "get_transaction",
                 "list_rpc_methods",
+                "list_wallets",
                 "resolve_alias",
                 "rpc_call",
+                "set_current_path",
+                "set_current_wallet",
+                "set_fast_mode",
                 "switch_network",
             ]
         );

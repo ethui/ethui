@@ -294,10 +294,13 @@ async fn handle_proposal(
     let optional_methods = collect_strings(optional, "methods");
 
     // Never mirror back a method just because the dApp asked for it — only
-    // claim what ethui_rpc actually has a handler for.
-    let supported: std::collections::HashSet<String> = ethui_rpc::Handler::new(None)
-        .method_names()
-        .map(String::from)
+    // claim what ethui_rpc actually has a handler for, and only what it will
+    // serve a remote peer: `served_method_names` drops the local-only tier a
+    // WalletConnect session can never reach.
+    let supported: std::collections::HashSet<String> =
+        ethui_rpc::Handler::new(None, ethui_rpc::Trust::Origin)
+            .served_method_names()
+            .map(String::from)
         .collect();
 
     let peer = DappMetadata {
@@ -506,7 +509,11 @@ async fn settle_session(
     let domain = url::Url::parse(&session.peer.url)
         .ok()
         .and_then(|u| u.host_str().map(|h| h.to_owned()));
-    let handler = Arc::new(ethui_rpc::Handler::new(domain));
+    // A WalletConnect peer is remote by definition, so it is never Local.
+    let handler = Arc::new(ethui_rpc::Handler::new(
+        domain,
+        ethui_rpc::Trust::Origin,
+    ));
 
     // Insert the handler before the session: `handle_request` reads SESSIONS
     // then SESSION_HANDLERS, so a reader that observes the session here is

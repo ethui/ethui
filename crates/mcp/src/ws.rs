@@ -129,6 +129,8 @@ impl Drop for PendingGuard {
 /// extension uses.
 pub struct WsBackend {
     url: String,
+    /// Which port's token to present, if any. See `connect_url`.
+    token_port: Option<u16>,
     timeout: Duration,
     connect_timeout: Duration,
     next_id: AtomicU64,
@@ -140,21 +142,47 @@ pub struct WsBackend {
 impl WsBackend {
     /// Connect to a local ethui on `port`, identifying as `mcp://claude` so the
     /// origin shows up in approval dialogs.
+    ///
+    /// The token is looked up per connect rather than here: an MCP client
+    /// starts this process whenever it likes, quite possibly before ethui is
+    /// running, and a token read once at construction would be missing forever.
+    /// Reading it at connect means the first reconnect after the app starts
+    /// picks it up.
     pub fn new(port: u16) -> Self {
         Self::with_url(format!(
             "ws://127.0.0.1:{port}/?url=mcp%3A%2F%2Fclaude&origin=claude-mcp"
         ))
+        .with_token_port(port)
     }
 
     pub fn with_url(url: impl Into<String>) -> Self {
         Self {
             url: url.into(),
+            token_port: None,
             timeout: DEFAULT_TIMEOUT,
             connect_timeout: DEFAULT_CONNECT_TIMEOUT,
             next_id: AtomicU64::new(1),
             connection: AsyncMutex::new(None),
             session: AtomicU64::new(0),
         }
+    }
+
+    /// Look up the local token for `port` on every connect. Without this the
+    /// backend still works; it just sees the methods a web page would.
+    pub fn with_token_port(mut self, port: u16) -> Self {
+        self.token_port = Some(port);
+        self
+    }
+
+    /// The URL to dial, with the token appended if one exists right now.
+    fn connect_url(&self) -> String {
+        let token = self
+            .token_port
+            .and_then(ethui_args::token::read)
+            .map(|token| format!("&token={token}"))
+            .unwrap_or_default();
+
+        format!("{}{token}", self.url)
     }
 
     pub fn with_timeout(mut self, timeout: Duration) -> Self {
@@ -195,8 +223,11 @@ impl WsBackend {
     }
 
     async fn connect(&self) -> Result<Connection> {
+        // Never logged: it carries the token.
+        let url = self.connect_url();
+
         let (stream, _) =
-            match tokio::time::timeout(self.connect_timeout, connect_async(&self.url)).await {
+            match tokio::time::timeout(self.connect_timeout, connect_async(&url)).await {
                 Ok(Ok(pair)) => pair,
                 Ok(Err(e)) => {
                     debug!("connect to {} failed: {e}", self.url);

@@ -1,5 +1,6 @@
 use std::net::SocketAddr;
 
+use ethui_connections::Trust;
 use ethui_networks::{NetworksActorExt as _, networks};
 use ethui_types::{Affinity, NetworkId, prelude::*};
 use serde_json::json;
@@ -15,6 +16,9 @@ pub struct Peer {
 
     // non-alive peers can represent browser tabs with now web3 connection
     pub alive: bool,
+
+    /// Decided from the handshake, never from what the peer claims to be.
+    pub trust: Trust,
 }
 
 impl Peer {
@@ -22,6 +26,7 @@ impl Peer {
         socket: SocketAddr,
         sender: mpsc::UnboundedSender<serde_json::Value>,
         params: &HashMap<String, String>,
+        trust: Trust,
     ) -> Self {
         let origin = params
             .get("origin")
@@ -36,6 +41,7 @@ impl Peer {
             sender,
             origin,
             url,
+            trust,
         }
     }
 
@@ -51,7 +57,7 @@ impl Peer {
 
 impl From<Peer> for ethui_rpc::Handler {
     fn from(value: Peer) -> Self {
-        Self::new(value.domain())
+        Self::new(value.domain(), value.trust)
     }
 }
 

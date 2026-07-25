@@ -69,7 +69,7 @@ impl Wallets {
     ///
     /// Since wallets actually contain multiple addresses, we need the ability to connect to a
     /// different one within the same wallet
-    async fn set_current_path(&mut self, key: String) -> color_eyre::Result<()> {
+    pub async fn set_current_path(&mut self, key: String) -> color_eyre::Result<()> {
         self.wallets[self.current].set_current_path(key).await?;
         self.on_wallet_changed().await?;
         self.save()?;
@@ -81,7 +81,7 @@ impl Wallets {
     }
 
     /// Switches the current default wallet
-    async fn set_current_wallet(&mut self, id: usize) -> color_eyre::Result<()> {
+    pub async fn set_current_wallet(&mut self, id: usize) -> color_eyre::Result<()> {
         if id >= self.wallets.len() {
             return Err(eyre!("invalid wallet index {}", id));
         }
@@ -97,7 +97,7 @@ impl Wallets {
     }
 
     /// Retrieves all wallets
-    fn get_all(&self) -> &Vec<Wallet> {
+    pub fn get_all(&self) -> &Vec<Wallet> {
         &self.wallets
     }
 
@@ -110,7 +110,7 @@ impl Wallets {
         res
     }
 
-    async fn create(&mut self, params: Json) -> color_eyre::Result<()> {
+    pub async fn create(&mut self, params: Json) -> color_eyre::Result<()> {
         let wallet = Wallet::create(params).await?;
         let addresses = wallet.get_all_addresses().await;
 

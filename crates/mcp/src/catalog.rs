@@ -375,6 +375,18 @@ static METHODS: &[(&str, MethodMeta)] = &[
         },
     ),
     (
+        "ethui_createWallet",
+        MethodMeta {
+            kind: Kind::Write,
+            params: "[{ type, name, ...per-type }]",
+            note: Some(
+                "local tier — served only to a caller holding ethui's token, absent for a web \
+                 origin. No approval dialog. Types: plaintext, jsonKeystore, HDWallet, \
+                 impersonator, ledger, privateKey",
+            ),
+        },
+    ),
+    (
         "ethui_forgeTestSubmitRun",
         MethodMeta {
             kind: Kind::Write,
@@ -407,11 +419,66 @@ static METHODS: &[(&str, MethodMeta)] = &[
         },
     ),
     (
+        "ethui_listWallets",
+        MethodMeta {
+            kind: Kind::Read,
+            params: "[]",
+            note: Some(
+                "local tier — a projection carrying name, type, current address and path keys \
+                 only, never key material",
+            ),
+        },
+    ),
+    (
         "ethui_rpcMethods",
         MethodMeta {
             kind: Kind::Read,
             params: "[]",
-            note: Some("the discovery method backing list_rpc_methods"),
+            note: Some(
+                "the discovery method backing list_rpc_methods; what it returns depends on the \
+                 caller — a web origin is not shown the local tier",
+            ),
+        },
+    ),
+    (
+        "ethui_setCurrentNetwork",
+        MethodMeta {
+            kind: Kind::Write,
+            params: "[{ name }]",
+            note: Some(
+                "local tier. Unlike wallet_switchEthereumChain this picks by name, so it can \
+                 disambiguate networks sharing a chain id. No approval dialog",
+            ),
+        },
+    ),
+    (
+        "ethui_setCurrentPath",
+        MethodMeta {
+            kind: Kind::Write,
+            params: "[{ key }]",
+            note: Some("local tier. Key comes from ethui_listWallets. No approval dialog"),
+        },
+    ),
+    (
+        "ethui_setCurrentWallet",
+        MethodMeta {
+            kind: Kind::Write,
+            params: "[{ name }]",
+            note: Some(
+                "local tier. Changes the signer for the whole app, not just this connection. \
+                 No approval dialog",
+            ),
+        },
+    ),
+    (
+        "ethui_setFastMode",
+        MethodMeta {
+            kind: Kind::Write,
+            params: "[{ enabled }]",
+            note: Some(
+                "local tier. Fast Mode is what lets ethui skip approval dialogs, so enabling it \
+                 removes the human gate from later writes. No approval dialog of its own",
+            ),
         },
     ),
     (

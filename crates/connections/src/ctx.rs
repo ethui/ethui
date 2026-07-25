@@ -6,6 +6,26 @@ use crate::{
     permissions::{Permission, PermissionRequest, RequestedPermission},
 };
 
+/// How much a connection is trusted.
+///
+/// The domain of an untrusted caller lives in [`Ctx::domain`], not in the
+/// `Origin` variant: one place for it means the two cannot drift apart.
+///
+/// `Origin` is the default so that a `Ctx` built without deciding — including
+/// every `..Default::default()` — is the restricted one. A new construction
+/// site that forgets to set trust loses access, rather than silently granting
+/// it.
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, serde::Serialize)]
+pub enum Trust {
+    /// The app's own GUI, or a local process that read the token file off disk.
+    Local,
+
+    /// A web page reaching ethui through the extension, or a WalletConnect
+    /// session. Cannot see methods registered as local-only.
+    #[default]
+    Origin,
+}
+
 /// Context for a provider connection
 ///
 /// Handles network affinity of this individual connection
@@ -15,6 +35,7 @@ pub struct Ctx {
     /// The domain associated with a connection
     pub domain: Option<String>,
     pub permissions: Vec<Permission>,
+    pub trust: Trust,
 }
 
 impl jsonrpc_core::Metadata for Ctx {}
