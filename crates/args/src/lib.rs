@@ -54,7 +54,11 @@ pub struct ForgeTest {
     pub args: Vec<String>,
 }
 
-const fn default_ws_port() -> u16 {
+/// The WS port ethui listens on, per build profile.
+///
+/// Public so peers that connect to it — `ethui-mcp`, for one — resolve the same
+/// port from the same definition rather than mirroring the literals.
+pub const fn default_ws_port() -> u16 {
     if cfg!(debug_assertions) { 9102 } else { 9002 }
 }
 

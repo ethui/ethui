@@ -252,7 +252,9 @@ impl<B: Backend> EthuiMcp<B> {
     #[tool(
         description = "List every JSON-RPC method this ethui instance serves, with parameter \
                        shapes and whether each is a read, a write, or a registered-but-\
-                       unimplemented stub. Use this before rpc_call."
+                       unimplemented stub. Use this before rpc_call. The method names come \
+                       from the running app; the kinds, parameter shapes and notes beside them \
+                       are static documentation that can lag what the app actually does."
     )]
     pub async fn list_rpc_methods(
         &self,
@@ -352,21 +354,9 @@ impl<B: Backend> EthuiMcp<B> {
         if let Some(meta) = catalog::meta(&method)
             && meta.kind == Kind::Unimplemented
         {
-            // The catalog note leads with "registered but always errors" so it
-            // reads on its own in list_rpc_methods. Here that is already the
-            // sentence, so keep only whatever advice follows it.
-            let advice = meta
-                .note
-                .unwrap_or_default()
-                .trim_start_matches("registered but always errors")
-                .trim_start_matches(';')
-                .trim();
-
-            let advice = if advice.is_empty() {
-                String::new()
-            } else {
-                format!(" — {advice}")
-            };
+            let advice = catalog::replacement(&method)
+                .map(|substitute| format!(" — use {substitute} instead"))
+                .unwrap_or_default();
 
             return Err(tool_error(Error::unsupported(format!(
                 "{method} is registered in ethui but always errors{advice}"
@@ -856,6 +846,36 @@ mod tests {
             err.message,
             "net_listening is registered in ethui but always errors"
         );
+    }
+
+    #[tokio::test]
+    async fn every_unimplemented_method_refuses_with_a_clean_sentence() {
+        // Only two of these were exercised before, so a catalog entry phrased
+        // differently from the rest could have produced a garbled refusal
+        // without any test noticing.
+        for method in catalog::names()
+            .filter(|name| catalog::meta(name).is_some_and(|m| m.kind == Kind::Unimplemented))
+        {
+            let backend = serving(json!([method]), json!(null));
+            let server = EthuiMcp::new(backend);
+
+            let err = server
+                .rpc_call(args(RpcCallArgs {
+                    method: method.to_owned(),
+                    params: None,
+                }))
+                .await
+                .unwrap_err();
+
+            let expected = match catalog::replacement(method) {
+                Some(substitute) => format!(
+                    "{method} is registered in ethui but always errors — use {substitute} instead"
+                ),
+                None => format!("{method} is registered in ethui but always errors"),
+            };
+
+            assert_eq!(err.message, expected, "refusing {method}");
+        }
     }
 
     #[tokio::test]

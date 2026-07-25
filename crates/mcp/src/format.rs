@@ -1,18 +1,23 @@
 //! Rendering JSON-RPC quantities as strings a human reads.
 
-use alloy_primitives::{U256, utils::format_ether};
+use alloy::primitives::{U256, utils::format_ether};
 
 use crate::error::{Error, Result};
 
+/// Drop the `0x` prefix a JSON-RPC quantity carries, if present.
+fn strip_0x(hex: &str) -> &str {
+    hex.strip_prefix("0x").unwrap_or(hex)
+}
+
 /// Parse a `0x`-prefixed JSON-RPC quantity into a `u64`.
 pub fn hex_to_u64(hex: &str) -> Result<u64> {
-    u64::from_str_radix(hex.trim_start_matches("0x"), 16)
+    u64::from_str_radix(strip_0x(hex), 16)
         .map_err(|_| Error::malformed(format!("an unparseable quantity: {hex}")))
 }
 
 /// Render a `0x`-prefixed wei quantity as ether, without trailing zeros.
 pub fn hex_wei_to_eth(hex: &str) -> Result<String> {
-    let wei = U256::from_str_radix(hex.trim_start_matches("0x"), 16)
+    let wei = U256::from_str_radix(strip_0x(hex), 16)
         .map_err(|_| Error::malformed(format!("an unparseable wei amount: {hex}")))?;
 
     // `format_ether` always pads to 18 decimals; a human reads "1", not

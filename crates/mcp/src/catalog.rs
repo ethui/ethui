@@ -47,6 +47,26 @@ pub struct MethodMeta {
     pub note: Option<&'static str>,
 }
 
+/// For [`Kind::Unimplemented`] methods that have a working substitute, the
+/// method to call instead.
+///
+/// Structured rather than scraped back out of the prose in `note`: callers that
+/// need the substitute get it as data, so no entry has to phrase its note a
+/// particular way for them to work.
+static REPLACEMENTS: &[(&str, &str)] = &[
+    ("eth_gasPrice", "eth_estimateGas"),
+    ("eth_signTransaction", "eth_sendTransaction"),
+];
+
+/// The method to call instead of `method`, if it is unimplemented and something
+/// else does the job.
+pub fn replacement(method: &str) -> Option<&'static str> {
+    REPLACEMENTS
+        .iter()
+        .find(|(name, _)| *name == method)
+        .map(|(_, substitute)| *substitute)
+}
+
 /// Sorted by name, so [`meta`] can binary-search and [`names`] needs no
 /// sorting of its own. The `names_are_sorted_*` tests hold this true.
 static METHODS: &[(&str, MethodMeta)] = &[

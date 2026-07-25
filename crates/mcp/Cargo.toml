@@ -16,7 +16,9 @@ name = "ethui-mcp"
 path = "src/main.rs"
 
 [dependencies]
-alloy-primitives = "1.4"
+ethui-args.workspace = true
+
+alloy.workspace = true
 rmcp = { version = "=3.0.0-beta.2", features = [
   "server",
   "macros",

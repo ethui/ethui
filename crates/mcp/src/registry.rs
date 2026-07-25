@@ -40,6 +40,11 @@ impl Entry {
     pub fn note(&self) -> Option<&'static str> {
         self.meta.and_then(|meta| meta.note)
     }
+
+    fn documented(name: String) -> Self {
+        let meta = catalog::meta(&name);
+        Self { name, meta }
+    }
 }
 
 /// What ethui serves, at one point in time.
@@ -63,7 +68,7 @@ impl Snapshot {
 /// Fetches and caches the method list.
 pub struct MethodRegistry<B: Backend> {
     backend: Arc<B>,
-    cached: Mutex<Option<Snapshot>>,
+    cached: Mutex<Option<Arc<Snapshot>>>,
 }
 
 impl<B: Backend> MethodRegistry<B> {
@@ -77,15 +82,17 @@ impl<B: Backend> MethodRegistry<B> {
     /// The cached snapshot, fetching one if there is none.
     ///
     /// The lock is held across the fetch, so concurrent tool calls on a cold
-    /// cache issue one request rather than racing.
-    pub async fn snapshot(&self) -> Snapshot {
+    /// cache issue one request rather than racing. Handed back behind an `Arc`
+    /// so a cache hit is a refcount bump rather than a deep copy of every
+    /// entry's owned name.
+    pub async fn snapshot(&self) -> Arc<Snapshot> {
         let mut cached = self.cached.lock().await;
 
         if let Some(snapshot) = cached.as_ref() {
             return snapshot.clone();
         }
 
-        let snapshot = self.fetch().await;
+        let snapshot = Arc::new(self.fetch().await);
 
         // A fallback snapshot is not the truth, only a guess — never memoize
         // it, so a later call can still reach a reconnected ethui.
@@ -97,7 +104,7 @@ impl<B: Backend> MethodRegistry<B> {
     }
 
     /// Discard the cache and fetch again.
-    pub async fn refresh(&self) -> Snapshot {
+    pub async fn refresh(&self) -> Arc<Snapshot> {
         *self.cached.lock().await = None;
         self.snapshot().await
     }
@@ -148,13 +155,6 @@ impl<B: Backend> MethodRegistry<B> {
             stale: Vec::new(),
             live: false,
         }
-    }
-}
-
-impl Entry {
-    fn documented(name: String) -> Self {
-        let meta = catalog::meta(&name);
-        Self { name, meta }
     }
 }
 
@@ -211,12 +211,11 @@ mod tests {
         ])));
         let registry = MethodRegistry::new(backend);
 
-        let names: Vec<_> = registry
-            .snapshot()
-            .await
+        let snapshot = registry.snapshot().await;
+        let names: Vec<_> = snapshot
             .entries
-            .into_iter()
-            .map(|entry| entry.name)
+            .iter()
+            .map(|entry| entry.name.as_str())
             .collect();
 
         assert_eq!(names, vec!["eth_accounts", "eth_chainId"]);

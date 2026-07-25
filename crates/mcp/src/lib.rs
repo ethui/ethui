@@ -13,11 +13,10 @@ mod testing;
 
 /// The WS port ethui listens on, per build profile.
 ///
-/// Mirrors `default_ws_port` in `crates/args/src/lib.rs`. A debug sidecar talks
-/// to a debug app.
-pub const fn default_ws_port() -> u16 {
-    if cfg!(debug_assertions) { 9102 } else { 9002 }
-}
+/// Re-exported from `ethui-args`, which owns the definition the app itself binds
+/// to. Mirroring the literals here would let the two desync silently, surfacing
+/// only at runtime as "ethui is not reachable".
+pub use ethui_args::default_ws_port;
 
 /// Resolve a port from an `ETHUI_WS_PORT` value, falling back to the default.
 ///
@@ -41,7 +40,8 @@ mod tests {
 
     #[test]
     fn default_port_follows_the_build_profile() {
-        // Matches crates/args/src/lib.rs, so the sidecar and the app agree.
+        // Guards the re-export, not the literals: ethui-args owns those, and the
+        // app binds to the same function.
         let expected = if cfg!(debug_assertions) { 9102 } else { 9002 };
         assert_eq!(default_ws_port(), expected);
     }

@@ -3376,9 +3376,10 @@ dependencies = [
 name = "ethui-mcp"
 version = "1.27.0"
 dependencies = [
- "alloy-primitives",
+ "alloy",
  "async-trait",
  "color-eyre",
+ "ethui-args",
  "futures",
  "rmcp",
  "schemars 1.0.4",
