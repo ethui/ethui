@@ -462,6 +462,96 @@ mod tests {
         assert!(started.elapsed() < Duration::from_secs(1));
     }
 
+    #[tokio::test]
+    async fn an_unreachable_app_is_a_disconnect_not_a_hang() {
+        // Bind a port, then drop the listener so nothing is accepting on it.
+        let port = {
+            let listener = std::net::TcpListener::bind("127.0.0.1:0").unwrap();
+            listener.local_addr().unwrap().port()
+        };
+
+        let backend = backend_on(port);
+        let err = backend.request("eth_chainId", json!([])).await.unwrap_err();
+
+        assert_eq!(
+            err.to_string(),
+            "ethui is not reachable — is the ethui app running?"
+        );
+    }
+
+    #[tokio::test]
+    async fn a_dropped_socket_fails_the_request_waiting_on_it() {
+        let port = spawn_echo_server(|_, _| Reply::Disconnect);
+
+        let backend = backend_on(port);
+        let err = backend.request("eth_chainId", json!([])).await.unwrap_err();
+
+        assert_eq!(
+            err.to_string(),
+            "ethui is not reachable — is the ethui app running?"
+        );
+    }
+
+    #[tokio::test]
+    async fn reconnects_lazily_after_the_app_restarts() {
+        // The first connection is dropped without an answer; the second is
+        // served normally. A working lazy reconnect turns the second call into
+        // a success without any timed backoff.
+        let port = spawn_echo_server(|request, connection| {
+            if connection == 0 {
+                Reply::Disconnect
+            } else {
+                Reply::Send(success_for(request, json!("0x1")))
+            }
+        });
+
+        let backend = backend_on(port);
+
+        let first = backend.request("eth_chainId", json!([])).await;
+        assert!(first.is_err(), "first call should fail on the dropped socket");
+
+        let second = backend.request("eth_chainId", json!([])).await.unwrap();
+        assert_eq!(second, json!("0x1"));
+    }
+
+    #[tokio::test]
+    async fn close_rejects_requests_still_in_flight() {
+        let port = spawn_echo_server(|_, _| Reply::Ignore);
+
+        let backend = Arc::new(backend_on(port));
+        let pending = {
+            let backend = backend.clone();
+            tokio::spawn(async move { backend.request("eth_chainId", json!([])).await })
+        };
+
+        // Give the request time to reach the server and register itself.
+        tokio::time::sleep(Duration::from_millis(100)).await;
+        backend.close().await;
+
+        let err = tokio::time::timeout(Duration::from_secs(5), pending)
+            .await
+            .expect("close() left the request hanging")
+            .unwrap()
+            .unwrap_err();
+
+        assert_eq!(
+            err.to_string(),
+            "ethui is not reachable — is the ethui app running?"
+        );
+    }
+
+    #[tokio::test]
+    async fn a_silent_app_times_out() {
+        let port = spawn_echo_server(|_, _| Reply::Ignore);
+
+        let backend = WsBackend::with_url(format!("ws://127.0.0.1:{port}"))
+            .with_timeout(Duration::from_millis(200));
+
+        let err = backend.request("eth_chainId", json!([])).await.unwrap_err();
+
+        assert_eq!(err.to_string(), "request timed out");
+    }
+
     #[test]
     fn builds_the_peer_identity_query_string() {
         let backend = WsBackend::new(9102);

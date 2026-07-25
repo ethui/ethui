@@ -8,8 +8,6 @@ use tokio::net::TcpListener;
 use tokio_tungstenite::tungstenite::Message;
 
 /// What the fake server should do with one incoming JSON-RPC request.
-// `Ignore` and `Disconnect` are unused until Task 3's failure-path tests.
-#[allow(dead_code)]
 pub(crate) enum Reply {
     /// Send this JSON value back.
     Send(Value),
