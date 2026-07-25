@@ -6,7 +6,7 @@ use jsonrpc_core::Params as RpcParams;
 use serde::{Deserialize, Serialize};
 use url::Url;
 
-use super::chain_add::Currency;
+use super::chain_add::{Currency, should_skip_dialog};
 use crate::{Error, Result, methods::Method, params::extract_single_param, utils};
 
 #[derive(Debug, Serialize)]
@@ -39,18 +39,23 @@ impl Method for ChainUpdate {
         }
 
         if !self.already_exists(&network).await? {
-            let add_dialog = Dialog::new("chain-add", serde_json::to_value(&new_network_params)?);
-            add_dialog.open().await?;
+            if should_skip_dialog(&new_network_params).await {
+                networks().add(new_network_params.clone()).await?;
+            } else {
+                let add_dialog =
+                    Dialog::new("chain-add", serde_json::to_value(&new_network_params)?);
+                add_dialog.open().await?;
 
-            while let Some(msg) = add_dialog.recv().await {
-                match msg {
-                    DialogMsg::Data(msg) => {
-                        if let Some("accept") = msg.as_str() {
-                            networks().add(new_network_params.clone()).await?;
-                            break;
+                while let Some(msg) = add_dialog.recv().await {
+                    match msg {
+                        DialogMsg::Data(msg) => {
+                            if let Some("accept") = msg.as_str() {
+                                networks().add(new_network_params.clone()).await?;
+                                break;
+                            }
                         }
+                        DialogMsg::Close => return Err(Error::UserRejectedDialog),
                     }
-                    DialogMsg::Close => return Err(Error::UserRejectedDialog),
                 }
             }
         }
