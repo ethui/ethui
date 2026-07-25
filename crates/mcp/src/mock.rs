@@ -48,10 +48,7 @@ impl MockBackend {
 #[async_trait]
 impl Backend for MockBackend {
     async fn request(&self, method: &str, params: Value) -> Result<Value> {
-        self.calls
-            .lock()
-            .unwrap()
-            .push((method.to_owned(), params));
+        self.calls.lock().unwrap().push((method.to_owned(), params));
 
         match &*self.response {
             MockResponse::Ok(value) => Ok(value.clone()),
@@ -77,10 +74,7 @@ mod tests {
         let result = mock.request("eth_chainId", json!([])).await.unwrap();
 
         assert_eq!(result, json!("0x1"));
-        assert_eq!(
-            mock.calls(),
-            vec![("eth_chainId".to_owned(), json!([]))]
-        );
+        assert_eq!(mock.calls(), vec![("eth_chainId".to_owned(), json!([]))]);
     }
 
     #[tokio::test]

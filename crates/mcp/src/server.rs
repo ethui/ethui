@@ -53,19 +53,15 @@ impl<B: Backend> EthuiMcp<B> {
             .map_err(tool_error)?;
 
         let hex = raw.as_str().ok_or_else(|| {
+            McpError::internal_error(format!("ethui returned a non-string chain id: {raw}"), None)
+        })?;
+
+        let chain_id = u64::from_str_radix(hex.trim_start_matches("0x"), 16).map_err(|_| {
             McpError::internal_error(
-                format!("ethui returned a non-string chain id: {raw}"),
+                format!("ethui returned an unparseable chain id: {hex}"),
                 None,
             )
         })?;
-
-        let chain_id = u64::from_str_radix(hex.trim_start_matches("0x"), 16)
-            .map_err(|_| {
-                McpError::internal_error(
-                    format!("ethui returned an unparseable chain id: {hex}"),
-                    None,
-                )
-            })?;
 
         Ok(chain_id.to_string())
     }
@@ -141,7 +137,10 @@ mod tests {
         let info = server.get_info();
 
         assert_eq!(info.server_info.name, "ethui-mcp");
-        assert!(info.capabilities.tools.is_some(), "tools capability must be advertised");
+        assert!(
+            info.capabilities.tools.is_some(),
+            "tools capability must be advertised"
+        );
     }
 
     #[test]
