@@ -35,6 +35,7 @@ members = [
   "crates/stacks",
   "crates/proxy-detect",
   "crates/walletconnect",
+  "crates/mcp",
 ]
 default-members = ["bin"]
 
@@ -74,6 +75,7 @@ ethui-token-list = { path = "crates/token-list" }
 ethui-proxy-detect = { path = "crates/proxy-detect" }
 ethui-stacks = { path = "crates/stacks" }
 ethui-walletconnect = { path = "crates/walletconnect" }
+ethui-mcp = { path = "crates/mcp" }
 tokio = { version = "1.49", features = ["rt-multi-thread", "sync", "signal"] }
 thiserror = "2.0"
 sqlx = { version = "0.8", default-features = false, features = [
