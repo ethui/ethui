@@ -35,6 +35,7 @@ ethui-simulator.workspace = true
 ethui-args.workspace = true
 ethui-proxy-detect.workspace = true
 ethui-stacks = { workspace = true, optional = true }
+ethui-walletconnect.workspace = true
 
 alloy.workspace = true
 serde.workspace = true

@@ -111,7 +111,7 @@ impl Peers {
                 }
             });
 
-            for (_, peer) in self.map.iter() {
+            for peer in self.map.values() {
                 if ethui_connections::utils::affinity_matches(peer.domain(), &domain, affinity)
                     .await
                 {

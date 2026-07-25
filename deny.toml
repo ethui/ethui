@@ -25,8 +25,6 @@ ignore = [
   "RUSTSEC-2024-0419",
   # paste is unmaintained
   "RUSTSEC-2024-0436",
-  # glib unsoundness
-  "RUSTSEC-2024-0429",
   # fxhash unmaintained
   "RUSTSEC-2025-0057",
   # unic-ucd-version
@@ -41,6 +39,16 @@ ignore = [
   "RUSTSEC-2025-0081",
   # ruint
   "RUSTSEC-2025-0137",
+  # ring 0.16 is unmaintained, pulled in transitively via jsonwebtoken (relay_rpc, walletconnect relay auth)
+  "RUSTSEC-2025-0010",
+  # ring 0.16 AES panic, same jsonwebtoken/relay_rpc pin as RUSTSEC-2025-0010
+  "RUSTSEC-2025-0009",
+  # proc-macro-error2 is unmaintained, no safe upgrade available
+  "RUSTSEC-2026-0173",
+  # quick-xml DoS, pulled in transitively via wayland-scanner (arboard clipboard support);
+  # fix requires wayland-scanner's next major release
+  "RUSTSEC-2026-0194",
+  "RUSTSEC-2026-0195",
 ]
 
 
@@ -63,4 +71,14 @@ allow = [
 ]
 
 [sources]
-allow-git = ["https://github.com/tauri-apps/fix-path-env-rs"]
+allow-git = [
+  "https://github.com/tauri-apps/fix-path-env-rs",
+  "https://github.com/reown-com/reown-rust",
+]
+
+# ring's LICENSE mixes multiple license texts that cargo-deny can't parse into
+# a single SPDX expression; pulled in transitively via jsonwebtoken (relay_rpc).
+[[licenses.clarify]]
+name = "ring"
+expression = "MIT AND ISC AND OpenSSL"
+license-files = [{ path = "LICENSE", hash = 0xbd0eed23 }]

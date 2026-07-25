@@ -38,6 +38,7 @@ in
 
     buildInputs = with pkgs; [
       openssl
+      zlib
       webkitgtk_4_1
       gtk3
       cairo

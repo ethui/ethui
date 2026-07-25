@@ -6,7 +6,8 @@ type Event =
   | "settings-changed"
   | "contracts-updated"
   | "txs-updated"
-  | "update-ready";
+  | "update-ready"
+  | "wc-sessions-updated";
 
 type Callback = (event?: any) => unknown;
 

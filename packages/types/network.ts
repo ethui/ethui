@@ -2,7 +2,7 @@ import { z } from "zod";
 
 export const networkIdSchema = z.object({
   chain_id: z.number("Invalid number").positive(),
-  dedup_id: z.number().positive().optional(),
+  dedup_id: z.number().nonnegative().optional(),
 });
 
 export const networkSchema = z.object({

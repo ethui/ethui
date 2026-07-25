@@ -108,6 +108,12 @@ jobs:
       - uses: taiki-e/install-action@v2
         with:
           tool: sqlx-cli
+
+      - name: Set up scratch DB for sqlx prepare check
+        run: |
+          echo "DATABASE_URL=sqlite://${{ runner.temp }}/sqlx-check.db" >> "$GITHUB_ENV"
+      - run: cargo sqlx database create
+      - run: cargo sqlx migrate run --source migrations
       - run: cargo sqlx prepare --workspace --check
 
   cargo-deny:

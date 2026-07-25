@@ -205,6 +205,7 @@ fn run_migrations(settings: Versions) -> Settings {
                     onboarding: v2.onboarding,
                     run_local_stacks: false,
                     check_for_updates: true,
+                    walletconnect_project_id: None,
                 });
             }
 

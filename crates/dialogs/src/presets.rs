@@ -83,5 +83,14 @@ pub(super) static PRESETS: Lazy<HashMap<String, Preset>> = Lazy::new(|| {
         },
     );
 
+    presets.insert(
+        "wc-session-proposal".into(),
+        Preset {
+            title: "WalletConnect — Connect".into(),
+            w: 420.0,
+            h: 540.0,
+        },
+    );
+
     presets
 });

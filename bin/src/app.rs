@@ -128,6 +128,10 @@ impl EthUIApp {
                 ethui_sync::commands::sync_get_native_balance,
                 ethui_simulator::commands::simulator_run,
                 ethui_simulator::commands::simulator_get_call_count,
+                ethui_walletconnect::commands::wc_pair,
+                ethui_walletconnect::commands::wc_disconnect,
+                ethui_walletconnect::commands::wc_list_sessions,
+                ethui_walletconnect::commands::wc_switch_account,
             ])
             .plugin(tauri_plugin_os::init())
             .plugin(tauri_plugin_clipboard_manager::init())
@@ -183,6 +187,12 @@ impl EthUIApp {
                 #[cfg(feature = "aptabase")]
                 let _ = handle.track_event("app_exited", None);
 
+                tokio::task::block_in_place(|| {
+                    tokio::runtime::Handle::current().block_on(async {
+                        ethui_walletconnect::shutdown().await;
+                    });
+                });
+
                 #[cfg(feature = "stacks")]
                 {
                     tokio::task::block_in_place(|| {
@@ -226,6 +236,7 @@ async fn init(app: &tauri::App, args: &Args) -> color_eyre::Result<()> {
     ethui_connections::init(resource(app, "connections.json", args)).await;
     ethui_wallets::init(resource(app, "wallets.json", args)).await;
     ethui_networks::init(resource(app, "networks.json", args)).await;
+    ethui_walletconnect::init().await;
     ethui_sol_artifacts::init().await?;
     ethui_analytics::init(app.handle()).await;
 
