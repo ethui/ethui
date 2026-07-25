@@ -164,6 +164,19 @@ impl Handler {
 
         #[cfg(feature = "forge-traces")]
         method_handler!("ethui_forgeTestSubmitRun", methods::ethui::ForgeTestTraces);
+
+        // Registered last so the captured list covers every handler above.
+        // `self_handler!` can't express this: its closures are 'static and have
+        // no access to `self.io` to read the registry back out.
+        let mut names: Vec<String> = self.io.iter().map(|(name, _)| name.clone()).collect();
+        names.push("ethui_rpcMethods".to_string());
+        names.sort();
+
+        self.io
+            .add_method_with_meta("ethui_rpcMethods", move |_: Params, _: Ctx| {
+                let names = names.clone();
+                async move { Ok::<Json, jsonrpc_core::Error>(json!(names)) }
+            });
     }
 
     async fn accounts(_: Empty, _: Ctx) -> Result<Json> {
@@ -244,5 +257,38 @@ impl Handler {
             },
             "accounts": [address],
         }))
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn method_names_includes_rpc_methods_itself() {
+        let handler = Handler::new(None);
+        let names: Vec<&str> = handler.method_names().collect();
+
+        assert!(
+            names.contains(&"ethui_rpcMethods"),
+            "ethui_rpcMethods must be registered; got {names:?}"
+        );
+    }
+
+    #[test]
+    fn method_names_includes_known_handlers() {
+        let handler = Handler::new(None);
+        let names: Vec<&str> = handler.method_names().collect();
+
+        for expected in [
+            "eth_accounts",
+            "eth_chainId",
+            "eth_getLogs",
+            "eth_sendTransaction",
+            "eth_gasPrice",
+            "ethui_getContractAbi",
+        ] {
+            assert!(names.contains(&expected), "missing {expected}");
+        }
     }
 }
