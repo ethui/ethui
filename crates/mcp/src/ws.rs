@@ -123,7 +123,7 @@ impl WsBackend {
     /// origin shows up in approval dialogs.
     pub fn new(port: u16) -> Self {
         Self::with_url(format!(
-            "ws://127.0.0.1:{port}?url=mcp%3A%2F%2Fclaude&origin=claude-mcp"
+            "ws://127.0.0.1:{port}/?url=mcp%3A%2F%2Fclaude&origin=claude-mcp"
         ))
     }
 
@@ -558,7 +558,27 @@ mod tests {
 
         assert_eq!(
             backend.url(),
-            "ws://127.0.0.1:9102?url=mcp%3A%2F%2Fclaude&origin=claude-mcp"
+            "ws://127.0.0.1:9102/?url=mcp%3A%2F%2Fclaude&origin=claude-mcp"
         );
+    }
+
+    #[tokio::test]
+    async fn the_production_url_survives_a_real_handshake() {
+        // Every other test in this module goes through `with_url` with a bare
+        // `ws://127.0.0.1:{port}`, bypassing `new`'s own URL construction
+        // entirely. That's how a request line missing its `/` — well-formed
+        // enough to unit-test as a string, fatal to an actual HTTP handshake
+        // — passed the whole suite while breaking every real connection.
+        // `spawn_echo_server` performs a real handshake via
+        // `tokio_tungstenite::accept_async`, so a malformed request line
+        // fails here exactly as it did against the live app.
+        let port = spawn_echo_server(|request, _| {
+            Reply::Send(success_for(request, json!("0x1")))
+        });
+
+        let backend = WsBackend::new(port).with_timeout(Duration::from_secs(5));
+        let result = backend.request("eth_chainId", json!([])).await.unwrap();
+
+        assert_eq!(result, json!("0x1"));
     }
 }
