@@ -19,4 +19,13 @@ pub trait Backend: Send + Sync + 'static {
     /// a bare string or number, say — as a malformed request, before it ever
     /// reaches ethui's own handlers.
     async fn request(&self, method: &str, params: Value) -> Result<Value>;
+
+    /// Which transport session answered the last request.
+    ///
+    /// Bumped on every fresh connection, so [`crate::registry`] can tell a
+    /// reconnect from a steady link and drop what the previous ethui process
+    /// told it. A backend with no connection to lose keeps the default.
+    fn session(&self) -> u64 {
+        0
+    }
 }

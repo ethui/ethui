@@ -2,7 +2,10 @@
 
 use std::{
     collections::HashMap,
-    sync::{Arc, Mutex},
+    sync::{
+        Arc, Mutex,
+        atomic::{AtomicU64, Ordering},
+    },
 };
 
 use async_trait::async_trait;
@@ -32,6 +35,7 @@ pub(crate) enum MockResponse {
 pub(crate) struct MockBackend {
     calls: Arc<Mutex<Vec<(String, Value)>>>,
     response: Arc<MockResponse>,
+    session: Arc<AtomicU64>,
 }
 
 impl MockBackend {
@@ -55,12 +59,18 @@ impl MockBackend {
         Self {
             calls: Default::default(),
             response: Arc::new(response),
+            session: Arc::new(AtomicU64::new(1)),
         }
     }
 
     /// Every call received so far, in order.
     pub(crate) fn calls(&self) -> Vec<(String, Value)> {
         self.calls.lock().unwrap().clone()
+    }
+
+    /// Stand in for the app being restarted underneath the client.
+    pub(crate) fn reconnect(&self) {
+        self.session.fetch_add(1, Ordering::SeqCst);
     }
 }
 
@@ -83,6 +93,10 @@ impl Backend for MockBackend {
             }),
             MockResponse::Disconnected => Err(Error::Disconnected),
         }
+    }
+
+    fn session(&self) -> u64 {
+        self.session.load(Ordering::SeqCst)
     }
 }
 

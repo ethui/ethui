@@ -68,7 +68,8 @@ impl Snapshot {
 /// Fetches and caches the method list.
 pub struct MethodRegistry<B: Backend> {
     backend: Arc<B>,
-    cached: Mutex<Option<Arc<Snapshot>>>,
+    /// The snapshot, paired with the transport session it was fetched over.
+    cached: Mutex<Option<(u64, Arc<Snapshot>)>>,
 }
 
 impl<B: Backend> MethodRegistry<B> {
@@ -85,10 +86,19 @@ impl<B: Backend> MethodRegistry<B> {
     /// cache issue one request rather than racing. Handed back behind an `Arc`
     /// so a cache hit is a refcount bump rather than a deep copy of every
     /// entry's owned name.
+    ///
+    /// A cache entry is only good for the connection that produced it. The
+    /// method list is fixed at ethui's startup (`crates/rpc/src/lib.rs` decides
+    /// it once, partly from compile-time features), so restarting the app on a
+    /// build with different registrations changes the answer — and without this
+    /// check `list_rpc_methods` would keep serving the pre-restart list for the
+    /// rest of the process, since only an `rpc_call` cache miss ever refreshes.
     pub async fn snapshot(&self) -> Arc<Snapshot> {
         let mut cached = self.cached.lock().await;
 
-        if let Some(snapshot) = cached.as_ref() {
+        if let Some((session, snapshot)) = cached.as_ref()
+            && *session == self.backend.session()
+        {
             return snapshot.clone();
         }
 
@@ -96,8 +106,12 @@ impl<B: Backend> MethodRegistry<B> {
 
         // A fallback snapshot is not the truth, only a guess — never memoize
         // it, so a later call can still reach a reconnected ethui.
+        //
+        // Stamped with the session read *after* the fetch: on a cold cache the
+        // fetch is what opens the connection, taking the session 0 -> 1, and
+        // stamping the earlier value would invalidate the entry immediately.
         if snapshot.live {
-            *cached = Some(snapshot.clone());
+            *cached = Some((self.backend.session(), snapshot.clone()));
         }
 
         snapshot
@@ -282,6 +296,30 @@ mod tests {
             2,
             "a later call must still be able to reach a reconnected ethui"
         );
+    }
+
+    #[tokio::test]
+    async fn a_reconnect_invalidates_the_cache() {
+        let backend = Arc::new(MockBackend::returning(json!(["eth_chainId"])));
+        let registry = MethodRegistry::new(backend.clone());
+
+        registry.snapshot().await;
+        backend.reconnect();
+        registry.snapshot().await;
+
+        assert_eq!(backend.calls().len(), 2);
+    }
+
+    #[tokio::test]
+    async fn a_steady_connection_keeps_serving_the_cache() {
+        let backend = Arc::new(MockBackend::returning(json!(["eth_chainId"])));
+        let registry = MethodRegistry::new(backend.clone());
+
+        registry.snapshot().await;
+        registry.snapshot().await;
+        registry.snapshot().await;
+
+        assert_eq!(backend.calls().len(), 1);
     }
 
     #[tokio::test]

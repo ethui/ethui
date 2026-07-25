@@ -501,7 +501,10 @@ static METHODS: &[(&str, MethodMeta)] = &[
         MethodMeta {
             kind: Kind::Write,
             params: "[{ chainId: hexString }]",
-            note: Some("scoped to this connection only; the desktop UI will not reflect it"),
+            note: Some(
+                "not session-scoped: under global affinity it moves ethui's network for \
+                 everything, otherwise it persists a per-origin pin that survives restarts",
+            ),
         },
     ),
     (

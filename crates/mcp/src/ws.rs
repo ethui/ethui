@@ -128,6 +128,8 @@ pub struct WsBackend {
     connect_timeout: Duration,
     next_id: AtomicU64,
     connection: AsyncMutex<Option<Arc<Connection>>>,
+    /// Counts sockets opened, so a reconnect is observable from outside.
+    session: AtomicU64,
 }
 
 impl WsBackend {
@@ -146,6 +148,7 @@ impl WsBackend {
             connect_timeout: DEFAULT_CONNECT_TIMEOUT,
             next_id: AtomicU64::new(1),
             connection: AsyncMutex::new(None),
+            session: AtomicU64::new(0),
         }
     }
 
@@ -178,6 +181,9 @@ impl WsBackend {
         }
 
         let connection = Arc::new(self.connect().await?);
+        // Bumped only on success: a failed connect leaves the session alone, so
+        // a cache is not invalidated by an ethui that was never reached.
+        self.session.fetch_add(1, Ordering::SeqCst);
         *guard = Some(connection.clone());
 
         Ok(connection)
@@ -336,6 +342,10 @@ impl Backend for WsBackend {
     async fn request(&self, method: &str, params: Value) -> Result<Value> {
         let connection = self.connection().await?;
         self.send_request(&connection, method, params).await
+    }
+
+    fn session(&self) -> u64 {
+        self.session.load(Ordering::SeqCst)
     }
 }
 
@@ -564,6 +574,47 @@ mod tests {
 
         let second = backend.request("eth_chainId", json!([])).await.unwrap();
         assert_eq!(second, json!("0x1"));
+    }
+
+    #[tokio::test]
+    async fn the_session_advances_once_per_socket_opened() {
+        // What `MethodRegistry` keys its cache on: a steady link must hold the
+        // session still, a reconnect must move it.
+        let port = spawn_echo_server(|request, connection| {
+            if connection == 0 {
+                Reply::Disconnect
+            } else {
+                Reply::Send(success_for(request, json!("0x1")))
+            }
+        });
+
+        let backend = backend_on(port);
+        assert_eq!(backend.session(), 0, "nothing opened yet");
+
+        let _ = backend.request("eth_chainId", json!([])).await;
+        assert_eq!(backend.session(), 1);
+
+        backend.request("eth_chainId", json!([])).await.unwrap();
+        assert_eq!(backend.session(), 2, "the reconnect opened a second socket");
+
+        backend.request("eth_chainId", json!([])).await.unwrap();
+        assert_eq!(
+            backend.session(),
+            2,
+            "a request reusing a live socket must not look like a reconnect"
+        );
+    }
+
+    #[tokio::test]
+    async fn a_failed_connect_leaves_the_session_alone() {
+        // Otherwise every call made while ethui is down would invalidate the
+        // registry cache, having reached nothing that could change it.
+        let backend = WsBackend::with_url("ws://127.0.0.1:1/")
+            .with_connect_timeout(Duration::from_millis(200));
+
+        assert!(backend.request("eth_chainId", json!([])).await.is_err());
+
+        assert_eq!(backend.session(), 0);
     }
 
     #[tokio::test]

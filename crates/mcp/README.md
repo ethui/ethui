@@ -43,10 +43,36 @@ Add to `claude_desktop_config.json`:
 
 ## Tools
 
-`get_chain` — the current EVM chain id, as a decimal string.
+Reads, none of which prompt the human:
 
-The wider tool catalog (accounts, balances, calls, and the approval-gated
-`send_transaction` / `sign_message` / `sign_typed_data`) is separate work.
+- `get_chain` — the current EVM chain id, as a decimal string.
+- `get_accounts` — the wallet accounts ethui exposes.
+- `get_balance` — ether balance of an address, defaulting to the active account.
+- `get_transaction` — a transaction by hash.
+- `call` — a read-only `eth_call` against a contract.
+- `get_contract_abi` — the ABI ethui knows for an address, if any.
+- `resolve_alias` — ethui's human-readable alias for an address, if set.
+
+State-changing:
+
+- `switch_network` — switch the active chain. No approval dialog, and **not**
+  confined to this MCP session: under global affinity it moves ethui's network
+  for everything, otherwise it persists a per-origin pin that outlives both the
+  connection and the app.
+- `rpc_call` — the escape hatch: any JSON-RPC method this ethui serves,
+  including writes such as `eth_sendTransaction` and the signing methods. Those
+  open ethui's approval dialog, showing the `claude` origin, and can be
+  rejected — bypassed only under Fast Mode (dev wallet AND dev network AND the
+  setting enabled). Approvals are not serialized, so concurrent writes stack
+  dialogs on the human.
+
+Discovery:
+
+- `list_rpc_methods` — every JSON-RPC method this instance serves, with
+  parameter shapes and a read/write/unimplemented label. Names come from the
+  running app via `ethui_rpcMethods`; the shapes and labels beside them are
+  static documentation from `src/catalog.rs` and can lag the app. When ethui
+  cannot be reached the listing falls back to that catalog and says so.
 
 ## Development notes
 

@@ -68,6 +68,33 @@ fn near_matches(target: &str, snapshot: &Snapshot) -> Vec<String> {
         .collect()
 }
 
+/// Add the catalog's advice to a failure from a method it documents as a stub.
+///
+/// Annotated rather than refused up front: the method list cannot tell a
+/// registered-and-working method from a registered-and-always-erroring one, so
+/// only the call settles it. Refusing on the static table's say-so would keep
+/// blocking a method a later ethui implements, with no way past it.
+fn annotate_documented_stub(method: &str, error: McpError) -> McpError {
+    let documented_stub =
+        catalog::meta(method).is_some_and(|meta| meta.kind == Kind::Unimplemented);
+
+    if !documented_stub {
+        return error;
+    }
+
+    let advice = catalog::replacement(method)
+        .map(|substitute| format!("; use {substitute} instead"))
+        .unwrap_or_default();
+
+    McpError::internal_error(
+        format!(
+            "{} — {method} is documented as registered in ethui but always erroring{advice}",
+            error.message
+        ),
+        None,
+    )
+}
+
 #[derive(Debug, Deserialize, JsonSchema)]
 pub struct AddressArgs {
     /// A 0x-prefixed EVM address.
@@ -231,12 +258,15 @@ impl<B: Backend> EthuiMcp<B> {
         })
     }
 
-    #[tool(
-        description = "Switch the active chain for this MCP session by chain id, scoped to this \
-                       connection like a dApp's wallet_switchEthereumChain. Applies immediately \
-                       without an approval dialog. Does not change ethui's global network, so the \
-                       desktop UI will not reflect it."
-    )]
+    #[tool(description = "Switch the active chain by chain id, like a dApp's \
+                       wallet_switchEthereumChain. Applies immediately without an approval \
+                       dialog. The effect depends on the affinity ethui holds for this \
+                       connection: under global affinity it moves ethui's network for \
+                       everything, which the desktop UI and every other connected dApp will \
+                       follow; otherwise it pins this origin to the chain and that pin is \
+                       persisted, outliving both this connection and the app itself. Either way \
+                       it is not confined to this MCP session — confirm with the human before \
+                       switching.")]
     pub async fn switch_network(
         &self,
         Parameters(args): Parameters<SwitchNetworkArgs>,
@@ -326,7 +356,9 @@ impl<B: Backend> EthuiMcp<B> {
                        in the ethui app and may be rejected — skipped only under ethui's Fast \
                        Mode, which requires a dev wallet AND a dev network AND the setting \
                        enabled. Concurrent writes are not serialized, so issuing several at once \
-                       stacks approval dialogs on the human; send them one at a time."
+                       stacks approval dialogs on the human; send them one at a time. Methods \
+                       list_rpc_methods marks unimplemented are still attempted, since only the \
+                       call itself can prove whether this build implements one."
     )]
     pub async fn rpc_call(&self, Parameters(args): Parameters<RpcCallArgs>) -> ToolResult {
         let method = args.method;
@@ -346,27 +378,28 @@ impl<B: Backend> EthuiMcp<B> {
                 format!(" Did you mean: {}?", near.join(", "))
             };
 
-            return Err(tool_error(Error::unsupported(format!(
-                "{method} is not served by this ethui build.{hint}"
-            ))));
+            // Only a live list can say what this build serves; on the static
+            // fallback the app was never reached, so blaming the build would
+            // send the agent hunting for a typo instead of telling the human
+            // to start ethui.
+            return Err(tool_error(if snapshot.live {
+                Error::unsupported(format!("{method} is not served by this ethui build.{hint}"))
+            } else {
+                Error::unsupported(format!(
+                    "ethui is not reachable — is the ethui app running? Its real method list is \
+                     unknown; {method} is not in the static catalog either.{hint}"
+                ))
+            }));
         }
 
-        if let Some(meta) = catalog::meta(&method)
-            && meta.kind == Kind::Unimplemented
-        {
-            let advice = catalog::replacement(&method)
-                .map(|substitute| format!(" — use {substitute} instead"))
-                .unwrap_or_default();
-
-            return Err(tool_error(Error::unsupported(format!(
-                "{method} is registered in ethui but always errors{advice}"
-            ))));
-        }
-
-        Ok(self
+        let result = self
             .request(&method, Value::Array(args.params.unwrap_or_default()))
-            .await?
-            .to_string())
+            .await;
+
+        match result {
+            Ok(value) => Ok(value.to_string()),
+            Err(error) => Err(annotate_documented_stub(&method, error)),
+        }
     }
 }
 
@@ -810,7 +843,9 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn rpc_call_refuses_a_method_that_is_registered_but_always_errors() {
+    async fn rpc_call_annotates_a_failing_stub_with_its_replacement() {
+        // `serving` routes only `eth_getLogs`, so `eth_gasPrice` fails the way
+        // a registered-but-unimplemented method does in the app.
         let backend = serving(json!(["eth_gasPrice"]), json!(null));
         let server = EthuiMcp::new(backend);
 
@@ -822,37 +857,48 @@ mod tests {
             .await
             .unwrap_err();
 
-        assert_eq!(
-            err.message,
-            "eth_gasPrice is registered in ethui but always errors — use eth_estimateGas instead",
-            "spend no round trip on a known stub, and say it once"
+        assert!(
+            err.message.contains("use eth_estimateGas instead"),
+            "a dead end should point somewhere, got: {}",
+            err.message
         );
     }
 
     #[tokio::test]
-    async fn rpc_call_refuses_a_stub_that_has_no_further_advice() {
-        let backend = serving(json!(["net_listening"]), json!(null));
-        let server = EthuiMcp::new(backend);
+    async fn rpc_call_attempts_a_documented_stub_rather_than_refusing_on_the_catalog() {
+        // The catalog is documentation, not truth: if this build implements
+        // what the static table calls a stub, the call must still go through.
+        let backend = Arc::new(MockBackend::responding(MockResponse::ByMethod(
+            [
+                ("ethui_rpcMethods".to_owned(), json!(["eth_gasPrice"])),
+                ("eth_gasPrice".to_owned(), json!("0x3b9aca00")),
+            ]
+            .into_iter()
+            .collect(),
+        )));
+        let server = EthuiMcp::new(backend.clone());
 
-        let err = server
+        let result = server
             .rpc_call(args(RpcCallArgs {
-                method: "net_listening".to_owned(),
+                method: "eth_gasPrice".to_owned(),
                 params: None,
             }))
             .await
-            .unwrap_err();
+            .unwrap();
 
-        assert_eq!(
-            err.message,
-            "net_listening is registered in ethui but always errors"
+        assert!(result.contains("0x3b9aca00"), "got: {result}");
+        assert!(
+            backend
+                .calls()
+                .contains(&("eth_gasPrice".to_owned(), json!([]))),
+            "the call must reach ethui, not stop at the static table"
         );
     }
 
     #[tokio::test]
-    async fn every_unimplemented_method_refuses_with_a_clean_sentence() {
-        // Only two of these were exercised before, so a catalog entry phrased
-        // differently from the rest could have produced a garbled refusal
-        // without any test noticing.
+    async fn every_unimplemented_method_annotates_cleanly() {
+        // A catalog entry phrased differently from the rest could produce a
+        // garbled annotation without any single-method test noticing.
         for method in catalog::names()
             .filter(|name| catalog::meta(name).is_some_and(|m| m.kind == Kind::Unimplemented))
         {
@@ -869,13 +915,45 @@ mod tests {
 
             let expected = match catalog::replacement(method) {
                 Some(substitute) => format!(
-                    "{method} is registered in ethui but always errors — use {substitute} instead"
+                    "{method} is documented as registered in ethui but always erroring; use \
+                     {substitute} instead"
                 ),
-                None => format!("{method} is registered in ethui but always errors"),
+                None => {
+                    format!("{method} is documented as registered in ethui but always erroring")
+                }
             };
 
-            assert_eq!(err.message, expected, "refusing {method}");
+            assert!(
+                err.message.ends_with(&expected),
+                "annotating {method}, got: {}",
+                err.message
+            );
         }
+    }
+
+    #[tokio::test]
+    async fn rpc_call_blames_an_unreachable_ethui_not_the_build() {
+        let backend = Arc::new(MockBackend::responding(MockResponse::Disconnected));
+        let server = EthuiMcp::new(backend);
+
+        let err = server
+            .rpc_call(args(RpcCallArgs {
+                method: "eth_madeUp".to_owned(),
+                params: None,
+            }))
+            .await
+            .unwrap_err();
+
+        assert!(
+            err.message.contains("ethui is not reachable"),
+            "got: {}",
+            err.message
+        );
+        assert!(
+            !err.message.contains("not served by this ethui build"),
+            "got: {}",
+            err.message
+        );
     }
 
     #[tokio::test]
