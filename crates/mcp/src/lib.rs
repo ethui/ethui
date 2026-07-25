@@ -1,5 +1,8 @@
 pub mod backend;
+pub mod catalog;
 pub mod error;
+pub mod format;
+pub mod registry;
 pub mod server;
 pub mod ws;
 

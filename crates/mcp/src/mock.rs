@@ -1,6 +1,9 @@
 //! Test double for [`Backend`]. Test-only — never compiled into the binary.
 
-use std::sync::{Arc, Mutex};
+use std::{
+    collections::HashMap,
+    sync::{Arc, Mutex},
+};
 
 use async_trait::async_trait;
 use serde_json::Value;
@@ -13,7 +16,13 @@ use crate::{
 /// What a [`MockBackend`] answers with, for every call it receives.
 pub(crate) enum MockResponse {
     Ok(Value),
-    Rpc { code: i64, message: String },
+    /// One canned answer per method, for tools that make more than one call.
+    /// An unrouted method answers "method not found", as ethui would.
+    ByMethod(HashMap<String, Value>),
+    Rpc {
+        code: i64,
+        message: String,
+    },
     Disconnected,
 }
 
@@ -29,6 +38,16 @@ impl MockBackend {
     /// A backend that answers every request with `value`.
     pub(crate) fn returning(value: Value) -> Self {
         Self::responding(MockResponse::Ok(value))
+    }
+
+    /// A backend that answers each listed method with its own value.
+    pub(crate) fn routing<const N: usize>(routes: [(&str, Value); N]) -> Self {
+        Self::responding(MockResponse::ByMethod(
+            routes
+                .into_iter()
+                .map(|(method, value)| (method.to_owned(), value))
+                .collect(),
+        ))
     }
 
     /// A backend that answers every request with a specific failure.
@@ -52,6 +71,12 @@ impl Backend for MockBackend {
 
         match &*self.response {
             MockResponse::Ok(value) => Ok(value.clone()),
+            MockResponse::ByMethod(routes) => {
+                routes.get(method).cloned().ok_or_else(|| Error::Rpc {
+                    code: -32601,
+                    message: format!("the method {method} does not exist/is not available"),
+                })
+            }
             MockResponse::Rpc { code, message } => Err(Error::Rpc {
                 code: *code,
                 message: message.clone(),
@@ -75,6 +100,32 @@ mod tests {
 
         assert_eq!(result, json!("0x1"));
         assert_eq!(mock.calls(), vec![("eth_chainId".to_owned(), json!([]))]);
+    }
+
+    #[tokio::test]
+    async fn routes_each_method_to_its_own_answer() {
+        let mock = MockBackend::routing([
+            ("eth_accounts", json!(["0xabc"])),
+            ("eth_chainId", json!("0x1")),
+        ]);
+
+        assert_eq!(
+            mock.request("eth_accounts", json!([])).await.unwrap(),
+            json!(["0xabc"])
+        );
+        assert_eq!(
+            mock.request("eth_chainId", json!([])).await.unwrap(),
+            json!("0x1")
+        );
+    }
+
+    #[tokio::test]
+    async fn an_unrouted_method_answers_method_not_found() {
+        let mock = MockBackend::routing([("eth_chainId", json!("0x1"))]);
+
+        let err = mock.request("eth_accounts", json!([])).await.unwrap_err();
+
+        assert!(err.to_string().contains("-32601"), "got: {err}");
     }
 
     #[tokio::test]

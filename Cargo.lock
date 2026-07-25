@@ -3376,6 +3376,7 @@ dependencies = [
 name = "ethui-mcp"
 version = "1.27.0"
 dependencies = [
+ "alloy-primitives",
  "async-trait",
  "color-eyre",
  "futures",
