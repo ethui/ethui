@@ -3377,6 +3377,7 @@ name = "ethui-mcp"
 version = "1.27.0"
 dependencies = [
  "async-trait",
+ "color-eyre",
  "futures",
  "rmcp",
  "schemars 1.0.4",
