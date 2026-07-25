@@ -1,0 +1,373 @@
+use std::{
+    collections::HashMap,
+    sync::{
+        Arc, Mutex,
+        atomic::{AtomicBool, AtomicU64, Ordering},
+    },
+    time::Duration,
+};
+
+use async_trait::async_trait;
+use futures::{SinkExt as _, StreamExt as _};
+use serde_json::{Value, json};
+use tokio::sync::{Mutex as AsyncMutex, mpsc, oneshot};
+use tokio_tungstenite::{connect_async, tungstenite::Message};
+use tracing::debug;
+
+use crate::{
+    backend::Backend,
+    error::{Error, Result},
+};
+
+/// Long enough for a human to read and act on an ethui approval dialog.
+pub const DEFAULT_TIMEOUT: Duration = Duration::from_secs(120);
+
+type Pending = Arc<Mutex<HashMap<u64, oneshot::Sender<Result<Value>>>>>;
+
+/// One live WebSocket, with the requests waiting on it.
+///
+/// The pending map belongs to the connection rather than to the backend, so a
+/// reconnect cannot disturb requests issued on the new socket: each socket only
+/// ever fails the requests it owns.
+struct Connection {
+    outbound: mpsc::UnboundedSender<Message>,
+    pending: Pending,
+    alive: Arc<AtomicBool>,
+}
+
+impl Connection {
+    fn is_alive(&self) -> bool {
+        self.alive.load(Ordering::SeqCst)
+    }
+}
+
+/// Fail every request still waiting on a socket that has gone away.
+fn fail_all(pending: &Pending) {
+    let drained: Vec<_> = pending.lock().unwrap().drain().collect();
+    for (_, sender) in drained {
+        let _ = sender.send(Err(Error::Disconnected));
+    }
+}
+
+/// Route one inbound frame to the request that is waiting for it.
+///
+/// Frames that are not JSON, or that carry no numeric `id` (ethui's event
+/// notifications), are ignored.
+fn dispatch(text: &str, pending: &Pending) {
+    let Ok(message) = serde_json::from_str::<Value>(text) else {
+        return;
+    };
+    let Some(id) = message.get("id").and_then(Value::as_u64) else {
+        return;
+    };
+    let Some(sender) = pending.lock().unwrap().remove(&id) else {
+        return;
+    };
+
+    let outcome = match message.get("error") {
+        Some(error) => Err(Error::Rpc {
+            code: error.get("code").and_then(Value::as_i64).unwrap_or(0),
+            message: error
+                .get("message")
+                .and_then(Value::as_str)
+                .unwrap_or("unknown error")
+                .to_owned(),
+        }),
+        None => Ok(message.get("result").cloned().unwrap_or(Value::Null)),
+    };
+
+    let _ = sender.send(outcome);
+}
+
+/// Reaches ethui over its WebSocket JSON-RPC port — the same one the browser
+/// extension uses.
+pub struct WsBackend {
+    url: String,
+    timeout: Duration,
+    next_id: AtomicU64,
+    connection: AsyncMutex<Option<Arc<Connection>>>,
+}
+
+impl WsBackend {
+    /// Connect to a local ethui on `port`, identifying as `mcp://claude` so the
+    /// origin shows up in approval dialogs.
+    pub fn new(port: u16) -> Self {
+        Self::with_url(format!(
+            "ws://127.0.0.1:{port}?url=mcp%3A%2F%2Fclaude&origin=claude-mcp"
+        ))
+    }
+
+    pub fn with_url(url: impl Into<String>) -> Self {
+        Self {
+            url: url.into(),
+            timeout: DEFAULT_TIMEOUT,
+            next_id: AtomicU64::new(1),
+            connection: AsyncMutex::new(None),
+        }
+    }
+
+    pub fn with_timeout(mut self, timeout: Duration) -> Self {
+        self.timeout = timeout;
+        self
+    }
+
+    pub fn url(&self) -> &str {
+        &self.url
+    }
+
+    /// Return the live connection, opening one if there is none.
+    async fn connection(&self) -> Result<Arc<Connection>> {
+        let mut guard = self.connection.lock().await;
+
+        if let Some(connection) = guard.as_ref()
+            && connection.is_alive()
+        {
+            return Ok(connection.clone());
+        }
+
+        let connection = Arc::new(self.connect().await?);
+        *guard = Some(connection.clone());
+
+        Ok(connection)
+    }
+
+    async fn connect(&self) -> Result<Connection> {
+        let (stream, _) = connect_async(&self.url).await.map_err(|e| {
+            debug!("connect to {} failed: {e}", self.url);
+            Error::Disconnected
+        })?;
+
+        let (mut sink, mut source) = stream.split();
+        let (outbound, mut to_send) = mpsc::unbounded_channel::<Message>();
+        let pending: Pending = Default::default();
+        let alive = Arc::new(AtomicBool::new(true));
+
+        tokio::spawn(async move {
+            while let Some(message) = to_send.recv().await {
+                if sink.send(message).await.is_err() {
+                    break;
+                }
+            }
+        });
+
+        let reader_pending = pending.clone();
+        let reader_outbound = outbound.clone();
+        let reader_alive = alive.clone();
+
+        tokio::spawn(async move {
+            while let Some(Ok(message)) = source.next().await {
+                let Message::Text(text) = message else {
+                    continue;
+                };
+
+                // Application-level keepalive, not a WebSocket control frame.
+                if text.as_str() == "pong" || text.as_str() == "ping" {
+                    if text.as_str() == "ping" {
+                        let _ = reader_outbound.send(Message::Text("pong".into()));
+                    }
+                    continue;
+                }
+
+                dispatch(text.as_str(), &reader_pending);
+            }
+
+            reader_alive.store(false, Ordering::SeqCst);
+            fail_all(&reader_pending);
+        });
+
+        Ok(Connection {
+            outbound,
+            pending,
+            alive,
+        })
+    }
+
+    /// Drop the connection and fail everything waiting on it.
+    pub async fn close(&self) {
+        let taken = self.connection.lock().await.take();
+
+        if let Some(connection) = taken {
+            connection.alive.store(false, Ordering::SeqCst);
+            let _ = connection.outbound.send(Message::Close(None));
+            fail_all(&connection.pending);
+        }
+    }
+}
+
+#[async_trait]
+impl Backend for WsBackend {
+    async fn request(&self, method: &str, params: Value) -> Result<Value> {
+        let connection = self.connection().await?;
+        let id = self.next_id.fetch_add(1, Ordering::Relaxed);
+        let (sender, receiver) = oneshot::channel();
+
+        connection.pending.lock().unwrap().insert(id, sender);
+
+        let payload = json!({
+            "jsonrpc": "2.0",
+            "id": id,
+            "method": method,
+            "params": params,
+        });
+
+        if connection
+            .outbound
+            .send(Message::Text(payload.to_string().into()))
+            .is_err()
+        {
+            connection.pending.lock().unwrap().remove(&id);
+            return Err(Error::Disconnected);
+        }
+
+        match tokio::time::timeout(self.timeout, receiver).await {
+            Ok(Ok(outcome)) => outcome,
+            // The connection dropped the sender without answering.
+            Ok(Err(_)) => Err(Error::Disconnected),
+            Err(_) => {
+                connection.pending.lock().unwrap().remove(&id);
+                Err(Error::Timeout)
+            }
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use std::time::Duration;
+
+    use serde_json::json;
+    use tokio_tungstenite::tungstenite::Message;
+
+    use super::*;
+    use crate::testing::{Reply, spawn_echo_server, success_for};
+
+    fn backend_on(port: u16) -> WsBackend {
+        WsBackend::with_url(format!("ws://127.0.0.1:{port}"))
+            .with_timeout(Duration::from_secs(5))
+    }
+
+    #[tokio::test]
+    async fn returns_the_result_field() {
+        let port = spawn_echo_server(|request, _| {
+            Reply::Send(success_for(request, json!("0x7a69")))
+        });
+
+        let backend = backend_on(port);
+        let result = backend.request("eth_chainId", json!([])).await.unwrap();
+
+        assert_eq!(result, json!("0x7a69"));
+    }
+
+    #[tokio::test]
+    async fn sends_a_well_formed_jsonrpc_request() {
+        let port = spawn_echo_server(|request, _| {
+            // Echo the request itself back as the result, so the test can
+            // inspect exactly what went over the wire.
+            Reply::Send(success_for(request, request.clone()))
+        });
+
+        let backend = backend_on(port);
+        let sent = backend
+            .request("eth_getBalance", json!(["0xabc", "latest"]))
+            .await
+            .unwrap();
+
+        assert_eq!(sent["jsonrpc"], json!("2.0"));
+        assert_eq!(sent["method"], json!("eth_getBalance"));
+        assert_eq!(sent["params"], json!(["0xabc", "latest"]));
+        assert!(sent["id"].is_u64());
+    }
+
+    #[tokio::test]
+    async fn correlates_concurrent_requests_by_id() {
+        // Answer every request with its own method name, so a mismatched
+        // correlation produces a visibly wrong answer rather than a hang.
+        let port = spawn_echo_server(|request, _| {
+            Reply::Send(success_for(request, request["method"].clone()))
+        });
+
+        let backend = backend_on(port);
+        let (first, second, third) = tokio::join!(
+            backend.request("method_a", json!([])),
+            backend.request("method_b", json!([])),
+            backend.request("method_c", json!([])),
+        );
+
+        assert_eq!(first.unwrap(), json!("method_a"));
+        assert_eq!(second.unwrap(), json!("method_b"));
+        assert_eq!(third.unwrap(), json!("method_c"));
+    }
+
+    #[tokio::test]
+    async fn maps_a_jsonrpc_error_to_an_rpc_error() {
+        let port = spawn_echo_server(|request, _| {
+            Reply::Send(json!({
+                "jsonrpc": "2.0",
+                "id": request["id"],
+                "error": { "code": -32603, "message": "user rejected the request" },
+            }))
+        });
+
+        let backend = backend_on(port);
+        let err = backend.request("eth_sendTransaction", json!([])).await.unwrap_err();
+
+        assert_eq!(
+            err.to_string(),
+            "RPC error -32603: user rejected the request"
+        );
+    }
+
+    #[tokio::test]
+    async fn answers_the_application_level_ping_with_pong() {
+        // ethui-ws sends a literal "ping" text frame every 15s and expects a
+        // "pong" text frame back. This is not a WebSocket control frame.
+        let listener = std::net::TcpListener::bind("127.0.0.1:0").unwrap();
+        listener.set_nonblocking(true).unwrap();
+        let port = listener.local_addr().unwrap().port();
+
+        let pong = tokio::spawn(async move {
+            let listener = tokio::net::TcpListener::from_std(listener).unwrap();
+            let (stream, _) = listener.accept().await.unwrap();
+            let ws = tokio_tungstenite::accept_async(stream).await.unwrap();
+            let (mut sink, mut source) = futures::StreamExt::split(ws);
+
+            futures::SinkExt::send(&mut sink, Message::Text("ping".into()))
+                .await
+                .unwrap();
+
+            loop {
+                let Some(Ok(Message::Text(text))) = source.next().await else {
+                    return None;
+                };
+                if text.as_str() == "pong" {
+                    return Some(text.to_string());
+                }
+            }
+        });
+
+        let backend = backend_on(port);
+        // Any request establishes the connection; the server never answers it.
+        let _ = tokio::time::timeout(
+            Duration::from_millis(500),
+            backend.request("eth_chainId", json!([])),
+        )
+        .await;
+
+        let received = tokio::time::timeout(Duration::from_secs(5), pong)
+            .await
+            .expect("timed out waiting for pong")
+            .unwrap();
+
+        assert_eq!(received.as_deref(), Some("pong"));
+    }
+
+    #[test]
+    fn builds_the_peer_identity_query_string() {
+        let backend = WsBackend::new(9102);
+
+        assert_eq!(
+            backend.url(),
+            "ws://127.0.0.1:9102?url=mcp%3A%2F%2Fclaude&origin=claude-mcp"
+        );
+    }
+}
