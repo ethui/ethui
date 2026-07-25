@@ -16,7 +16,7 @@ mod testing;
 /// Re-exported from `ethui-args`, which owns the definition the app itself binds
 /// to. Mirroring the literals here would let the two desync silently, surfacing
 /// only at runtime as "ethui is not reachable".
-pub use ethui_args::default_ws_port;
+pub use ethui_args::{WS_PORT_ENV, default_ws_port};
 
 /// Resolve a port from an `ETHUI_WS_PORT` value, falling back to the default.
 ///
@@ -31,7 +31,7 @@ pub fn parse_ws_port(value: Option<String>) -> u16 {
 
 /// Resolve the port from the process environment.
 pub fn ws_port_from_env() -> u16 {
-    parse_ws_port(std::env::var("ETHUI_WS_PORT").ok())
+    parse_ws_port(std::env::var(WS_PORT_ENV).ok())
 }
 
 #[cfg(test)]

@@ -13,7 +13,7 @@ pub struct Args {
     #[arg(long, env = "ETHUI_CONFIG_DIR")]
     pub config_dir: Option<String>,
 
-    #[arg(long, default_value_t = default_ws_port(), env = "ETHUI_WS_PORT")]
+    #[arg(long, default_value_t = default_ws_port(), env = WS_PORT_ENV)]
     pub ws_port: u16,
 
     #[arg(long, default_value_t = default_stacks_port(), env = "ETHUI_STACKS_PORT")]
@@ -53,6 +53,12 @@ pub struct ForgeTest {
     #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
     pub args: Vec<String>,
 }
+
+/// The environment variable that overrides the WS port.
+///
+/// Public for the same reason as [`default_ws_port`]: peers read the name from
+/// here rather than repeating the literal.
+pub const WS_PORT_ENV: &str = "ETHUI_WS_PORT";
 
 /// The WS port ethui listens on, per build profile.
 ///

@@ -1,8 +1,8 @@
 //! The set of JSON-RPC methods the connected ethui actually serves.
 //!
-//! A port of `packages/mcp/src/rpc-registry.ts`. Prefers the live
-//! `ethui_rpcMethods` list and falls back to [`crate::catalog`] when ethui
-//! cannot be reached, marking the result as a guess.
+//! Prefers the live `ethui_rpcMethods` list and falls back to
+//! [`crate::catalog`] when ethui cannot be reached, marking the result as a
+//! guess.
 
 use std::sync::Arc;
 
@@ -52,9 +52,6 @@ impl Entry {
 pub struct Snapshot {
     /// Sorted by name.
     pub entries: Vec<Entry>,
-    /// Catalog methods this build does not serve. Empty unless `live`, since a
-    /// fallback snapshot has nothing to compare against.
-    pub stale: Vec<&'static str>,
     /// Whether this came from ethui (`true`) or the static catalog (`false`).
     pub live: bool,
 }
@@ -62,6 +59,21 @@ pub struct Snapshot {
 impl Snapshot {
     pub fn contains(&self, method: &str) -> bool {
         self.entries.iter().any(|entry| entry.name == method)
+    }
+
+    /// Catalog methods this build does not serve.
+    ///
+    /// Derived rather than stored so the "empty unless live" rule is a
+    /// consequence rather than an invariant each constructor has to uphold: a
+    /// fallback snapshot is the catalog, so it cannot prove drift against it.
+    pub fn stale(&self) -> Vec<&'static str> {
+        if !self.live {
+            return Vec::new();
+        }
+
+        catalog::names()
+            .filter(|documented| !self.contains(documented))
+            .collect()
     }
 }
 
@@ -150,13 +162,8 @@ impl<B: Backend> MethodRegistry<B> {
         names.sort();
         names.dedup();
 
-        let stale = catalog::names()
-            .filter(|documented| !names.iter().any(|name| name == documented))
-            .collect();
-
         Snapshot {
             entries: names.into_iter().map(Entry::documented).collect(),
-            stale,
             live: true,
         }
     }
@@ -166,7 +173,6 @@ impl<B: Backend> MethodRegistry<B> {
             entries: catalog::names()
                 .map(|name| Entry::documented(name.to_owned()))
                 .collect(),
-            stale: Vec::new(),
             live: false,
         }
     }
@@ -243,10 +249,10 @@ mod tests {
         let snapshot = registry.snapshot().await;
 
         assert!(
-            snapshot.stale.contains(&"eth_getBalance"),
+            snapshot.stale().contains(&"eth_getBalance"),
             "a catalog method absent from the live list is drift worth reporting"
         );
-        assert!(!snapshot.stale.contains(&"eth_chainId"));
+        assert!(!snapshot.stale().contains(&"eth_chainId"));
     }
 
     #[tokio::test]
@@ -267,7 +273,7 @@ mod tests {
         let registry = MethodRegistry::new(backend);
 
         assert!(
-            registry.snapshot().await.stale.is_empty(),
+            registry.snapshot().await.stale().is_empty(),
             "a guess cannot prove drift"
         );
     }

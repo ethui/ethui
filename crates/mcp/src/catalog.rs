@@ -1,11 +1,12 @@
 //! Static metadata for the JSON-RPC methods ethui serves.
 //!
-//! A port of `packages/mcp/src/rpc-catalog.ts`. It is documentation, not truth:
-//! [`crate::registry`] prefers the live `ethui_rpcMethods` list and falls back
-//! here only when the app cannot be reached.
+//! It is documentation, not truth: [`crate::registry`] prefers the live
+//! `ethui_rpcMethods` list and falls back here only when the app cannot be
+//! reached.
 
 /// What calling a method does.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Deserialize, schemars::JsonSchema)]
+#[serde(rename_all = "lowercase")]
 pub enum Kind {
     /// Answers from state; no dialog.
     Read,
@@ -16,23 +17,13 @@ pub enum Kind {
 }
 
 impl Kind {
-    /// The lowercase name used in tool output and in `list_rpc_methods`'s
-    /// `kind` filter.
+    /// The lowercase name used in tool output. Matches the `rename_all` form
+    /// the `kind` filter deserializes from.
     pub fn as_str(&self) -> &'static str {
         match self {
             Self::Read => "read",
             Self::Write => "write",
             Self::Unimplemented => "unimplemented",
-        }
-    }
-
-    /// Parse the filter value an agent passes to `list_rpc_methods`.
-    pub fn parse(value: &str) -> Option<Self> {
-        match value {
-            "read" => Some(Self::Read),
-            "write" => Some(Self::Write),
-            "unimplemented" => Some(Self::Unimplemented),
-            _ => None,
         }
     }
 }
@@ -52,7 +43,8 @@ pub struct MethodMeta {
 ///
 /// Structured rather than scraped back out of the prose in `note`: callers that
 /// need the substitute get it as data, so no entry has to phrase its note a
-/// particular way for them to work.
+/// particular way for them to work. It is the only place a substitute is
+/// written down — every message that offers one renders it from here.
 static REPLACEMENTS: &[(&str, &str)] = &[
     ("eth_gasPrice", "eth_estimateGas"),
     ("eth_signTransaction", "eth_sendTransaction"),
@@ -115,7 +107,7 @@ static METHODS: &[(&str, MethodMeta)] = &[
         MethodMeta {
             kind: Kind::Unimplemented,
             params: "[]",
-            note: Some("registered but always errors; use eth_estimateGas instead"),
+            note: Some("registered but always errors"),
         },
     ),
     (
@@ -347,7 +339,7 @@ static METHODS: &[(&str, MethodMeta)] = &[
         MethodMeta {
             kind: Kind::Unimplemented,
             params: "[txObject]",
-            note: Some("registered but always errors; use eth_sendTransaction instead"),
+            note: Some("registered but always errors"),
         },
     ),
     (
@@ -625,17 +617,5 @@ mod tests {
         ] {
             assert!(meta(name).is_some(), "{name} must be documented");
         }
-    }
-
-    #[test]
-    fn kind_round_trips_through_its_string_form() {
-        for kind in [Kind::Read, Kind::Write, Kind::Unimplemented] {
-            assert_eq!(Kind::parse(kind.as_str()), Some(kind));
-        }
-    }
-
-    #[test]
-    fn an_unknown_kind_filter_does_not_parse() {
-        assert!(Kind::parse("banana").is_none());
     }
 }

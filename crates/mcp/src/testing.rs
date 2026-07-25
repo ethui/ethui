@@ -10,6 +10,27 @@ use tokio_tungstenite::tungstenite::{
     handshake::server::{ErrorResponse, Request, Response},
 };
 
+/// A bound, non-blocking listener and the port it holds, for a test that wants
+/// to accept connections by hand rather than through [`spawn_echo_server`].
+///
+/// Non-blocking because every caller hands it to `tokio::net::TcpListener::
+/// from_std`, which requires it.
+pub(crate) fn reserved_listener() -> (std::net::TcpListener, u16) {
+    let listener = std::net::TcpListener::bind("127.0.0.1:0").unwrap();
+    listener.set_nonblocking(true).unwrap();
+    let port = listener.local_addr().unwrap().port();
+
+    (listener, port)
+}
+
+/// A port with nothing listening on it: bound to learn the number, then
+/// released.
+pub(crate) fn dead_port() -> u16 {
+    let listener = std::net::TcpListener::bind("127.0.0.1:0").unwrap();
+
+    listener.local_addr().unwrap().port()
+}
+
 /// What the fake server should do with one incoming JSON-RPC request.
 pub(crate) enum Reply {
     /// Send this JSON value back.

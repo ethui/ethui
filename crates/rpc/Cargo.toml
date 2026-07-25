@@ -8,6 +8,9 @@ repository.workspace = true
 exclude.workspace = true
 authors.workspace = true
 
+[dev-dependencies]
+tokio = { workspace = true, features = ["macros", "rt"] }
+
 [dependencies]
 ethui-types.workspace = true
 ethui-settings.workspace = true

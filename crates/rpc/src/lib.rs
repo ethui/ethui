@@ -168,14 +168,18 @@ impl Handler {
         // Registered last so the captured list covers every handler above.
         // `self_handler!` can't express this: its closures are 'static and have
         // no access to `self.io` to read the registry back out.
-        let mut names: Vec<String> = self.io.iter().map(|(name, _)| name.clone()).collect();
+        let mut names: Vec<String> = self.method_names().map(String::from).collect();
         names.push("ethui_rpcMethods".to_string());
         names.sort();
 
+        // Rendered once at registration rather than per call: the payload is
+        // the same for the life of the handler.
+        let payload = json!(names);
+
         self.io
             .add_method_with_meta("ethui_rpcMethods", move |_: Params, _: Ctx| {
-                let names = names.clone();
-                async move { Ok::<Json, jsonrpc_core::Error>(json!(names)) }
+                let payload = payload.clone();
+                async move { Ok::<Json, jsonrpc_core::Error>(payload) }
             });
     }
 
@@ -290,5 +294,38 @@ mod tests {
         ] {
             assert!(names.contains(&expected), "missing {expected}");
         }
+    }
+
+    /// The list is captured at registration time, so it can only be trusted if
+    /// what the handler *serves* is checked, not just that it is registered.
+    /// Moving the capture above a handler would silently drop entries from the
+    /// served list while every `method_names()` assertion above still passed.
+    #[tokio::test]
+    async fn rpc_methods_serves_the_whole_registry() {
+        let handler = Handler::new(None);
+
+        let response = handler
+            .handle(jsonrpc_core::Request::Single(
+                jsonrpc_core::Call::MethodCall(jsonrpc_core::MethodCall {
+                    jsonrpc: Some(jsonrpc_core::Version::V2),
+                    method: "ethui_rpcMethods".to_owned(),
+                    params: Params::Array(vec![]),
+                    id: jsonrpc_core::Id::Num(1),
+                }),
+            ))
+            .await
+            .expect("ethui_rpcMethods must answer");
+
+        let jsonrpc_core::Response::Single(jsonrpc_core::Output::Success(success)) = response
+        else {
+            panic!("expected a success response, got {response:?}");
+        };
+
+        let mut served: Vec<String> = serde_json::from_value(success.result).unwrap();
+        let mut registered: Vec<String> = handler.method_names().map(String::from).collect();
+        served.sort();
+        registered.sort();
+
+        assert_eq!(served, registered);
     }
 }

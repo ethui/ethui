@@ -129,8 +129,8 @@ pub struct SwitchNetworkArgs {
 
 #[derive(Debug, Deserialize, JsonSchema)]
 pub struct ListRpcMethodsArgs {
-    /// Show only methods of one kind: `read`, `write`, or `unimplemented`.
-    pub kind: Option<String>,
+    /// Show only methods of one kind. Omit to list every method.
+    pub kind: Option<Kind>,
 }
 
 #[derive(Debug, Deserialize, JsonSchema)]
@@ -290,14 +290,7 @@ impl<B: Backend> EthuiMcp<B> {
         &self,
         Parameters(args): Parameters<ListRpcMethodsArgs>,
     ) -> ToolResult {
-        let filter = match args.kind.as_deref() {
-            None => None,
-            Some(kind) => Some(Kind::parse(kind).ok_or_else(|| {
-                tool_error(Error::unsupported(format!(
-                    "{kind} is not a method kind; use read, write, or unimplemented"
-                )))
-            })?),
-        };
+        let filter = args.kind;
 
         let snapshot = self.registry.snapshot().await;
         let shown: Vec<_> = snapshot
@@ -306,20 +299,17 @@ impl<B: Backend> EthuiMcp<B> {
             .filter(|entry| filter.is_none_or(|kind| entry.kind() == Some(kind)))
             .collect();
 
-        let header = if snapshot.live {
-            format!(
-                "{} of {} methods (live from ethui)",
-                shown.len(),
-                snapshot.entries.len()
-            )
+        let source = if snapshot.live {
+            "live from ethui"
         } else {
-            format!(
-                "{} of {} methods (STATIC FALLBACK — ethui_rpcMethods unavailable, this ethui \
-                 build may predate it; treat as a guess)",
-                shown.len(),
-                snapshot.entries.len()
-            )
+            "STATIC FALLBACK — ethui_rpcMethods unavailable, this ethui build may predate it; \
+             treat as a guess"
         };
+        let header = format!(
+            "{} of {} methods ({source})",
+            shown.len(),
+            snapshot.entries.len()
+        );
 
         let lines: Vec<_> = shown
             .iter()
@@ -328,8 +318,13 @@ impl<B: Backend> EthuiMcp<B> {
                     .note()
                     .map(|note| format!(" — {note}"))
                     .unwrap_or_default();
+                // Rendered from `REPLACEMENTS` rather than written into the
+                // note, so the substitute has one home.
+                let advice = catalog::replacement(&entry.name)
+                    .map(|substitute| format!("; use {substitute} instead"))
+                    .unwrap_or_default();
                 format!(
-                    "{} {} [{}]{note}",
+                    "{} {} [{}]{note}{advice}",
                     entry.name,
                     entry.params(),
                     entry.kind_label()
@@ -337,12 +332,13 @@ impl<B: Backend> EthuiMcp<B> {
             })
             .collect();
 
-        let stale = if snapshot.stale.is_empty() {
+        let drifted = snapshot.stale();
+        let stale = if drifted.is_empty() {
             String::new()
         } else {
             format!(
                 "\n\nDocumented but not served by this build: {}",
-                snapshot.stale.join(", ")
+                drifted.join(", ")
             )
         };
 
@@ -364,9 +360,11 @@ impl<B: Backend> EthuiMcp<B> {
         let method = args.method;
 
         let mut snapshot = self.registry.snapshot().await;
-        if !snapshot.contains(&method) {
+        if snapshot.live && !snapshot.contains(&method) {
             // The cache could predate an ethui restart, so pay for one refetch
-            // before refusing a method that may now exist.
+            // before refusing a method that may now exist. Pointless on a
+            // fallback snapshot: that one is never memoized, so it came from a
+            // fetch that just failed, and retrying only doubles the stall.
             snapshot = self.registry.refresh().await;
         }
 
@@ -629,14 +627,10 @@ mod tests {
 
     /// A backend whose method list is live and whose other calls succeed.
     fn serving(methods: Value, result: Value) -> Arc<MockBackend> {
-        Arc::new(MockBackend::responding(MockResponse::ByMethod(
-            [
-                ("ethui_rpcMethods".to_owned(), methods),
-                ("eth_getLogs".to_owned(), result),
-            ]
-            .into_iter()
-            .collect(),
-        )))
+        Arc::new(MockBackend::routing([
+            ("ethui_rpcMethods", methods),
+            ("eth_getLogs", result),
+        ]))
     }
 
     #[tokio::test]
@@ -691,7 +685,7 @@ mod tests {
 
         let listing = server
             .list_rpc_methods(args(ListRpcMethodsArgs {
-                kind: Some("write".to_owned()),
+                kind: Some(Kind::Write),
             }))
             .await
             .unwrap();
@@ -700,19 +694,16 @@ mod tests {
         assert!(!listing.contains("eth_chainId []"), "got: {listing}");
     }
 
-    #[tokio::test]
-    async fn list_rpc_methods_rejects_a_kind_it_cannot_filter_on() {
-        let backend = serving(json!(["eth_chainId"]), json!(null));
-        let server = EthuiMcp::new(backend);
+    #[test]
+    fn the_kind_filter_takes_the_labels_the_listing_prints() {
+        // The agent reads these off the tool schema and passes them straight
+        // back, so the two spellings have to agree.
+        for kind in [Kind::Read, Kind::Write, Kind::Unimplemented] {
+            let parsed: Kind = serde_json::from_value(json!(kind.as_str())).unwrap();
+            assert_eq!(parsed, kind);
+        }
 
-        let err = server
-            .list_rpc_methods(args(ListRpcMethodsArgs {
-                kind: Some("banana".to_owned()),
-            }))
-            .await
-            .unwrap_err();
-
-        assert!(err.message.contains("banana"), "got: {}", err.message);
+        assert!(serde_json::from_value::<Kind>(json!("banana")).is_err());
     }
 
     #[tokio::test]
@@ -868,14 +859,10 @@ mod tests {
     async fn rpc_call_attempts_a_documented_stub_rather_than_refusing_on_the_catalog() {
         // The catalog is documentation, not truth: if this build implements
         // what the static table calls a stub, the call must still go through.
-        let backend = Arc::new(MockBackend::responding(MockResponse::ByMethod(
-            [
-                ("ethui_rpcMethods".to_owned(), json!(["eth_gasPrice"])),
-                ("eth_gasPrice".to_owned(), json!("0x3b9aca00")),
-            ]
-            .into_iter()
-            .collect(),
-        )));
+        let backend = Arc::new(MockBackend::routing([
+            ("ethui_rpcMethods", json!(["eth_gasPrice"])),
+            ("eth_gasPrice", json!("0x3b9aca00")),
+        ]));
         let server = EthuiMcp::new(backend.clone());
 
         let result = server

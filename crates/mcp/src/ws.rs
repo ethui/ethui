@@ -63,7 +63,7 @@ fn fail_all(pending: &Pending) {
 /// call that times out because ethui actually answered instantly with
 /// something we couldn't correlate leaves a trace to find.
 fn dispatch(text: &str, pending: &Pending) {
-    let Ok(message) = serde_json::from_str::<Value>(text) else {
+    let Ok(mut message) = serde_json::from_str::<Value>(text) else {
         debug!("dropping uncorrelatable frame (not JSON): {text}");
         return;
     };
@@ -84,7 +84,12 @@ fn dispatch(text: &str, pending: &Pending) {
                 .unwrap_or("unknown error")
                 .to_owned(),
         }),
-        None => Ok(message.get("result").cloned().unwrap_or(Value::Null)),
+        // Taken rather than cloned: `result` can be a whole block or an ABI,
+        // and the parsed message is dropped on the next line anyway.
+        None => Ok(message
+            .get_mut("result")
+            .map(Value::take)
+            .unwrap_or(Value::Null)),
     };
 
     let _ = sender.send(outcome);
@@ -246,15 +251,15 @@ impl WsBackend {
                     continue;
                 };
 
-                // Application-level keepalive, not a WebSocket control frame.
-                if text.as_str() == "pong" || text.as_str() == "ping" {
-                    if text.as_str() == "ping" {
+                // "ping"/"pong" are ethui's application-level keepalive, not
+                // WebSocket control frames.
+                match text.as_str() {
+                    "ping" => {
                         let _ = reader_outbound.send(Message::Text("pong".into()));
                     }
-                    continue;
+                    "pong" => {}
+                    frame => dispatch(frame, &reader_pending),
                 }
-
-                dispatch(text.as_str(), &reader_pending);
             }
 
             reader_alive.store(false, Ordering::SeqCst);
@@ -357,7 +362,10 @@ mod tests {
     use tokio_tungstenite::tungstenite::Message;
 
     use super::*;
-    use crate::testing::{Reply, spawn_echo_server, spawn_echo_server_capturing_uri, success_for};
+    use crate::testing::{
+        Reply, dead_port, reserved_listener, spawn_echo_server, spawn_echo_server_capturing_uri,
+        success_for,
+    };
 
     fn backend_on(port: u16) -> WsBackend {
         WsBackend::with_url(format!("ws://127.0.0.1:{port}")).with_timeout(Duration::from_secs(5))
@@ -440,9 +448,7 @@ mod tests {
     async fn answers_the_application_level_ping_with_pong() {
         // ethui-ws sends a literal "ping" text frame every 15s and expects a
         // "pong" text frame back. This is not a WebSocket control frame.
-        let listener = std::net::TcpListener::bind("127.0.0.1:0").unwrap();
-        listener.set_nonblocking(true).unwrap();
-        let port = listener.local_addr().unwrap().port();
+        let (listener, port) = reserved_listener();
 
         let pong = tokio::spawn(async move {
             let listener = tokio::net::TcpListener::from_std(listener).unwrap();
@@ -523,13 +529,7 @@ mod tests {
 
     #[tokio::test]
     async fn an_unreachable_app_is_a_disconnect_not_a_hang() {
-        // Bind a port, then drop the listener so nothing is accepting on it.
-        let port = {
-            let listener = std::net::TcpListener::bind("127.0.0.1:0").unwrap();
-            listener.local_addr().unwrap().port()
-        };
-
-        let backend = backend_on(port);
+        let backend = backend_on(dead_port());
         let err = backend.request("eth_chainId", json!([])).await.unwrap_err();
 
         assert_eq!(
@@ -688,9 +688,7 @@ mod tests {
         // caller's own request timeout — or, since `connection()` holds the
         // mutex across `connect()`, block every other concurrent tool call
         // too.
-        let listener = std::net::TcpListener::bind("127.0.0.1:0").unwrap();
-        listener.set_nonblocking(true).unwrap();
-        let port = listener.local_addr().unwrap().port();
+        let (listener, port) = reserved_listener();
 
         tokio::spawn(async move {
             let listener = tokio::net::TcpListener::from_std(listener).unwrap();
