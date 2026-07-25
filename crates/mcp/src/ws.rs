@@ -79,6 +79,36 @@ fn dispatch(text: &str, pending: &Pending) {
     let _ = sender.send(outcome);
 }
 
+/// Removes its pending-map entry when dropped.
+///
+/// Registration and cleanup are joined so a request can never register
+/// without a matching deregistration: normal completion, a send failure, an
+/// internal timeout, and the caller cancelling the request (dropping the
+/// `request()` future before it resolves — an outer `select!`, an outer
+/// timeout, or a task abort) all go through this one `Drop` impl. Removing an
+/// id that `dispatch` or `fail_all` already took is a harmless no-op:
+/// `HashMap::remove` on an absent key just returns `None`.
+struct PendingGuard {
+    pending: Pending,
+    id: u64,
+}
+
+impl PendingGuard {
+    fn register(pending: &Pending, id: u64, sender: oneshot::Sender<Result<Value>>) -> Self {
+        pending.lock().unwrap().insert(id, sender);
+        Self {
+            pending: pending.clone(),
+            id,
+        }
+    }
+}
+
+impl Drop for PendingGuard {
+    fn drop(&mut self) {
+        self.pending.lock().unwrap().remove(&self.id);
+    }
+}
+
 /// Reaches ethui over its WebSocket JSON-RPC port — the same one the browser
 /// extension uses.
 pub struct WsBackend {
@@ -142,6 +172,9 @@ impl WsBackend {
         let pending: Pending = Default::default();
         let alive = Arc::new(AtomicBool::new(true));
 
+        // Runs until `to_send` closes (every `outbound` sender dropped) or the
+        // socket errors. The handle is intentionally discarded: the task
+        // manages its own lifetime and needs no external supervision.
         tokio::spawn(async move {
             while let Some(message) = to_send.recv().await {
                 if sink.send(message).await.is_err() {
@@ -154,6 +187,10 @@ impl WsBackend {
         let reader_outbound = outbound.clone();
         let reader_alive = alive.clone();
 
+        // Runs until the socket closes. The handle is intentionally
+        // discarded: the task manages its own lifetime, tearing the
+        // connection down (marking it dead and failing `pending`) when it
+        // exits.
         tokio::spawn(async move {
             while let Some(Ok(message)) = source.next().await {
                 let Message::Text(text) = message else {
@@ -182,6 +219,58 @@ impl WsBackend {
         })
     }
 
+    /// Issue one JSON-RPC request over `connection` and wait for its matching
+    /// response.
+    ///
+    /// Split out from [`Backend::request`] so a test can supply an
+    /// already-obtained connection and manipulate its liveness directly,
+    /// exercising the `is_alive` recheck below against the exact code path
+    /// production uses — that race (a concurrent `close()` marking this same
+    /// connection dead between the caller obtaining it and us inserting into
+    /// `pending`) has no reproducible timing of its own to drive a test with.
+    async fn send_request(
+        &self,
+        connection: &Connection,
+        method: &str,
+        params: Value,
+    ) -> Result<Value> {
+        let id = self.next_id.fetch_add(1, Ordering::Relaxed);
+        let (sender, receiver) = oneshot::channel();
+
+        let _guard = PendingGuard::register(&connection.pending, id, sender);
+
+        // close() can run concurrently between our caller obtaining this
+        // connection and our insert just above: it can mark the connection
+        // dead and drain its pending map before our entry was ever in it.
+        // Catch that here rather than waiting out the full timeout for an
+        // answer that will never come.
+        if !connection.is_alive() {
+            return Err(Error::Disconnected);
+        }
+
+        let payload = json!({
+            "jsonrpc": "2.0",
+            "id": id,
+            "method": method,
+            "params": params,
+        });
+
+        if connection
+            .outbound
+            .send(Message::Text(payload.to_string().into()))
+            .is_err()
+        {
+            return Err(Error::Disconnected);
+        }
+
+        match tokio::time::timeout(self.timeout, receiver).await {
+            Ok(Ok(outcome)) => outcome,
+            // The connection dropped the sender without answering.
+            Ok(Err(_)) => Err(Error::Disconnected),
+            Err(_) => Err(Error::Timeout),
+        }
+    }
+
     /// Drop the connection and fail everything waiting on it.
     pub async fn close(&self) {
         let taken = self.connection.lock().await.take();
@@ -198,36 +287,7 @@ impl WsBackend {
 impl Backend for WsBackend {
     async fn request(&self, method: &str, params: Value) -> Result<Value> {
         let connection = self.connection().await?;
-        let id = self.next_id.fetch_add(1, Ordering::Relaxed);
-        let (sender, receiver) = oneshot::channel();
-
-        connection.pending.lock().unwrap().insert(id, sender);
-
-        let payload = json!({
-            "jsonrpc": "2.0",
-            "id": id,
-            "method": method,
-            "params": params,
-        });
-
-        if connection
-            .outbound
-            .send(Message::Text(payload.to_string().into()))
-            .is_err()
-        {
-            connection.pending.lock().unwrap().remove(&id);
-            return Err(Error::Disconnected);
-        }
-
-        match tokio::time::timeout(self.timeout, receiver).await {
-            Ok(Ok(outcome)) => outcome,
-            // The connection dropped the sender without answering.
-            Ok(Err(_)) => Err(Error::Disconnected),
-            Err(_) => {
-                connection.pending.lock().unwrap().remove(&id);
-                Err(Error::Timeout)
-            }
-        }
+        self.send_request(&connection, method, params).await
     }
 }
 
@@ -359,6 +419,47 @@ mod tests {
             .unwrap();
 
         assert_eq!(received.as_deref(), Some("pong"));
+    }
+
+    #[tokio::test]
+    async fn cancelling_a_request_does_not_leak_its_pending_entry() {
+        // The server accepts the request but never answers it, so the only
+        // way this resolves is via the outer timeout below — which drops the
+        // `request()` future before it ever completes on its own, the same
+        // way an MCP host's own call-level timeout would.
+        let port = spawn_echo_server(|_, _| Reply::Ignore);
+        let backend = backend_on(port);
+
+        let _ = tokio::time::timeout(
+            Duration::from_millis(300),
+            backend.request("eth_chainId", json!([])),
+        )
+        .await;
+
+        let connection = backend.connection().await.unwrap();
+        assert_eq!(connection.pending.lock().unwrap().len(), 0);
+    }
+
+    #[tokio::test]
+    async fn request_on_a_connection_marked_dead_returns_disconnected_promptly() {
+        // Simulates the close() race directly: we hold this connection the
+        // same way `request()` does internally (via the private
+        // `connection()` accessor), and it goes dead — exactly as `close()`
+        // marks it — before `send_request` gets to insert and send.
+        let port = spawn_echo_server(|_, _| Reply::Ignore);
+        let backend = backend_on(port);
+
+        let connection = backend.connection().await.unwrap();
+        connection.alive.store(false, Ordering::SeqCst);
+
+        let started = std::time::Instant::now();
+        let err = backend
+            .send_request(&connection, "eth_chainId", json!([]))
+            .await
+            .unwrap_err();
+
+        assert!(matches!(err, Error::Disconnected));
+        assert!(started.elapsed() < Duration::from_secs(1));
     }
 
     #[test]
