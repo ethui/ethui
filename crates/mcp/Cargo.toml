@@ -23,7 +23,7 @@ rmcp = { version = "=3.0.0-beta.2", features = [
 ] }
 schemars = "1.0"
 
-tokio = { workspace = true, features = ["macros", "io-std"] }
+tokio = { workspace = true, features = ["macros", "io-std", "time", "net"] }
 tokio-tungstenite.workspace = true
 futures.workspace = true
 
@@ -34,3 +34,6 @@ thiserror.workspace = true
 tracing.workspace = true
 tracing-subscriber = { version = "0.3", features = ["env-filter", "fmt"] }
 color-eyre.workspace = true
+
+[dev-dependencies]
+url.workspace = true
