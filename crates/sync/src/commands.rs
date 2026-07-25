@@ -19,14 +19,17 @@ pub async fn sync_get_native_balance(
     ) -> color_eyre::Result<U256> {
         let network = ethui_networks::get_network(chain_id).await?;
 
-        // TODO: check with networks if this is anvil or not
-        if network.is_dev().await? {
+        // The DB is only kept current for alchemy-synced chains. For those (and
+        // when not a dev node), serve the cached value. Otherwise — dev nodes, or
+        // any chain nothing background-syncs (e.g. Avalanche C-Chain) — query the
+        // network RPC live, or the balance would always read as 0.
+        if ethui_sync_alchemy::supports_network(chain_id) && !network.is_dev().await? {
+            Ok(db.get_native_balance(chain_id, address).await)
+        } else {
             Ok(
                 ethui_sync_devnet::get_native_balance(network.http_url.to_string(), address)
                     .await?,
             )
-        } else {
-            Ok(db.get_native_balance(chain_id, address).await)
         }
     }
 
