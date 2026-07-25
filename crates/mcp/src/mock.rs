@@ -14,7 +14,6 @@ use crate::{
 pub(crate) enum MockResponse {
     Ok(Value),
     Rpc { code: i64, message: String },
-    #[allow(dead_code)]
     Disconnected,
 }
 
