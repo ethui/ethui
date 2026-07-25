@@ -22,6 +22,10 @@ use crate::{
 /// Long enough for a human to read and act on an ethui approval dialog.
 pub const DEFAULT_TIMEOUT: Duration = Duration::from_secs(120);
 
+/// Generous for a loopback handshake, short enough that a hung `connect_async`
+/// doesn't block every concurrent tool call for the full response timeout.
+pub const DEFAULT_CONNECT_TIMEOUT: Duration = Duration::from_secs(5);
+
 type Pending = Arc<Mutex<HashMap<u64, oneshot::Sender<Result<Value>>>>>;
 
 /// One live WebSocket, with the requests waiting on it.
@@ -52,12 +56,19 @@ fn fail_all(pending: &Pending) {
 /// Route one inbound frame to the request that is waiting for it.
 ///
 /// Frames that are not JSON, or that carry no numeric `id` (ethui's event
-/// notifications), are ignored.
+/// notifications — but also, e.g., `crates/ws/src/server.rs`'s
+/// `json_rpc_parse_error` response, which answers with `"id": null` when it
+/// cannot parse the request at all), are dropped uncorrelated: there is no
+/// pending request to fail them onto. Logged rather than silent, so a wedged
+/// call that times out because ethui actually answered instantly with
+/// something we couldn't correlate leaves a trace to find.
 fn dispatch(text: &str, pending: &Pending) {
     let Ok(message) = serde_json::from_str::<Value>(text) else {
+        debug!("dropping uncorrelatable frame (not JSON): {text}");
         return;
     };
     let Some(id) = message.get("id").and_then(Value::as_u64) else {
+        debug!("dropping uncorrelatable frame (no numeric id): {text}");
         return;
     };
     let Some(sender) = pending.lock().unwrap().remove(&id) else {
@@ -114,6 +125,7 @@ impl Drop for PendingGuard {
 pub struct WsBackend {
     url: String,
     timeout: Duration,
+    connect_timeout: Duration,
     next_id: AtomicU64,
     connection: AsyncMutex<Option<Arc<Connection>>>,
 }
@@ -131,6 +143,7 @@ impl WsBackend {
         Self {
             url: url.into(),
             timeout: DEFAULT_TIMEOUT,
+            connect_timeout: DEFAULT_CONNECT_TIMEOUT,
             next_id: AtomicU64::new(1),
             connection: AsyncMutex::new(None),
         }
@@ -141,11 +154,20 @@ impl WsBackend {
         self
     }
 
+    pub fn with_connect_timeout(mut self, connect_timeout: Duration) -> Self {
+        self.connect_timeout = connect_timeout;
+        self
+    }
+
     pub fn url(&self) -> &str {
         &self.url
     }
 
     /// Return the live connection, opening one if there is none.
+    ///
+    /// Holds the `connection` mutex across `self.connect().await`, so one
+    /// hung connect attempt blocks every concurrent tool call until it gives
+    /// up — bounded by `connect_timeout`, not left open-ended.
     async fn connection(&self) -> Result<Arc<Connection>> {
         let mut guard = self.connection.lock().await;
 
@@ -162,25 +184,46 @@ impl WsBackend {
     }
 
     async fn connect(&self) -> Result<Connection> {
-        let (stream, _) = connect_async(&self.url).await.map_err(|e| {
-            debug!("connect to {} failed: {e}", self.url);
-            Error::Disconnected
-        })?;
+        let (stream, _) =
+            match tokio::time::timeout(self.connect_timeout, connect_async(&self.url)).await {
+                Ok(Ok(pair)) => pair,
+                Ok(Err(e)) => {
+                    debug!("connect to {} failed: {e}", self.url);
+                    return Err(Error::Disconnected);
+                }
+                Err(_) => {
+                    debug!(
+                        "connect to {} timed out after {:?}",
+                        self.url, self.connect_timeout
+                    );
+                    return Err(Error::Disconnected);
+                }
+            };
 
         let (mut sink, mut source) = stream.split();
         let (outbound, mut to_send) = mpsc::unbounded_channel::<Message>();
         let pending: Pending = Default::default();
         let alive = Arc::new(AtomicBool::new(true));
 
+        let writer_pending = pending.clone();
+        let writer_alive = alive.clone();
+
         // Runs until `to_send` closes (every `outbound` sender dropped) or the
         // socket errors. The handle is intentionally discarded: the task
-        // manages its own lifetime and needs no external supervision.
+        // manages its own lifetime, tearing the connection down (marking it
+        // dead and failing `pending`) when it exits — otherwise a write
+        // failure the reader half never observes would leave `alive` true
+        // forever, wedging `connection()` onto a socket that can no longer
+        // send anything.
         tokio::spawn(async move {
             while let Some(message) = to_send.recv().await {
                 if sink.send(message).await.is_err() {
                     break;
                 }
             }
+
+            writer_alive.store(false, Ordering::SeqCst);
+            fail_all(&writer_pending);
         });
 
         let reader_pending = pending.clone();
@@ -260,6 +303,11 @@ impl WsBackend {
             .send(Message::Text(payload.to_string().into()))
             .is_err()
         {
+            // The writer task has already exited (it drops `to_send`'s
+            // receiver on the way out), so it will never reach its own
+            // teardown to mark this dead. Do it here instead, or
+            // `connection()` keeps handing out a socket that can never send.
+            connection.alive.store(false, Ordering::SeqCst);
             return Err(Error::Disconnected);
         }
 
@@ -299,18 +347,16 @@ mod tests {
     use tokio_tungstenite::tungstenite::Message;
 
     use super::*;
-    use crate::testing::{Reply, spawn_echo_server, success_for};
+    use crate::testing::{Reply, spawn_echo_server, spawn_echo_server_capturing_uri, success_for};
 
     fn backend_on(port: u16) -> WsBackend {
-        WsBackend::with_url(format!("ws://127.0.0.1:{port}"))
-            .with_timeout(Duration::from_secs(5))
+        WsBackend::with_url(format!("ws://127.0.0.1:{port}")).with_timeout(Duration::from_secs(5))
     }
 
     #[tokio::test]
     async fn returns_the_result_field() {
-        let port = spawn_echo_server(|request, _| {
-            Reply::Send(success_for(request, json!("0x7a69")))
-        });
+        let port =
+            spawn_echo_server(|request, _| Reply::Send(success_for(request, json!("0x7a69"))));
 
         let backend = backend_on(port);
         let result = backend.request("eth_chainId", json!([])).await.unwrap();
@@ -369,7 +415,10 @@ mod tests {
         });
 
         let backend = backend_on(port);
-        let err = backend.request("eth_sendTransaction", json!([])).await.unwrap_err();
+        let err = backend
+            .request("eth_sendTransaction", json!([]))
+            .await
+            .unwrap_err();
 
         assert_eq!(
             err.to_string(),
@@ -508,7 +557,47 @@ mod tests {
         let backend = backend_on(port);
 
         let first = backend.request("eth_chainId", json!([])).await;
-        assert!(first.is_err(), "first call should fail on the dropped socket");
+        assert!(
+            first.is_err(),
+            "first call should fail on the dropped socket"
+        );
+
+        let second = backend.request("eth_chainId", json!([])).await.unwrap();
+        assert_eq!(second, json!("0x1"));
+    }
+
+    #[tokio::test]
+    async fn a_writer_side_failure_clears_alive_so_the_next_request_reconnects() {
+        // Any connection this real server accepts answers successfully — it
+        // stands in for the *post-reconnect* socket. The backend is then
+        // poisoned with a hand-built `Connection` whose write half is
+        // already dead (its `outbound` receiver dropped), which is exactly
+        // what a writer task leaves behind after `sink.send` fails: `alive`
+        // still true, `outbound.send` doomed to fail forever. Without I2's
+        // fix, `connection()` would keep handing this same broken connection
+        // back out and every future call would return `Disconnected`
+        // without ever reconnecting.
+        let port = spawn_echo_server(|request, _| Reply::Send(success_for(request, json!("0x1"))));
+        let backend = backend_on(port);
+
+        let (outbound, receiver) = mpsc::unbounded_channel::<Message>();
+        drop(receiver);
+        let broken = Arc::new(Connection {
+            outbound,
+            pending: Default::default(),
+            alive: Arc::new(AtomicBool::new(true)),
+        });
+        *backend.connection.lock().await = Some(broken.clone());
+
+        let first = backend.request("eth_chainId", json!([])).await;
+        assert!(
+            first.is_err(),
+            "first call should fail on the broken writer"
+        );
+        assert!(
+            !broken.is_alive(),
+            "an outbound.send failure must clear alive, or the next call can never reconnect"
+        );
 
         let second = backend.request("eth_chainId", json!([])).await.unwrap();
         assert_eq!(second, json!("0x1"));
@@ -541,6 +630,35 @@ mod tests {
     }
 
     #[tokio::test]
+    async fn a_hung_handshake_times_out_instead_of_blocking_forever() {
+        // Accept the TCP connection but never write the HTTP upgrade
+        // response, so `connect_async`'s handshake never resolves on its
+        // own. Without a connect timeout this would hang for as long as the
+        // caller's own request timeout — or, since `connection()` holds the
+        // mutex across `connect()`, block every other concurrent tool call
+        // too.
+        let listener = std::net::TcpListener::bind("127.0.0.1:0").unwrap();
+        listener.set_nonblocking(true).unwrap();
+        let port = listener.local_addr().unwrap().port();
+
+        tokio::spawn(async move {
+            let listener = tokio::net::TcpListener::from_std(listener).unwrap();
+            let (_stream, _) = listener.accept().await.unwrap();
+            std::future::pending::<()>().await
+        });
+
+        let backend = WsBackend::with_url(format!("ws://127.0.0.1:{port}"))
+            .with_connect_timeout(Duration::from_millis(200))
+            .with_timeout(Duration::from_secs(5));
+
+        let started = std::time::Instant::now();
+        let err = backend.request("eth_chainId", json!([])).await.unwrap_err();
+
+        assert!(matches!(err, Error::Disconnected));
+        assert!(started.elapsed() < Duration::from_secs(1));
+    }
+
+    #[tokio::test]
     async fn a_silent_app_times_out() {
         let port = spawn_echo_server(|_, _| Reply::Ignore);
 
@@ -550,6 +668,49 @@ mod tests {
         let err = backend.request("eth_chainId", json!([])).await.unwrap_err();
 
         assert_eq!(err.to_string(), "request timed out");
+    }
+
+    #[test]
+    fn dispatch_drops_a_non_json_frame_without_touching_pending() {
+        let pending: Pending = Default::default();
+        let (sender, mut receiver) = oneshot::channel::<Result<Value>>();
+        pending.lock().unwrap().insert(1, sender);
+
+        dispatch("not json", &pending);
+
+        assert_eq!(
+            pending.lock().unwrap().len(),
+            1,
+            "the pending entry must survive"
+        );
+        assert!(
+            receiver.try_recv().is_err(),
+            "an uncorrelatable frame must not resolve a pending request"
+        );
+    }
+
+    #[test]
+    fn dispatch_drops_a_frame_without_a_numeric_id_without_touching_pending() {
+        let pending: Pending = Default::default();
+        let (sender, mut receiver) = oneshot::channel::<Result<Value>>();
+        pending.lock().unwrap().insert(1, sender);
+
+        // Mirrors `crates/ws/src/server.rs`'s `json_rpc_parse_error`
+        // response, sent when it cannot parse the request at all.
+        dispatch(
+            r#"{"jsonrpc":"2.0","error":{"code":-32700,"message":"Parse error"},"id":null}"#,
+            &pending,
+        );
+
+        assert_eq!(
+            pending.lock().unwrap().len(),
+            1,
+            "the pending entry must survive"
+        );
+        assert!(
+            receiver.try_recv().is_err(),
+            "an uncorrelatable frame must not resolve a pending request"
+        );
     }
 
     #[test]
@@ -569,10 +730,10 @@ mod tests {
         // entirely. That's how a request line missing its `/` — well-formed
         // enough to unit-test as a string, fatal to an actual HTTP handshake
         // — passed the whole suite while breaking every real connection.
-        // `spawn_echo_server` performs a real handshake via
-        // `tokio_tungstenite::accept_async`, so a malformed request line
+        // `spawn_echo_server_capturing_uri` performs a real handshake via
+        // `tokio_tungstenite::accept_hdr_async`, so a malformed request line
         // fails here exactly as it did against the live app.
-        let port = spawn_echo_server(|request, _| {
+        let (port, mut uris) = spawn_echo_server_capturing_uri(|request, _| {
             Reply::Send(success_for(request, json!("0x1")))
         });
 
@@ -580,5 +741,26 @@ mod tests {
         let result = backend.request("eth_chainId", json!([])).await.unwrap();
 
         assert_eq!(result, json!("0x1"));
+
+        // Not just "the handshake succeeded" — assert on the exact bytes the
+        // server received, decoded the same way `crates/ws/src/server.rs`
+        // decodes them (`Url::parse` against a synthetic base, then
+        // `query_pairs()`). This is the assertion that can actually fail:
+        // `builds_the_peer_identity_query_string` below only checks that
+        // `WsBackend::url()` echoes back the literal it built, which is true
+        // by construction and proves nothing about what went over the wire.
+        let uri = uris.recv().await.expect("server never saw a connection");
+        let parsed = url::Url::parse(&format!("http://localhost{uri}")).unwrap();
+        let query_params: std::collections::HashMap<String, String> =
+            parsed.query_pairs().into_owned().collect();
+
+        assert_eq!(
+            query_params.get("url").map(String::as_str),
+            Some("mcp://claude")
+        );
+        assert_eq!(
+            query_params.get("origin").map(String::as_str),
+            Some("claude-mcp")
+        );
     }
 }

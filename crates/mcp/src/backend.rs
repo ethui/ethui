@@ -13,5 +13,10 @@ use crate::error::Result;
 #[async_trait]
 pub trait Backend: Send + Sync + 'static {
     /// Issue a JSON-RPC call and return its `result` field.
+    ///
+    /// `params` must serialize to a JSON array or object. `jsonrpc_core`
+    /// (ethui's dispatcher) rejects any request whose `params` is neither —
+    /// a bare string or number, say — as a malformed request, before it ever
+    /// reaches ethui's own handlers.
     async fn request(&self, method: &str, params: Value) -> Result<Value>;
 }
