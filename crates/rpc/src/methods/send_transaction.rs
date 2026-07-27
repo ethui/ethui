@@ -1,7 +1,7 @@
 use std::str::FromStr;
 
 use alloy::{
-    network::{Ethereum, EthereumWallet, NetworkWallet, TransactionBuilder as _},
+    network::{Ethereum, TransactionBuilder as _},
     providers::{DynProvider, PendingTransactionBuilder, Provider, ProviderBuilder},
     rpc::types::TransactionRequest,
 };
@@ -209,13 +209,12 @@ impl SendTransaction {
             // this is just a minor optimization, though
             let provider = ProviderBuilder::new().connect(&url).await?.erased();
 
-            let signer = wallet
-                .build_signer(self.network.chain_id(), &resolved.path)
-                .await?;
-
-            let address = <EthereumWallet as NetworkWallet<Ethereum>>::default_signer_address(
-                &signer.to_wallet(),
-            );
+            // The node signs on a dev network — note the provider deliberately
+            // carries no wallet — so all this branch needs is the address to
+            // impersonate. Asking the wallet for it directly, instead of
+            // building a signer only to read its address, is what lets keyless
+            // wallets (impersonator) send here at all.
+            let address = wallet.get_address(&resolved.path).await?;
 
             provider
                 .client()

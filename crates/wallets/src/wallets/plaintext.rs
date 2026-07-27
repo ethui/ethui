@@ -21,7 +21,10 @@ pub struct PlaintextWallet {
 #[async_trait]
 impl WalletCreate for PlaintextWallet {
     async fn create(params: serde_json::Value) -> color_eyre::Result<Wallet> {
-        Ok(Wallet::Plaintext(serde_json::from_value(params)?))
+        let wallet: Self = serde_json::from_value(params)?;
+        wallet.check_count()?;
+
+        Ok(Wallet::Plaintext(wallet))
     }
 }
 
@@ -32,7 +35,10 @@ impl WalletControl for PlaintextWallet {
     }
 
     async fn update(mut self, params: serde_json::Value) -> color_eyre::Result<Wallet> {
-        Ok(Wallet::Plaintext(serde_json::from_value(params)?))
+        let wallet: Self = serde_json::from_value(params)?;
+        wallet.check_count()?;
+
+        Ok(Wallet::Plaintext(wallet))
     }
 
     async fn get_current_address(&self) -> Address {
@@ -81,6 +87,24 @@ impl WalletControl for PlaintextWallet {
             })?;
 
         Ok(Signer::Local(signer))
+    }
+}
+
+impl PlaintextWallet {
+    /// A zero count derives no addresses at all, leaving a wallet that lists no
+    /// keys. The GUI form rejects it, but every other caller
+    /// (`ethui_createWallet`, and the MCP tool on top of it) does not.
+    ///
+    /// Checked here rather than in `TryFrom<Deserializer>` on purpose: the same
+    /// deserializer reads `wallets.json` at boot, where `init` unwraps, so
+    /// rejecting there would turn an already-stored bad wallet into a startup
+    /// panic.
+    fn check_count(&self) -> color_eyre::Result<()> {
+        if self.count == 0 {
+            return Err(eyre!("count must be at least 1"));
+        }
+
+        Ok(())
     }
 }
 
@@ -134,5 +158,50 @@ impl TryFrom<Deserializer> for PlaintextWallet {
             count: value.count,
             current_path: current_path.derivation_string(),
         })
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn params(count: usize) -> Json {
+        json!({
+            "type": "plaintext",
+            "name": "test",
+            "mnemonic": "test test test test test test test test test test test junk",
+            "derivationPath": "m/44'/60'/0'/0",
+            "count": count,
+        })
+    }
+
+    /// A wallet that derives no addresses is not a wallet. Without this, a
+    /// `count` of 0 deserializes fine and the wallet is persisted with an empty
+    /// key list.
+    #[tokio::test]
+    async fn a_zero_count_is_rejected() {
+        let err = PlaintextWallet::create(params(0)).await.unwrap_err();
+
+        assert!(
+            err.to_string().contains("count must be at least 1"),
+            "expected a count error, got {err}"
+        );
+    }
+
+    /// The counterpart to the check living in `create` rather than in the
+    /// deserializer: `init` unwraps when reading `wallets.json`, so a wallet
+    /// already stored with a zero count has to keep loading.
+    #[test]
+    fn a_stored_zero_count_wallet_still_deserializes() {
+        let wallet: PlaintextWallet = serde_json::from_value(params(0)).unwrap();
+
+        assert_eq!(wallet.count, 0);
+    }
+
+    #[tokio::test]
+    async fn a_positive_count_derives_that_many_addresses() {
+        let wallet = PlaintextWallet::create(params(3)).await.unwrap();
+
+        assert_eq!(wallet.get_all_addresses().await.len(), 3);
     }
 }

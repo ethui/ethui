@@ -33,6 +33,10 @@ impl WalletControl for LedgerWallet {
 
         if params["paths"].as_array().is_some() {
             let paths: Vec<String> = serde_json::from_value(params["paths"].clone())?;
+            if paths.is_empty() {
+                return Err(eyre!("a wallet needs at least one derivation path"));
+            }
+
             let addresses = utils::ledger_derive_multiple(paths).await?;
             self.addresses = addresses;
         }
@@ -92,6 +96,12 @@ pub struct LedgerParams {
 
 impl LedgerWallet {
     pub async fn from_params(params: LedgerParams) -> color_eyre::Result<Self> {
+        // `get_current_address` unwraps into `addresses`, so a wallet with no
+        // paths panics as soon as anything lists it.
+        if params.paths.is_empty() {
+            return Err(eyre!("a wallet needs at least one derivation path"));
+        }
+
         let addresses = utils::ledger_derive_multiple(params.paths).await?;
 
         Ok(Self {

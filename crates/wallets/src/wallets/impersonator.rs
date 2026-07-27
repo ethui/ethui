@@ -15,8 +15,10 @@ pub struct Impersonator {
 #[async_trait]
 impl WalletCreate for Impersonator {
     async fn create(params: serde_json::Value) -> color_eyre::Result<Wallet> {
-        // TODO: make sure current is within the array
-        Ok(Wallet::Impersonator(serde_json::from_value(params)?))
+        let wallet: Self = serde_json::from_value(params)?;
+        wallet.check_current_in_range()?;
+
+        Ok(Wallet::Impersonator(wallet))
     }
 }
 
@@ -39,7 +41,7 @@ impl WalletControl for Impersonator {
             self.current = current as usize;
         }
 
-        // TODO: make sure current is within the array
+        self.check_current_in_range()?;
 
         Ok(Wallet::Impersonator(self))
     }
@@ -53,7 +55,12 @@ impl WalletControl for Impersonator {
     }
 
     async fn set_current_path(&mut self, path: String) -> color_eyre::Result<()> {
-        self.current = usize::from_str(&path)?;
+        let current = usize::from_str(&path)?;
+        if current >= self.addresses.len() {
+            return Err(eyre!("unknown wallet key: {path}"));
+        }
+
+        self.current = current;
         Ok(())
     }
 
@@ -66,7 +73,10 @@ impl WalletControl for Impersonator {
     }
 
     async fn get_address(&self, path: &str) -> color_eyre::Result<Address> {
-        Ok(self.addresses[usize::from_str(path)?])
+        self.addresses
+            .get(usize::from_str(path)?)
+            .copied()
+            .with_context(|| format!("unknown wallet key: {path}"))
     }
 
     fn is_dev(&self) -> bool {
@@ -75,5 +85,64 @@ impl WalletControl for Impersonator {
 
     async fn build_signer(&self, _chain_id: u64, _path: &str) -> color_eyre::Result<Signer> {
         Err(eyre!("This wallet type cannot sign"))
+    }
+}
+
+impl Impersonator {
+    /// `get_current_address` indexes `addresses` directly, so a wallet whose
+    /// `current` is out of range — including one with no addresses at all —
+    /// panics as soon as anything lists it. Rejected at construction instead.
+    fn check_current_in_range(&self) -> color_eyre::Result<()> {
+        if self.addresses.is_empty() {
+            return Err(eyre!("a wallet needs at least one address"));
+        }
+
+        if self.current >= self.addresses.len() {
+            return Err(eyre!(
+                "current index {} is out of range for {} addresses",
+                self.current,
+                self.addresses.len()
+            ));
+        }
+
+        Ok(())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[tokio::test]
+    async fn an_empty_address_list_is_rejected() {
+        let err = Impersonator::create(json!({
+            "type": "impersonator",
+            "name": "test",
+            "addresses": [],
+        }))
+        .await
+        .unwrap_err();
+
+        assert!(
+            err.to_string().contains("at least one address"),
+            "expected an empty-address error, got {err}"
+        );
+    }
+
+    #[tokio::test]
+    async fn an_out_of_range_current_is_rejected() {
+        let err = Impersonator::create(json!({
+            "type": "impersonator",
+            "name": "test",
+            "addresses": ["0xd8da6bf26964af9d7eed9e03e53415d37aa96045"],
+            "current": 4,
+        }))
+        .await
+        .unwrap_err();
+
+        assert!(
+            err.to_string().contains("out of range"),
+            "expected a range error, got {err}"
+        );
     }
 }

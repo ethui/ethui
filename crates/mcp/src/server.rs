@@ -139,12 +139,20 @@ pub struct CreateWalletArgs {
     pub wallet_type: String,
     /// The name to give the wallet. Must be unique.
     pub name: String,
-    /// The remaining per-type fields, passed through verbatim — e.g.
-    /// `{"mnemonic": "...", "derivationPath": "m/44'/60'/0'/0", "count": 3,
-    /// "password": "..."}` for an HDWallet, `{"addresses": ["0x..."]}` for an
-    /// impersonator. Secret fields are redacted from ethui's logs, but they do
-    /// pass through this conversation — prefer `impersonator` or `ledger` when
-    /// the task does not need a real key.
+    /// The remaining per-type fields, passed through verbatim. All of them are
+    /// required for the type in question:
+    /// - `plaintext`: `mnemonic`, `derivationPath` (e.g. `m/44'/60'/0'/0`),
+    ///   `count` (how many addresses to derive, at least 1)
+    /// - `HDWallet`: the same three, plus `password` to encrypt the mnemonic at
+    ///   rest
+    /// - `privateKey`: `privateKey`, `password`
+    /// - `jsonKeystore`: `file` (path to the keystore JSON)
+    /// - `impersonator`: `addresses` (a list of `0x...`)
+    /// - `ledger`: `paths` (a list of derivation paths)
+    ///
+    /// Secret fields are redacted from ethui's logs, but they do pass through
+    /// this conversation — prefer `impersonator` or `ledger` when the task does
+    /// not need a real key.
     pub params: Option<serde_json::Map<String, Value>>,
 }
 
@@ -340,20 +348,24 @@ impl<B: Backend> EthuiMcp<B> {
         }
     }
 
-    #[tool(description = "List the wallets ethui holds, with each wallet's name, type, current \
+    #[tool(
+        description = "List the wallets ethui holds, with each wallet's name, type, current \
                        address, and the derivation paths it exposes. Names from here are what \
-                       set_current_wallet takes, and path keys are what set_current_path takes.")]
+                       set_current_wallet takes, and path keys are what set_current_path takes."
+    )]
     pub async fn list_wallets(&self) -> ToolResult {
         let wallets = self.request("ethui_listWallets", json!([])).await?;
 
         Ok(serde_json::to_string_pretty(&wallets).unwrap_or_else(|_| wallets.to_string()))
     }
 
-    #[tool(description = "Create a wallet. Types that carry key material (plaintext, HDWallet, \
+    #[tool(
+        description = "Create a wallet. Types that carry key material (plaintext, HDWallet, \
                        privateKey, jsonKeystore) mean that material passes through this \
                        conversation before reaching ethui — prefer impersonator or ledger \
                        unless a real signer is required. Creating a wallet does not make it \
-                       current; use set_current_wallet for that.")]
+                       current; use set_current_wallet for that."
+    )]
     pub async fn create_wallet(
         &self,
         Parameters(args): Parameters<CreateWalletArgs>,
@@ -367,9 +379,11 @@ impl<B: Backend> EthuiMcp<B> {
         Ok(format!("created wallet {}", args.name))
     }
 
-    #[tool(description = "Switch ethui's current wallet by name. This changes the signer the \
+    #[tool(
+        description = "Switch ethui's current wallet by name. This changes the signer the \
                        desktop app and every connected dApp will use, not just this MCP \
-                       session.")]
+                       session."
+    )]
     pub async fn set_current_wallet(
         &self,
         Parameters(args): Parameters<WalletNameArgs>,
@@ -380,8 +394,10 @@ impl<B: Backend> EthuiMcp<B> {
         Ok(format!("current wallet is now {}", args.name))
     }
 
-    #[tool(description = "Switch the active derivation path within the current wallet, which \
-                       changes the active address. Takes a key from list_wallets.")]
+    #[tool(
+        description = "Switch the active derivation path within the current wallet, which \
+                       changes the active address. Takes a key from list_wallets."
+    )]
     pub async fn set_current_path(&self, Parameters(args): Parameters<PathKeyArgs>) -> ToolResult {
         self.request("ethui_setCurrentPath", json!([{ "key": args.key }]))
             .await?;
@@ -389,10 +405,12 @@ impl<B: Backend> EthuiMcp<B> {
         Ok(format!("current path is now {}", args.key))
     }
 
-    #[tool(description = "Turn ethui's Fast Mode on or off. Fast Mode is what lets ethui skip \
+    #[tool(
+        description = "Turn ethui's Fast Mode on or off. Fast Mode is what lets ethui skip \
                        approval dialogs for a dev wallet on a dev network, so turning it on \
                        removes the human confirmation step from later transactions and \
-                       signatures. Confirm with the human before enabling it.")]
+                       signatures. Confirm with the human before enabling it."
+    )]
     pub async fn set_fast_mode(&self, Parameters(args): Parameters<FastModeArgs>) -> ToolResult {
         self.request("ethui_setFastMode", json!([{ "enabled": args.enabled }]))
             .await?;

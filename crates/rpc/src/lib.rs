@@ -6,12 +6,11 @@ mod utils;
 
 use alloy::providers::Provider as _;
 use ethui_connections::Ctx;
+pub use ethui_connections::Trust;
 use ethui_types::prelude::*;
 use ethui_wallets::{WalletControl, Wallets};
 use jsonrpc_core::{MetaIoHandler, Params};
 use serde_json::json;
-
-pub use ethui_connections::Trust;
 
 pub use self::error::{Error, Result};
 use self::{
@@ -370,14 +369,14 @@ mod tests {
     /// so tests can assert on error codes rather than on `Result` shape.
     async fn call(handler: &Handler, method: &str, params: Params) -> jsonrpc_core::Output {
         let response = handler
-            .handle(jsonrpc_core::Request::Single(jsonrpc_core::Call::MethodCall(
-                jsonrpc_core::MethodCall {
+            .handle(jsonrpc_core::Request::Single(
+                jsonrpc_core::Call::MethodCall(jsonrpc_core::MethodCall {
                     jsonrpc: Some(jsonrpc_core::Version::V2),
                     method: method.to_owned(),
                     params,
                     id: jsonrpc_core::Id::Num(1),
-                },
-            )))
+                }),
+            ))
             .await
             .expect("a method call must produce a response");
 

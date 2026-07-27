@@ -301,7 +301,7 @@ async fn handle_proposal(
         ethui_rpc::Handler::new(None, ethui_rpc::Trust::Origin)
             .served_method_names()
             .map(String::from)
-        .collect();
+            .collect();
 
     let peer = DappMetadata {
         name: metadata["name"].as_str().unwrap_or("Unknown").to_owned(),
@@ -510,10 +510,7 @@ async fn settle_session(
         .ok()
         .and_then(|u| u.host_str().map(|h| h.to_owned()));
     // A WalletConnect peer is remote by definition, so it is never Local.
-    let handler = Arc::new(ethui_rpc::Handler::new(
-        domain,
-        ethui_rpc::Trust::Origin,
-    ));
+    let handler = Arc::new(ethui_rpc::Handler::new(domain, ethui_rpc::Trust::Origin));
 
     // Insert the handler before the session: `handle_request` reads SESSIONS
     // then SESSION_HANDLERS, so a reader that observes the session here is

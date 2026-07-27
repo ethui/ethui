@@ -46,7 +46,18 @@ pub struct Wallets {
 }
 
 impl Wallets {
+    /// Finds the wallet that owns an address, preferring the current one.
+    ///
+    /// Nothing stops two wallets from holding the same address — importing the
+    /// same mnemonic twice, or an impersonator listing an address a real signer
+    /// also derives. When that happens the wallet the user selected is the one
+    /// they meant, so it wins over whichever happens to come first in the list.
     pub async fn find(&self, address: Address) -> Option<(&Wallet, String)> {
+        let current = self.get_current_wallet();
+        if let Some(path) = current.find(address).await {
+            return Some((current, path));
+        }
+
         for w in self.wallets.iter() {
             if let Some(path) = w.find(address).await {
                 return Some((w, path));
@@ -249,5 +260,89 @@ impl Wallets {
             return Err(eyre!("duplicate wallet names `{}`", name));
         }
         Ok(())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use std::str::FromStr as _;
+
+    use super::*;
+    use crate::wallets::{Impersonator, PlaintextWallet};
+
+    /// The first address of the anvil mnemonic, which the default plaintext
+    /// wallet derives.
+    const ANVIL_0: &str = "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266";
+    const ANVIL_1: &str = "0x70997970c51812dc3a010c7d01b50e0d17dc79c8";
+
+    /// An impersonator holding the same address as the plaintext wallet, in
+    /// front of it in the list. This is what a dev setup looks like once the
+    /// anvil mnemonic has been added twice.
+    fn wallets(current: usize) -> Wallets {
+        Wallets {
+            wallets: vec![
+                Wallet::Impersonator(Impersonator {
+                    name: "impersonator".into(),
+                    addresses: vec![Address::from_str(ANVIL_0).unwrap()],
+                    current: 0,
+                }),
+                Wallet::Plaintext(PlaintextWallet::default()),
+            ],
+            current,
+            file: None,
+        }
+    }
+
+    /// Several wallets can hold the same address, and `find` decides which one
+    /// signs. Scanning in list order made the choice depend on insertion order,
+    /// so a wallet the user had explicitly selected could be shadowed by an
+    /// impersonator that cannot sign at all.
+    #[tokio::test]
+    async fn the_current_wallet_wins_a_shared_address() {
+        let wallets = wallets(1);
+
+        let (wallet, path) = wallets
+            .find(Address::from_str(ANVIL_0).unwrap())
+            .await
+            .expect("the address is held by both wallets");
+
+        assert_eq!(wallet.wallet_type(), "Plaintext");
+        assert_eq!(path, "m/44'/60'/0'/0/0");
+    }
+
+    #[tokio::test]
+    async fn the_current_wallet_still_wins_when_it_is_the_impersonator() {
+        let wallets = wallets(0);
+
+        let (wallet, path) = wallets
+            .find(Address::from_str(ANVIL_0).unwrap())
+            .await
+            .expect("the address is held by both wallets");
+
+        assert_eq!(wallet.wallet_type(), "Impersonator");
+        assert_eq!(path, "0");
+    }
+
+    /// Addresses the current wallet does not hold still resolve — a dApp may
+    /// send from any address ethui knows about.
+    #[tokio::test]
+    async fn an_address_outside_the_current_wallet_falls_back_to_the_others() {
+        let wallets = wallets(0);
+
+        let (wallet, path) = wallets
+            .find(Address::from_str(ANVIL_1).unwrap())
+            .await
+            .expect("the plaintext wallet derives this address");
+
+        assert_eq!(wallet.wallet_type(), "Plaintext");
+        assert_eq!(path, "m/44'/60'/0'/0/1");
+    }
+
+    #[tokio::test]
+    async fn an_unknown_address_resolves_to_nothing() {
+        let wallets = wallets(0);
+        let unknown = Address::from_str("0x000000000000000000000000000000000000dead").unwrap();
+
+        assert!(wallets.find(unknown).await.is_none());
     }
 }

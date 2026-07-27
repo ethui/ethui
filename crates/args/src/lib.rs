@@ -160,7 +160,12 @@ pub mod token {
         // random source, rather than adding a crypto dependency for a value
         // that only has to be unguessable by other local processes.
         (0..4)
-            .map(|_| format!("{:016x}", RandomState::new().hash_one(RandomState::new().hash_one(0u8))))
+            .map(|_| {
+                format!(
+                    "{:016x}",
+                    RandomState::new().hash_one(RandomState::new().hash_one(0u8))
+                )
+            })
             .collect()
     }
 
@@ -170,7 +175,8 @@ pub mod token {
 
         /// A scratch directory, so the tests never touch the real `~/.ethui`.
         fn scratch(name: &str) -> PathBuf {
-            let dir = std::env::temp_dir().join(format!("ethui-token-{name}-{}", std::process::id()));
+            let dir =
+                std::env::temp_dir().join(format!("ethui-token-{name}-{}", std::process::id()));
             let _ = std::fs::remove_dir_all(&dir);
             dir
         }
