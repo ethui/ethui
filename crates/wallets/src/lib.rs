@@ -115,8 +115,8 @@ impl Wallets {
         let addresses = wallet.get_all_addresses().await;
 
         self.ensure_no_duplicates_of(&wallet.name())?;
+        self.ensure_no_impersonator_collision(&wallet, None).await?;
 
-        // TODO: ensure no duplicates
         self.wallets.push(wallet);
 
         self.on_wallet_changed().await?;
@@ -139,7 +139,10 @@ impl Wallets {
             .with_context(|| format!("invalid wallet name `{name}`"))?;
 
         let before = self.wallets[i].get_all_addresses().await;
-        self.wallets[i] = self.wallets[i].clone().update(params).await?;
+        let updated = self.wallets[i].clone().update(params).await?;
+        self.ensure_no_impersonator_collision(&updated, Some(&name))
+            .await?;
+        self.wallets[i] = updated;
         let after = self.wallets[i].get_all_addresses().await;
 
         tokio::spawn(async move {
@@ -249,5 +252,147 @@ impl Wallets {
             return Err(eyre!("duplicate wallet names `{}`", name));
         }
         Ok(())
+    }
+
+    /// Rejects `wallet` if it shares an address with an existing wallet of the
+    /// opposite signing kind (real-key vs. `Impersonator`) — otherwise an
+    /// impersonator could silently take over signing for a real wallet's
+    /// address just by becoming current. Same-kind collisions (e.g. one
+    /// mnemonic imported twice) are fine and stay allowed.
+    async fn ensure_no_impersonator_collision(
+        &self,
+        wallet: &Wallet,
+        exclude_name: Option<&str>,
+    ) -> color_eyre::Result<()> {
+        let is_impersonator = matches!(wallet, Wallet::Impersonator(_));
+        let addresses: HashSet<Address> = wallet
+            .get_all_addresses()
+            .await
+            .into_iter()
+            .map(|(_, address)| address)
+            .collect();
+
+        for other in self.wallets.iter() {
+            if exclude_name == Some(other.name().as_str()) {
+                continue;
+            }
+
+            if matches!(other, Wallet::Impersonator(_)) == is_impersonator {
+                continue;
+            }
+
+            for (_, address) in other.get_all_addresses().await {
+                if addresses.contains(&address) {
+                    return Err(eyre!(
+                        "address {address} is already held by `{}` ({}) — an impersonator \
+                         cannot share an address with a real-key wallet",
+                        other.name(),
+                        other.wallet_type()
+                    ));
+                }
+            }
+        }
+
+        Ok(())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use std::str::FromStr as _;
+
+    use super::*;
+    use crate::wallets::{Impersonator, PlaintextWallet};
+
+    /// The first address of the anvil mnemonic, which the default plaintext
+    /// wallet derives.
+    const ANVIL_0: &str = "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266";
+
+    fn wallets_with(entries: Vec<Wallet>) -> Wallets {
+        Wallets {
+            wallets: entries,
+            current: 0,
+            file: None,
+        }
+    }
+
+    #[tokio::test]
+    async fn same_kind_collisions_are_allowed() {
+        let addr = Address::from_str(ANVIL_0).unwrap();
+        let wallets = wallets_with(vec![Wallet::Impersonator(Impersonator {
+            name: "impersonator".into(),
+            addresses: vec![addr],
+            current: 0,
+        })]);
+        let second = Wallet::Impersonator(Impersonator {
+            name: "second-impersonator".into(),
+            addresses: vec![addr],
+            current: 0,
+        });
+
+        assert!(
+            wallets
+                .ensure_no_impersonator_collision(&second, None)
+                .await
+                .is_ok()
+        );
+    }
+
+    #[tokio::test]
+    async fn an_impersonator_cannot_shadow_a_real_key_wallets_address() {
+        let addr = Address::from_str(ANVIL_0).unwrap();
+        let wallets = wallets_with(vec![Wallet::Plaintext(PlaintextWallet::default())]);
+        let shadow = Wallet::Impersonator(Impersonator {
+            name: "shadow".into(),
+            addresses: vec![addr],
+            current: 0,
+        });
+
+        let err = wallets
+            .ensure_no_impersonator_collision(&shadow, None)
+            .await
+            .unwrap_err();
+
+        assert!(err.to_string().contains("Plaintext"), "got: {err}");
+    }
+
+    #[tokio::test]
+    async fn a_real_key_wallet_cannot_collide_with_an_existing_impersonator() {
+        let addr = Address::from_str(ANVIL_0).unwrap();
+        let wallets = wallets_with(vec![Wallet::Impersonator(Impersonator {
+            name: "impersonator".into(),
+            addresses: vec![addr],
+            current: 0,
+        })]);
+        let real_key = Wallet::Plaintext(PlaintextWallet::default());
+
+        let err = wallets
+            .ensure_no_impersonator_collision(&real_key, None)
+            .await
+            .unwrap_err();
+
+        assert!(err.to_string().contains("impersonator"), "got: {err}");
+    }
+
+    #[tokio::test]
+    async fn updating_a_wallet_excludes_its_own_prior_entry() {
+        let addr = Address::from_str(ANVIL_0).unwrap();
+        let wallets = wallets_with(vec![Wallet::Impersonator(Impersonator {
+            name: "impersonator".into(),
+            addresses: vec![addr],
+            current: 0,
+        })]);
+        let unchanged = Wallet::Impersonator(Impersonator {
+            name: "impersonator".into(),
+            addresses: vec![addr],
+            current: 0,
+        });
+
+        assert!(
+            wallets
+                .ensure_no_impersonator_collision(&unchanged, Some("impersonator"))
+                .await
+                .is_ok()
+        );
     }
 }
