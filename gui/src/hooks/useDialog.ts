@@ -11,7 +11,10 @@ export function useDialog<T>(idStr: string) {
   const { data } = useInvoke<T>("dialog_get_payload", { id });
 
   const send = useCallback(
-    (payload: unknown = {}) => invoke("dialog_send", { id, payload }),
+    (payload: unknown = {}) =>
+      invoke("dialog_send", { id, payload }).catch((err) =>
+        console.warn("Failed to send dialog payload", err),
+      ),
     [id],
   );
 

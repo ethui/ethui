@@ -44,14 +44,18 @@ function logWindowError(event: string | Event, error: Error | undefined) {
   const message = error ? error.toString() : event.toString();
   const stack = error?.stack?.split("\n").filter((n) => n.length > 0);
   console.error(error);
-  invoke("ui_error", { message, stack });
+  invoke("ui_error", { message, stack }).catch((err) =>
+    console.warn("Failed to report UI error", err),
+  );
 }
 
 function logUnhandledRejection(reason: Error | string) {
   const message = typeof reason === "string" ? reason : reason.message;
   const stack = typeof reason === "string" ? [] : formatStack(reason?.stack);
   // console.error(reason);
-  invoke("ui_error", { message, stack });
+  invoke("ui_error", { message, stack }).catch((err) =>
+    console.warn("Failed to report UI rejection", err),
+  );
 }
 
 async function logError(err: Error, info?: ErrorInfo) {

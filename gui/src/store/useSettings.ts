@@ -16,7 +16,9 @@ const store: StateCreator<Store> = (set) => ({
   settings: undefined,
 
   setFastMode(mode: boolean) {
-    invoke("settings_set_fast_mode", { mode });
+    invoke("settings_set_fast_mode", { mode }).catch((err) =>
+      console.warn("Failed to set fast mode", err),
+    );
   },
 
   async reload() {

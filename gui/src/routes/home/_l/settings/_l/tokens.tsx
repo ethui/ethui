@@ -19,11 +19,15 @@ function SettingsTokens() {
 
   if (!currentNetwork) return null;
 
-  const unhide = (contract: Address) => {
-    invoke("db_clear_erc20_blacklist", {
-      chainId: currentNetwork.id.chain_id,
-      address: contract,
-    });
+  const unhide = async (contract: Address) => {
+    try {
+      await invoke("db_clear_erc20_blacklist", {
+        chainId: currentNetwork.id.chain_id,
+        address: contract,
+      });
+    } catch (err) {
+      console.warn("Failed to unhide token", err);
+    }
   };
 
   return (

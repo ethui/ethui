@@ -37,12 +37,16 @@ export function ERC20View({
   const truncatedBalance =
     balance - (balance % BigInt(Math.ceil(minimum * 10 ** decimals)));
 
-  const blacklist = () => {
-    invoke("db_set_erc20_blacklist", {
-      chainId: network.id.chain_id,
-      address: contract,
-      blacklisted: true,
-    });
+  const blacklist = async () => {
+    try {
+      await invoke("db_set_erc20_blacklist", {
+        chainId: network.id.chain_id,
+        address: contract,
+        blacklisted: true,
+      });
+    } catch (err) {
+      console.warn("Failed to blacklist token", err);
+    }
   };
 
   return (
