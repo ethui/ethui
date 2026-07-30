@@ -45,7 +45,7 @@ in
       gdk-pixbuf
       glib
       dbus
-      libsoup_2_4
+      libsoup_3
       pango
       cairo
       librsvg
