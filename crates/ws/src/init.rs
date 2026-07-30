@@ -9,8 +9,10 @@ use crate::{peers::Peers, server::server};
 
 static PEERS: Lazy<RwLock<Peers>> = Lazy::new(Default::default);
 
-pub async fn init(args: &Args) {
+pub async fn init(args: &Args, local_token: String) {
     let port = args.ws_port;
+
+    crate::server::set_local_token(local_token);
 
     tokio::spawn(async move { server(port).await });
     tokio::spawn(async { receiver().await });

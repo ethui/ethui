@@ -111,6 +111,12 @@ impl WalletControl for HDWallet {
 
 impl HDWallet {
     pub async fn from_params(params: HDWalletParams) -> color_eyre::Result<Self> {
+        // Guarded before deriving: a zero count leaves `addresses` empty, and
+        // every `first().unwrap()` below would panic on it.
+        if params.count == 0 {
+            return Err(eyre!("count must be at least 1"));
+        }
+
         let addresses =
             utils::derive_addresses(&params.mnemonic, &params.derivation_path, params.count);
         let current = addresses.first().unwrap().clone();
@@ -136,6 +142,10 @@ impl HDWallet {
     }
 
     async fn update_count(&mut self, count: usize) -> color_eyre::Result<()> {
+        if count == 0 {
+            return Err(eyre!("count must be at least 1"));
+        }
+
         self.count = count;
 
         self.update_derived_addresses().await?;
@@ -182,7 +192,29 @@ pub struct HDWalletParams {
 
 #[cfg(test)]
 mod tests {
+    use super::*;
     use crate::secret_cache::{string_from_secret, string_into_secret};
+
+    /// `from_params` unwraps the first derived address, so a zero count used to
+    /// panic rather than return an error.
+    #[tokio::test]
+    async fn a_zero_count_is_rejected_instead_of_panicking() {
+        let err = HDWallet::create(json!({
+            "type": "HDWallet",
+            "name": "test",
+            "mnemonic": "test test test test test test test test test test test junk",
+            "derivationPath": "m/44'/60'/0'/0",
+            "password": "password",
+            "count": 0,
+        }))
+        .await
+        .unwrap_err();
+
+        assert!(
+            err.to_string().contains("count must be at least 1"),
+            "expected a count error, got {err}"
+        );
+    }
 
     #[test]
     fn secret() {

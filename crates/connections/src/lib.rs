@@ -6,6 +6,6 @@ pub mod permissions;
 mod store;
 pub mod utils;
 
-pub use ctx::Ctx;
+pub use ctx::{Ctx, Trust};
 pub use init::init;
 pub use store::Store;

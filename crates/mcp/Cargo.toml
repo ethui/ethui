@@ -1,0 +1,42 @@
+[package]
+name = "ethui-mcp"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+homepage.workspace = true
+repository.workspace = true
+exclude.workspace = true
+authors.workspace = true
+
+[lib]
+name = "ethui_mcp"
+
+[[bin]]
+name = "ethui-mcp"
+path = "src/main.rs"
+
+[dependencies]
+ethui-args.workspace = true
+
+alloy.workspace = true
+rmcp = { version = "=3.0.0-beta.2", features = [
+  "server",
+  "macros",
+  "transport-io",
+] }
+schemars = "1.0"
+
+tokio = { workspace = true, features = ["macros", "io-std", "time", "net"] }
+tokio-tungstenite.workspace = true
+futures.workspace = true
+
+serde.workspace = true
+serde_json.workspace = true
+async-trait.workspace = true
+thiserror.workspace = true
+tracing.workspace = true
+tracing-subscriber = { version = "0.3", features = ["env-filter", "fmt"] }
+color-eyre.workspace = true
+
+[dev-dependencies]
+url.workspace = true
