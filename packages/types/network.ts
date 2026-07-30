@@ -18,9 +18,22 @@ export const networkSchema = z.object({
 
 export type NetworkInputs = z.infer<typeof networkSchema>;
 export type NetworkId = z.infer<typeof networkIdSchema>;
+
+export interface AnvilSnapshot {
+  id: string;
+  taken_at: number;
+}
+
 export type Network = NetworkInputs & {
   status: "unknown" | "online" | "offline";
+  anvil_snapshots: AnvilSnapshot[];
+  current_snapshot: string | null;
 };
+
+export interface AnvilSnapshotsState {
+  snapshots: AnvilSnapshot[];
+  current: string | null;
+}
 
 export const stacksSchema = z.object({ slug: z.string() });
 export type StacksInputs = z.infer<typeof stacksSchema>;

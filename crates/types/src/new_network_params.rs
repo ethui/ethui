@@ -27,6 +27,8 @@ impl NewNetworkParams {
             decimals: self.decimals,
             status: NetworkStatus::Unknown,
             is_stack: self.is_stack,
+            anvil_snapshots: vec![],
+            current_snapshot: None,
         }
     }
 }

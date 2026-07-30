@@ -46,6 +46,8 @@ async fn test_http_worker_lifecycle() {
         decimals: 18,
         status: NetworkStatus::Unknown,
         is_stack: true,
+        anvil_snapshots: vec![],
+        current_snapshot: None,
     };
     let worker = AnvilHttp::new(network);
     let consumer = TestConsumer;
@@ -81,6 +83,8 @@ async fn test_ws_worker_lifecycle() {
         decimals: 18,
         status: NetworkStatus::Unknown,
         is_stack: true,
+        anvil_snapshots: vec![],
+        current_snapshot: None,
     };
     let worker = AnvilWs::new(network);
     let consumer = TestConsumer;
@@ -116,6 +120,8 @@ async fn test_message_processing_lifecycle() {
         decimals: 18,
         status: NetworkStatus::Unknown,
         is_stack: false,
+        anvil_snapshots: vec![],
+        current_snapshot: None,
     };
     let worker = AnvilHttp::new(network);
     let message_count = Arc::new(AtomicU32::new(0));
@@ -161,6 +167,8 @@ async fn test_wait_behavior() {
         decimals: 18,
         status: NetworkStatus::Unknown,
         is_stack: true,
+        anvil_snapshots: vec![],
+        current_snapshot: None,
     };
 
     // Test HTTP worker - should timeout or error without anvil
@@ -205,6 +213,8 @@ async fn test_wait_unavailable_node() {
         decimals: 18,
         status: NetworkStatus::Unknown,
         is_stack: true,
+        anvil_snapshots: vec![],
+        current_snapshot: None,
     };
 
     // Test HTTP worker failure
@@ -245,6 +255,8 @@ async fn test_block_subscription_behavior() {
         decimals: 18,
         status: NetworkStatus::Unknown,
         is_stack: true,
+        anvil_snapshots: vec![],
+        current_snapshot: None,
     };
 
     // Test HTTP block subscription - should fail gracefully without anvil
@@ -281,6 +293,8 @@ async fn test_worker_subscription_lifecycle() {
         decimals: 18,
         status: NetworkStatus::Unknown,
         is_stack: true,
+        anvil_snapshots: vec![],
+        current_snapshot: None,
     };
     let worker = Worker::new(AnvilHttp::new(network.clone()));
     let consumer = TestConsumer;
@@ -322,6 +336,8 @@ async fn test_historical_blocks_stream_interface() {
         decimals: 18,
         status: NetworkStatus::Unknown,
         is_stack: true,
+        anvil_snapshots: vec![],
+        current_snapshot: None,
     };
 
     // Test that backfill_blocks interface works without requiring actual anvil
@@ -368,6 +384,8 @@ async fn test_worker_streaming_lifecycle() {
         decimals: 18,
         status: NetworkStatus::Unknown,
         is_stack: true,
+        anvil_snapshots: vec![],
+        current_snapshot: None,
     };
 
     let worker = Worker::new(AnvilHttp::new(network.clone()));

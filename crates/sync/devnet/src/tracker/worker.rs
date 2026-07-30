@@ -304,6 +304,8 @@ mod tests {
             decimals: 18,
             status: NetworkStatus::Unknown,
             is_stack: false,
+            anvil_snapshots: vec![],
+            current_snapshot: None,
         };
 
         let worker = super::create_worker(network_with_ws.clone());
@@ -326,6 +328,8 @@ mod tests {
             decimals: 18,
             status: NetworkStatus::Unknown,
             is_stack: false,
+            anvil_snapshots: vec![],
+            current_snapshot: None,
         };
 
         let worker = super::create_worker(network_without_ws);
@@ -377,6 +381,8 @@ mod tests {
             decimals: 18,
             status: NetworkStatus::Unknown,
             is_stack: false,
+            anvil_snapshots: vec![],
+            current_snapshot: None,
         };
 
         let mut worker = Worker::new(AnvilHttp::new(network));
@@ -437,6 +443,8 @@ mod tests {
             decimals: 18,
             status: ethui_types::NetworkStatus::Unknown,
             is_stack: false,
+            anvil_snapshots: vec![],
+            current_snapshot: None,
         };
 
         let provider = AnvilWs::new(network);

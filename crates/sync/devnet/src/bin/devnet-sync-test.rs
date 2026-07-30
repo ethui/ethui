@@ -78,6 +78,8 @@ async fn main() -> Result<()> {
         decimals: 18,
         status: NetworkStatus::Unknown,
         is_stack: false,
+        anvil_snapshots: vec![],
+        current_snapshot: None,
     };
 
     // Create worker
