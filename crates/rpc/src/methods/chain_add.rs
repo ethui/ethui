@@ -1,6 +1,7 @@
 use ethui_connections::Ctx;
 use ethui_dialogs::{Dialog, DialogMsg};
 use ethui_networks::{NetworksActorExt as _, networks};
+use ethui_settings::{SettingsActorExt as _, settings};
 use ethui_types::{Json, NewNetworkParams, U64};
 use jsonrpc_core::Params as RpcParams;
 use serde::{Deserialize, Serialize};
@@ -43,6 +44,11 @@ impl Method for ChainAdd {
             return Ok(Json::Null);
         }
 
+        if should_skip_dialog(&network).await {
+            networks().add(network).await?;
+            return Ok(Json::Null);
+        }
+
         let dialog = Dialog::new("chain-add", serde_json::to_value(&network)?);
         dialog.open().await?;
 
@@ -61,6 +67,22 @@ impl Method for ChainAdd {
 
         Ok(Json::Null)
     }
+}
+
+pub(super) async fn should_skip_dialog(network: &NewNetworkParams) -> bool {
+    let fast_mode = settings()
+        .get_all()
+        .await
+        .map(|settings| settings.fast_mode)
+        .unwrap_or(false);
+
+    fast_mode
+        && network
+            .clone()
+            .into_network(0)
+            .is_dev()
+            .await
+            .unwrap_or(false)
 }
 
 impl ChainAdd {
