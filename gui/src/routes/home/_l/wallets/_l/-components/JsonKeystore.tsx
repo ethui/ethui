@@ -5,13 +5,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-const schema = z.object({
+const createSchema = z.object({
   name: z.string().min(1),
   file: z.string().min(1),
-  currentPath: z.string().optional(),
+  password: z.string().min(1),
 });
 
-type Schema = z.infer<typeof schema>;
+const updateSchema = createSchema.pick({ name: true });
 
 interface JsonKeystoreProps {
   wallet?: JsonKeystoreWallet;
@@ -24,21 +24,32 @@ export function JsonKeystore({
   onSubmit,
   onRemove,
 }: JsonKeystoreProps) {
+  const schema = wallet ? updateSchema : createSchema;
   const form = useForm({
     mode: "onBlur",
     resolver: zodResolver(schema),
     defaultValues: wallet,
   });
 
-  const prepareAndSubmit = (data: Schema) => {
-    onSubmit({ type: "jsonKeystore", ...data });
-    form.reset(data);
+  const prepareAndSubmit = (data: z.infer<typeof schema>) => {
+    onSubmit({ type: "jsonKeystore", ...data } as Wallet);
+    form.reset();
   };
 
   return (
     <Form form={form} onSubmit={prepareAndSubmit} className="gap-4">
       <Form.Text label="Name" name="name" className="w-full" />
-      <Form.Text label="Keystore file" name="file" className="w-full" />
+      {!wallet && (
+        <>
+          <Form.Text label="Keystore file" name="file" className="w-full" />
+          <Form.Text
+            type="password"
+            label="Keystore password"
+            name="password"
+            className="w-full"
+          />
+        </>
+      )}
 
       <div className="flex gap-2">
         <Form.Submit label="Save" />

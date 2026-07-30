@@ -1,4 +1,4 @@
-use std::{fs::File, io::BufReader, path::PathBuf, str::FromStr};
+use std::{path::PathBuf, str::FromStr};
 
 use alloy::{
     primitives::B256,
@@ -15,19 +15,76 @@ use crate::{
     wallet::WalletCreate,
 };
 
-#[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
+#[derive(Debug, serde::Serialize, Clone)]
 pub struct JsonKeystoreWallet {
     name: String,
     pub file: PathBuf,
+    address: Address,
 
     #[serde(skip)]
     cache: SecretCache,
 }
 
+/// Wallets persisted before `address` was added to this struct don't have it in
+/// storage. Rather than panic on load (breaking every existing JSON keystore
+/// wallet), fall back to the legacy lookup of the keystore file's own
+/// (non-standard, optional) `address` field.
+impl<'de> serde::Deserialize<'de> for JsonKeystoreWallet {
+    fn deserialize<D>(deserializer: D) -> std::result::Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        #[derive(serde::Deserialize)]
+        struct Raw {
+            name: String,
+            file: PathBuf,
+            #[serde(default)]
+            address: Option<Address>,
+        }
+
+        let raw = Raw::deserialize(deserializer)?;
+        let address = raw
+            .address
+            .or_else(|| legacy_file_address(&raw.file))
+            .unwrap_or_default();
+
+        Ok(Self {
+            name: raw.name,
+            file: raw.file,
+            address,
+            cache: Default::default(),
+        })
+    }
+}
+
+fn legacy_file_address(file: &std::path::Path) -> Option<Address> {
+    let file = std::fs::File::open(file).ok()?;
+    let json: serde_json::Value = serde_json::from_reader(std::io::BufReader::new(file)).ok()?;
+    Address::from_str(json["address"].as_str()?).ok()
+}
+
+/// The keystore's own `address` field is a non-standard, optional extension
+/// (e.g. omitted by `cast wallet new`), so the address is derived once at
+/// import time by decrypting the file, rather than trusted from the JSON.
+#[derive(Debug, serde::Deserialize)]
+struct JsonKeystoreWalletParams {
+    name: String,
+    file: PathBuf,
+    password: String,
+}
+
 #[async_trait]
 impl WalletCreate for JsonKeystoreWallet {
     async fn create(params: serde_json::Value) -> color_eyre::Result<Wallet> {
-        Ok(Wallet::JsonKeystore(serde_json::from_value(params)?))
+        let params: JsonKeystoreWalletParams = serde_json::from_value(params)?;
+        let keystore = LocalSigner::decrypt_keystore(&params.file, &params.password)?;
+
+        Ok(Wallet::JsonKeystore(Self {
+            name: params.name,
+            address: keystore.address(),
+            file: params.file,
+            cache: Default::default(),
+        }))
     }
 }
 
@@ -38,16 +95,15 @@ impl WalletControl for JsonKeystoreWallet {
     }
 
     async fn update(mut self, params: serde_json::Value) -> color_eyre::Result<Wallet> {
-        Ok(Wallet::JsonKeystore(serde_json::from_value(params)?))
+        if let Some(name) = params["name"].as_str() {
+            self.name = name.into();
+        }
+
+        Ok(Wallet::JsonKeystore(self))
     }
 
     async fn get_current_address(&self) -> Address {
-        let file = File::open(self.file.clone()).unwrap();
-        let reader = BufReader::new(file);
-        let mut res: serde_json::Value = serde_json::from_reader(reader).unwrap();
-
-        // TODO: this should fail correctly
-        Address::from_str(res["address"].take().as_str().unwrap()).unwrap()
+        self.address
     }
 
     fn get_current_path(&self) -> String {
@@ -110,6 +166,8 @@ fn signer_from_secret(secret: &SecretVec<u8>) -> LocalSigner<ecdsa::SigningKey> 
 
 #[cfg(test)]
 mod tests {
+    use std::str::FromStr;
+
     use super::*;
 
     #[test]
@@ -121,5 +179,62 @@ mod tests {
 
         assert_eq!(signer.address(), recovered_signer.address());
         assert_eq!(signer.credential(), recovered_signer.credential());
+    }
+
+    /// Regression test for https://github.com/ethui/ethui/issues/823:
+    /// `cast wallet new` keystores omit the (non-standard) `address` field.
+    #[test]
+    fn create_derives_address_from_keystore_without_address_field() {
+        let dir = tempfile::tempdir().unwrap();
+        let file = dir.path().join("keystore.json");
+        std::fs::write(
+            &file,
+            r#"{"crypto":{"cipher":"aes-128-ctr","cipherparams":{"iv":"9ac58c41f3cfb68fb8ed629e93f22d28"},"ciphertext":"3e355b65148cb1cc194207a25436038d920faf25a6c5cfb9ba8d914d57253f23","kdf":"scrypt","kdfparams":{"dklen":32,"n":8192,"p":1,"r":8,"salt":"e52897a58091613e00db586696f35a68c833e470d9dd55bb1170e0ea0cce82d2"},"mac":"ad7da2792c9b73ee96ffe31bba7f6ca999074b600f62d49eff840d1bf67bbfae"},"id":"c29a7096-a490-40db-b75e-2512647a4496","version":3}"#,
+        )
+        .unwrap();
+
+        let params = serde_json::json!({
+            "name": "test",
+            "file": file,
+            "password": "test123",
+        });
+
+        let wallet = tokio::runtime::Runtime::new()
+            .unwrap()
+            .block_on(JsonKeystoreWallet::create(params))
+            .unwrap();
+        let Wallet::JsonKeystore(wallet) = wallet else {
+            panic!("expected a JsonKeystore wallet");
+        };
+
+        assert_eq!(
+            wallet.address,
+            Address::from_str("0xe27952879c504b1c8e9fF34aB53Fa0d3c08C47B9").unwrap()
+        );
+    }
+
+    /// Wallets persisted before `address` was added to the struct must still
+    /// deserialize instead of panicking `wallets.json` load for existing users.
+    #[test]
+    fn deserializes_legacy_wallet_without_persisted_address() {
+        let dir = tempfile::tempdir().unwrap();
+        let file = dir.path().join("keystore.json");
+        std::fs::write(
+            &file,
+            r#"{"address":"e27952879c504b1c8e9fF34aB53Fa0d3c08C47B9","crypto":{}}"#,
+        )
+        .unwrap();
+
+        let persisted = serde_json::json!({
+            "name": "legacy",
+            "file": file,
+        });
+
+        let wallet: JsonKeystoreWallet = serde_json::from_value(persisted).unwrap();
+
+        assert_eq!(
+            wallet.address,
+            Address::from_str("0xe27952879c504b1c8e9fF34aB53Fa0d3c08C47B9").unwrap()
+        );
     }
 }

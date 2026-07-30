@@ -31,3 +31,4 @@ coins-bip32 = "0.13"
 
 [dev-dependencies]
 rstest.workspace = true
+tempfile.workspace = true
