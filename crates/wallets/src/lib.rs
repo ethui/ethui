@@ -115,8 +115,8 @@ impl Wallets {
         let addresses = wallet.get_all_addresses().await;
 
         self.ensure_no_duplicates_of(&wallet.name())?;
+        self.ensure_no_cross_tier_collision(&wallet, None).await?;
 
-        // TODO: ensure no duplicates
         self.wallets.push(wallet);
 
         self.on_wallet_changed().await?;
@@ -139,7 +139,10 @@ impl Wallets {
             .with_context(|| format!("invalid wallet name `{name}`"))?;
 
         let before = self.wallets[i].get_all_addresses().await;
-        self.wallets[i] = self.wallets[i].clone().update(params).await?;
+        let updated = self.wallets[i].clone().update(params).await?;
+        self.ensure_no_cross_tier_collision(&updated, Some(&name))
+            .await?;
+        self.wallets[i] = updated;
         let after = self.wallets[i].get_all_addresses().await;
 
         tokio::spawn(async move {
@@ -249,5 +252,240 @@ impl Wallets {
             return Err(eyre!("duplicate wallet names `{}`", name));
         }
         Ok(())
+    }
+
+    /// Rejects `wallet` if it shares an address with an existing wallet of a
+    /// different [`SecurityTier`] — otherwise a weaker-protected wallet could
+    /// silently take over signing for an address just by becoming current.
+    /// Same-tier collisions (e.g. one mnemonic imported twice) are fine and
+    /// stay allowed.
+    async fn ensure_no_cross_tier_collision(
+        &self,
+        wallet: &Wallet,
+        exclude_name: Option<&str>,
+    ) -> color_eyre::Result<()> {
+        let tier = SecurityTier::of(wallet);
+        let addresses: HashSet<Address> = wallet
+            .get_all_addresses()
+            .await
+            .into_iter()
+            .map(|(_, address)| address)
+            .collect();
+
+        for other in self.wallets.iter() {
+            if exclude_name == Some(other.name().as_str()) {
+                continue;
+            }
+
+            if SecurityTier::of(other) == tier {
+                continue;
+            }
+
+            for (_, address) in other.get_all_addresses().await {
+                if addresses.contains(&address) {
+                    return Err(eyre!(
+                        "address {address} is already held by `{}` ({}), which does not share \
+                         `{}`'s level of key protection — they cannot cover the same address",
+                        other.name(),
+                        other.wallet_type(),
+                        wallet.wallet_type(),
+                    ));
+                }
+            }
+        }
+
+        Ok(())
+    }
+}
+
+/// How well a wallet type protects the key material behind an address, from
+/// weakest to strongest. Two wallets covering the same address at different
+/// tiers is always a mistake, not a workflow: the weaker one either can't
+/// sign at all (`Impersonator`), or reintroduces a copy of the key at a
+/// lower protection level than the stronger wallet was chosen for — and
+/// `Wallets::find` has no notion of "the more secure one wins", so whichever
+/// answers first decides which protection level a signature actually goes
+/// through.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum SecurityTier {
+    /// No key material at all.
+    None,
+    /// Key material stored unencrypted (`PlaintextWallet`'s mnemonic).
+    Unencrypted,
+    /// Key material encrypted at rest, external (a keystore file), or never
+    /// resident (hardware).
+    Protected,
+}
+
+impl SecurityTier {
+    fn of(wallet: &Wallet) -> Self {
+        match wallet {
+            Wallet::Impersonator(_) => Self::None,
+            Wallet::Plaintext(_) => Self::Unencrypted,
+            Wallet::HDWallet(_)
+            | Wallet::PrivateKey(_)
+            | Wallet::JsonKeystore(_)
+            | Wallet::Ledger(_) => Self::Protected,
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use std::str::FromStr as _;
+
+    use ethui_types::prelude::json;
+
+    use super::*;
+    use crate::wallets::{Impersonator, PlaintextWallet, PrivateKeyWallet};
+
+    /// The first address of the anvil mnemonic, which the default plaintext
+    /// wallet derives.
+    const ANVIL_0: &str = "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266";
+
+    fn wallets_with(entries: Vec<Wallet>) -> Wallets {
+        Wallets {
+            wallets: entries,
+            current: 0,
+            file: None,
+        }
+    }
+
+    fn impersonator(name: &str, addr: Address) -> Wallet {
+        Wallet::Impersonator(Impersonator {
+            name: name.into(),
+            addresses: vec![addr],
+            current: 0,
+        })
+    }
+
+    /// `LedgerWallet`'s fields are private, so build it the same way `create`
+    /// does: through its tagged `Deserialize` impl rather than a struct
+    /// literal.
+    fn ledger(name: &str, addr: Address) -> Wallet {
+        serde_json::from_value(json!({
+            "type": "ledger",
+            "name": name,
+            "addresses": [["0", addr]],
+            "current": 0,
+        }))
+        .unwrap()
+    }
+
+    /// Anvil's default private key, deriving `ANVIL_0` — routed through the
+    /// real `from_params`/encryption path rather than a struct literal.
+    async fn private_key_wallet(name: &str) -> Wallet {
+        let params = serde_json::from_value(json!({
+            "name": name,
+            "privateKey": "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80",
+            "password": "test",
+        }))
+        .unwrap();
+
+        Wallet::PrivateKey(PrivateKeyWallet::from_params(params).await.unwrap())
+    }
+
+    #[tokio::test]
+    async fn same_tier_collisions_are_allowed() {
+        let addr = Address::from_str(ANVIL_0).unwrap();
+        let wallets = wallets_with(vec![impersonator("impersonator", addr)]);
+        let second = impersonator("second-impersonator", addr);
+
+        assert!(
+            wallets
+                .ensure_no_cross_tier_collision(&second, None)
+                .await
+                .is_ok()
+        );
+    }
+
+    /// Two `Protected`-tier wallets of different *types* are still the same
+    /// tier — an encrypted private key and a hardware wallet covering the
+    /// same address don't downgrade each other's protection.
+    #[tokio::test]
+    async fn different_protected_wallet_types_may_share_an_address() {
+        let addr = Address::from_str(ANVIL_0).unwrap();
+        let wallets = wallets_with(vec![ledger("ledger", addr)]);
+        let private_key = private_key_wallet("private-key").await;
+
+        assert!(
+            wallets
+                .ensure_no_cross_tier_collision(&private_key, None)
+                .await
+                .is_ok()
+        );
+    }
+
+    #[tokio::test]
+    async fn an_impersonator_cannot_shadow_a_real_key_wallets_address() {
+        let addr = Address::from_str(ANVIL_0).unwrap();
+        let wallets = wallets_with(vec![Wallet::Plaintext(PlaintextWallet::default())]);
+        let shadow = impersonator("shadow", addr);
+
+        let err = wallets
+            .ensure_no_cross_tier_collision(&shadow, None)
+            .await
+            .unwrap_err();
+
+        assert!(err.to_string().contains("Plaintext"), "got: {err}");
+    }
+
+    #[tokio::test]
+    async fn a_real_key_wallet_cannot_collide_with_an_existing_impersonator() {
+        let addr = Address::from_str(ANVIL_0).unwrap();
+        let wallets = wallets_with(vec![impersonator("impersonator", addr)]);
+        let real_key = Wallet::Plaintext(PlaintextWallet::default());
+
+        let err = wallets
+            .ensure_no_cross_tier_collision(&real_key, None)
+            .await
+            .unwrap_err();
+
+        assert!(err.to_string().contains("Impersonator"), "got: {err}");
+    }
+
+    /// A plaintext (unencrypted) mnemonic must not be allowed to cover an
+    /// address already backed by an encrypted/hardware wallet — that would
+    /// leave a copy of the key at a lower protection level than the user
+    /// chose for it.
+    #[tokio::test]
+    async fn a_plaintext_wallet_cannot_shadow_a_protected_wallets_address() {
+        let addr = Address::from_str(ANVIL_0).unwrap();
+        let wallets = wallets_with(vec![ledger("ledger", addr)]);
+        let plaintext = Wallet::Plaintext(PlaintextWallet::default());
+
+        let err = wallets
+            .ensure_no_cross_tier_collision(&plaintext, None)
+            .await
+            .unwrap_err();
+
+        assert!(err.to_string().contains("Ledger"), "got: {err}");
+    }
+
+    #[tokio::test]
+    async fn a_protected_wallet_cannot_collide_with_an_existing_plaintext_wallet() {
+        let wallets = wallets_with(vec![Wallet::Plaintext(PlaintextWallet::default())]);
+        let private_key = private_key_wallet("private-key").await;
+
+        let err = wallets
+            .ensure_no_cross_tier_collision(&private_key, None)
+            .await
+            .unwrap_err();
+
+        assert!(err.to_string().contains("Plaintext"), "got: {err}");
+    }
+
+    #[tokio::test]
+    async fn updating_a_wallet_excludes_its_own_prior_entry() {
+        let addr = Address::from_str(ANVIL_0).unwrap();
+        let wallets = wallets_with(vec![impersonator("impersonator", addr)]);
+        let unchanged = impersonator("impersonator", addr);
+
+        assert!(
+            wallets
+                .ensure_no_cross_tier_collision(&unchanged, Some("impersonator"))
+                .await
+                .is_ok()
+        );
     }
 }
